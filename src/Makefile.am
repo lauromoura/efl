@@ -77,6 +77,7 @@ include Makefile_efl_wl.am
 
 include Makefile_Cxx.am
 include Makefile_Eolian_Cxx.am
+include Makefile_Eolian_Csharp.am
 
 include Makefile_Elua.am
 
