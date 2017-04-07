@@ -880,6 +880,16 @@ EAPI Eina_Bool eolian_function_is_constructor(const Eolian_Function *function_id
 EAPI Eina_Bool eolian_function_is_function_pointer(const Eolian_Function *function_id);
 
 /*
+ * @brief Get whether a function is a function pointer.
+ *
+ * @param[in] function_id Id of the function
+ * @return EINA_TRUE and EINA_FALSE respectively
+ *
+ * @ingroup Eolian
+ */
+EAPI Eina_Bool eolian_function_is_function_pointer(const Eolian_Function *function_id);
+
+/*
  * @brief Returns an iterator to the parameter handles for a method/ctor/dtor.
  *
  * @param[in] function_id Id of the function
