@@ -249,7 +249,7 @@ inline bool operator!=(type_def const& lhs, type_def const& rhs)
   return !(lhs == rhs);
 }
         
-type_def const void_ {attributes::regular_type_def{"void", {qualifier_info::is_none, {}}, {}}, "void", false};
+type_def const void_ {attributes::regular_type_def{"void", {qualifier_info::is_none, {}}, {}, false}, "void", false};
         
 inline void type_def::set(Eolian_Type const* eolian_type, Eolian_Unit const* unit, Eolian_C_Type_Type ctype)
 {
@@ -260,7 +260,7 @@ inline void type_def::set(Eolian_Type const* eolian_type, Eolian_Unit const* uni
    switch( ::eolian_type_type_get(eolian_type))
      {
      case EOLIAN_TYPE_VOID:
-       original_type = attributes::regular_type_def{"void", {qualifiers(eolian_type), {}}, {}};
+       original_type = attributes::regular_type_def{"void", {qualifiers(eolian_type), {}}, {}, false};
        break;
      case EOLIAN_TYPE_REGULAR:
        if (!stp)
@@ -313,7 +313,7 @@ inline void type_def::set(Eolian_Expression_Type eolian_exp_type)
     switch(eolian_exp_type)
       {
       case EOLIAN_EXPR_INT:
-        original_type = attributes::regular_type_def{"int", {{}, {}}, {}};
+        original_type = attributes::regular_type_def{"int", {{}, {}}, {}, false};
         c_type = "int";
         break;
       default:
