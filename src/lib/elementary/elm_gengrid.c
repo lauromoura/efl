@@ -1012,6 +1012,15 @@ _item_text_realize(Elm_Gen_Item *it,
 }
 
 static void
+_focus_changed_cb(void *data, const Efl_Event *ev)
+{
+   Eina_Bool focus = (Eina_Bool) ev->info;
+
+   if (!elm_config_item_select_on_focus_disabled_get())
+     elm_gengrid_item_selected_set(data, focus);
+}
+
+static void
 _item_content_realize(Elm_Gen_Item *it,
                       Evas_Object *target,
                       Eina_List **contents,
@@ -1049,6 +1058,7 @@ _item_content_realize(Elm_Gen_Item *it,
                content = it->itc->func.content_get
                   ((void *)WIDGET_ITEM_DATA_GET(EO_OBJ(it)), WIDGET(it), key);
              if (!content) goto out;
+             efl_event_callback_add(content, EFL_UI_FOCUS_OBJECT_EVENT_FOCUS_CHANGED, _focus_changed_cb, EO_OBJ(it));
           }
         *contents = eina_list_append(*contents, content);
         if (!edje_object_part_swallow(target, key, content))
@@ -2693,7 +2703,7 @@ _anim_end(Elm_Gengrid_Data *sd)
            {
               sd->items = eina_inlist_remove(sd->items, EINA_INLIST_GET(sd->reorder.it1));
               sd->items = eina_inlist_remove(sd->items, EINA_INLIST_GET(sd->reorder.it2));
-           
+
               if (it1_prev)
                 {
                    tmp = eina_inlist_find(sd->items, EINA_INLIST_GET(it1_prev));
@@ -2702,7 +2712,7 @@ _anim_end(Elm_Gengrid_Data *sd)
                 }
               else
                 sd->items = eina_inlist_prepend(sd->items, EINA_INLIST_GET(sd->reorder.it2));
-           
+
               if (it2_prev)
                 {
                    tmp = eina_inlist_find(sd->items, EINA_INLIST_GET(it2_prev));
@@ -2726,16 +2736,16 @@ _anim_end(Elm_Gengrid_Data *sd)
           {
              sd->items = eina_inlist_remove(sd->items, EINA_INLIST_GET(sd->reorder.it1));
              sd->items = eina_inlist_remove(sd->items, EINA_INLIST_GET(sd->reorder.it2));
-          
+
              if (it1_prev)
-               {  
+               {
                   tmp = eina_inlist_find(sd->items, EINA_INLIST_GET(it1_prev));
                   sd->items = eina_inlist_append_relative(sd->items, EINA_INLIST_GET(sd->reorder.it2),
                                                           tmp);
                }
              else
                sd->items = eina_inlist_prepend(sd->items, EINA_INLIST_GET(sd->reorder.it2));
-        
+
              if (it2_prev)
                {
                   tmp = eina_inlist_find(sd->items, EINA_INLIST_GET(it2_prev));
@@ -3257,6 +3267,8 @@ _key_action_move(Evas_Object *obj, const char *params)
 
    if (_get_direction(dir, &direction))
      {
+        //if (mirrored || sd->focus )
+          return EINA_FALSE;
         if (mirrored)
           {
             if (direction == ELM_FOCUS_RIGHT || direction == ELM_FOCUS_LEFT)
@@ -4163,7 +4175,7 @@ _elm_gengrid_efl_canvas_group_group_add(Eo *obj, Elm_Gengrid_Data *priv)
    evas_object_show(priv->hit_rect);
    evas_object_repeat_events_set(priv->hit_rect, EINA_TRUE);
 
-   elm_widget_can_focus_set(obj, EINA_TRUE);
+   //elm_widget_can_focus_set(obj, EINA_TRUE);
 
    priv->calc_cb = (Ecore_Cb)_calc_job;
 
