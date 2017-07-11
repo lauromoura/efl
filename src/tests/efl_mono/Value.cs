@@ -324,6 +324,13 @@ public static class TestEinaValue {
         }
     }
 
+    public static void TestValueContainerConstructorWrongArgs()
+    {
+        Test.AssertRaises<ArgumentException>(() => {
+            using(eina.Value array = new eina.Value(eina.ValueType.String, eina.ValueType.String)) { }
+        });
+    }
+
     public static void TestValueArray() {
         using(eina.Value array = new eina.Value(eina.ValueType.Array, eina.ValueType.Int32)) {
             Test.Assert(array.Append(0));
@@ -366,10 +373,6 @@ public static class TestEinaValue {
             Test.AssertEquals((string)array[0], "efl");
             Test.AssertEquals((string)array[1], "rocks");
         }
-
-        Test.AssertRaises<ArgumentException>(() => {
-            using(eina.Value array = new eina.Value(eina.ValueType.String, eina.ValueType.String)) { }
-        });
     }
 
     public static void TestArrayOutOfBounds() {
