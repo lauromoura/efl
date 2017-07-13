@@ -280,6 +280,9 @@ EAPI const Eina_Value_Type *type_string() {
 EAPI const Eina_Value_Type *type_array() {
    return EINA_VALUE_TYPE_ARRAY;
 }
+EAPI const Eina_Value_Type *type_list() {
+   return EINA_VALUE_TYPE_LIST;
+}
 
 EAPI size_t eina_value_sizeof()
 {
@@ -322,9 +325,19 @@ EAPI Eina_Bool eina_value_array_setup_wrapper(Eina_Value *array, const Eina_Valu
    return eina_value_array_setup(array, subtype, step);
 }
 
+EAPI Eina_Bool eina_value_list_setup_wrapper(Eina_Value *list, const Eina_Value_Type *subtype)
+{
+   return eina_value_list_setup(list, subtype);
+}
+
 EAPI Eina_Bool eina_value_array_append_wrapper(Eina_Value *array, va_list argp)
 {
    return eina_value_array_append(array, argp);
+}
+
+EAPI Eina_Bool eina_value_list_append_wrapper(Eina_Value *list, va_list argp)
+{
+   return eina_value_list_append(list, argp);
 }
 
 EAPI Eina_Bool eina_value_array_get_wrapper(const Eina_Value *array, int i, void *output)
@@ -332,9 +345,19 @@ EAPI Eina_Bool eina_value_array_get_wrapper(const Eina_Value *array, int i, void
    return eina_value_array_get(array, i, output);
 }
 
+EAPI Eina_Bool eina_value_list_get_wrapper(const Eina_Value *list, int i, void *output)
+{
+   return eina_value_list_get(list, i, output);
+}
+
 EAPI Eina_Bool eina_value_array_set_wrapper(Eina_Value *array, int i, void *value)
 {
    return eina_value_array_set(array, i, value);
+}
+
+EAPI Eina_Bool eina_value_list_set_wrapper(Eina_Value *list, int i, void *value)
+{
+   return eina_value_list_set(list, i, value);
 }
 
 // Not actually a wrapper, but keeping the naming convention for functions on this file.
@@ -345,7 +368,19 @@ EAPI const Eina_Value_Type* eina_value_array_subtype_get_wrapper(const Eina_Valu
    return array_value.subtype;
 }
 
+EAPI const Eina_Value_Type* eina_value_list_subtype_get_wrapper(const Eina_Value *list)
+{
+   Eina_Value_List list_value;
+   eina_value_get(list, &list_value);
+   return list_value.subtype;
+}
+
 EAPI unsigned int eina_value_array_count_wrapper(const Eina_Value *array)
 {
    return eina_value_array_count(array);
+}
+
+EAPI unsigned int eina_value_list_count_wrapper(const Eina_Value *list)
+{
+   return eina_value_list_count(list);
 }
