@@ -66,7 +66,15 @@ static internal class UnsafeNativeMethods {
 
     [DllImport("eflcustomexportsmono")]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
+    internal static extern bool eina_value_list_setup_wrapper(IntPtr handle, IntPtr subtype);
+
+    [DllImport("eflcustomexportsmono")]
+    [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_array_append_wrapper(IntPtr handle, IntPtr data);
+
+    [DllImport("eflcustomexportsmono")]
+    [return: MarshalAsAttribute(UnmanagedType.U1)]
+    internal static extern bool eina_value_list_append_wrapper(IntPtr handle, IntPtr data);
 
     [DllImport("eflcustomexportsmono")]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
@@ -74,13 +82,27 @@ static internal class UnsafeNativeMethods {
 
     [DllImport("eflcustomexportsmono")]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
+    internal static extern bool eina_value_list_get_wrapper(IntPtr handle, int index, out IntPtr output);
+
+    [DllImport("eflcustomexportsmono")]
+    [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_array_set_wrapper(IntPtr handle, int index, IntPtr value);
+
+    [DllImport("eflcustomexportsmono")]
+    [return: MarshalAsAttribute(UnmanagedType.U1)]
+    internal static extern bool eina_value_list_set_wrapper(IntPtr handle, int index, IntPtr value);
 
     [DllImport("eflcustomexportsmono")]
     internal static extern IntPtr eina_value_array_subtype_get_wrapper(IntPtr handle);
 
     [DllImport("eflcustomexportsmono")]
+    internal static extern IntPtr eina_value_list_subtype_get_wrapper(IntPtr handle);
+
+    [DllImport("eflcustomexportsmono")]
     internal static extern uint eina_value_array_count_wrapper(IntPtr handle);
+
+    [DllImport("eflcustomexportsmono")]
+    internal static extern uint eina_value_list_count_wrapper(IntPtr handle);
 
     // Supported types
     [DllImport("eflcustomexportsmono")]
@@ -91,6 +113,8 @@ static internal class UnsafeNativeMethods {
     internal static extern IntPtr type_string();
     [DllImport("eflcustomexportsmono")]
     internal static extern IntPtr type_array();
+    [DllImport("eflcustomexportsmono")]
+    internal static extern IntPtr type_list();
 }
 }
 
