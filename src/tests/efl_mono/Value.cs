@@ -235,10 +235,48 @@ public static class TestEinaValue {
         }
     }
 
-    /* public static void TestValueCompareList() */
-    /* { */
-    /*     Test.Assert(false, "Implement me."); */
-    /* } */
+    public static void TestValueCompareList()
+    {
+        using(eina.Value a = new eina.Value(eina.ValueType.List, eina.ValueType.Int32))
+        using(eina.Value b = new eina.Value(eina.ValueType.List, eina.ValueType.Int32)) {
+
+            Test.AssertEquals(a, b);
+
+            Test.Assert(a.Append(0));
+            Test.Assert(a.Append(1));
+            Test.Assert(a.Append(5));
+            Test.Assert(a.Append(42));
+
+            Test.Assert(b.Append(0));
+            Test.Assert(b.Append(1));
+            Test.Assert(b.Append(5));
+            Test.Assert(b.Append(42));
+
+            Test.AssertEquals(a, b);
+
+            a[0] = -1;
+            Test.Assert(!a.Equals(b));
+            Test.AssertLessThan(a, b);
+
+            a[0] = 10;
+            Test.AssertGreaterThan(a, b);
+
+            a[0] = 0;
+            Test.AssertEquals(a, b);
+
+            // bigger arrays are greater
+            Test.Assert(b.Append(0));
+            Test.AssertLessThan(a, b);
+
+            Test.Assert(a.Append(0));
+            Test.Assert(a.Append(0));
+            Test.AssertGreaterThan(a, b);
+
+            // bigger arrays are greater, unless an element says other wise
+            b[0] = 10;
+            Test.AssertGreaterThan(b, a);
+        }
+    }
 
     /* public static void TestValueCompareHash() */
     /* { */
@@ -331,6 +369,15 @@ public static class TestEinaValue {
         });
     }
 
+    public static void TestValueContainerWithNonContainerAccess()
+    {
+        using(eina.Value array = new eina.Value(eina.ValueType.Int32)) {
+            Test.AssertRaises<eina.NotAValueContainerException>(() => array[0] = 1);
+            object val = null;
+            Test.AssertRaises<eina.NotAValueContainerException>(() => val = array[0]);
+        }
+    }
+
     public static void TestValueArray() {
         using(eina.Value array = new eina.Value(eina.ValueType.Array, eina.ValueType.Int32)) {
             Test.Assert(array.Append(0));
@@ -377,13 +424,17 @@ public static class TestEinaValue {
 
     public static void TestArrayOutOfBounds() {
         using(eina.Value array = new eina.Value(eina.ValueType.Array, eina.ValueType.Int32)) {
+            object placeholder = null;
             Test.AssertRaises<System.ArgumentOutOfRangeException>(() => array[0] = 1);
+            Test.AssertRaises<System.ArgumentOutOfRangeException>(() => placeholder = array[0]);
             Test.Assert(array.Append(0));
             Test.AssertNotRaises<System.ArgumentOutOfRangeException>(() => array[0] = 1);
+            Test.AssertNotRaises<System.ArgumentOutOfRangeException>(() => placeholder = array[0]);
             Test.AssertRaises<System.ArgumentOutOfRangeException>(() => array[1] = 1);
+            Test.AssertRaises<System.ArgumentOutOfRangeException>(() => placeholder = array[1]);
             Test.Assert(array.Append(0));
             Test.AssertNotRaises<System.ArgumentOutOfRangeException>(() => array[1] = 1);
-
+            Test.AssertNotRaises<System.ArgumentOutOfRangeException>(() => placeholder = array[1]);
         }
     }
 
@@ -395,9 +446,68 @@ public static class TestEinaValue {
             Test.AssertEquals(eina.ValueType.UInt32, array.GetValueSubType());
     }
 
-    /* public static void TestValueList() { */
-    /*     Test.Assert(false, "Implement me."); */
-    /* } */
+    public static void TestValueList() {
+        using(eina.Value list = new eina.Value(eina.ValueType.List, eina.ValueType.Int32)) {
+            Test.Assert(list.Append(0));
+            Test.Assert(list.Append(1));
+            Test.Assert(list.Append(5));
+            Test.Assert(list.Append(42));
+
+
+            Test.AssertEquals((int)list[0], 0);
+            Test.AssertEquals((int)list[1], 1);
+            Test.AssertEquals((int)list[2], 5);
+            Test.AssertEquals((int)list[3], 42);
+
+            list[0] = 1984;
+            list[1] = -42;
+
+            Test.AssertEquals((int)list[0], 1984);
+            Test.AssertEquals((int)list[1], -42);
+            Test.AssertEquals((int)list[2], 5);
+            Test.AssertEquals((int)list[3], 42);
+
+        }
+
+        using(eina.Value list = new eina.Value(eina.ValueType.List, eina.ValueType.UInt32)) {
+            Test.Assert(list.Append(2));
+            Test.AssertEquals((uint)list[0], (uint)2);
+            Test.AssertRaises<OverflowException>(() => list[0] = -1);
+        }
+
+        using(eina.Value list = new eina.Value(eina.ValueType.List, eina.ValueType.String)) {
+
+            Test.Assert(list.Append("hello"));
+            Test.Assert(list.Append("world"));
+
+            Test.AssertEquals((string)list[0], "hello");
+            Test.AssertEquals((string)list[1], "world");
+
+            list[0] = "efl";
+            list[1] = "rocks";
+
+            Test.AssertEquals((string)list[0], "efl");
+            Test.AssertEquals((string)list[1], "rocks");
+        }
+    }
+
+    public static void TestListOutOfBounds() {
+        using(eina.Value list = new eina.Value(eina.ValueType.List, eina.ValueType.Int32)) {
+            object placeholder = null;
+            Test.AssertRaises<System.ArgumentOutOfRangeException>(() => list[0] = 1);
+            Test.AssertRaises<System.ArgumentOutOfRangeException>(() => placeholder = list[0]);
+            Test.Assert(list.Append(0));
+            Test.AssertNotRaises<System.ArgumentOutOfRangeException>(() => list[0] = 1);
+            Test.AssertNotRaises<System.ArgumentOutOfRangeException>(() => placeholder = list[0]);
+            Test.AssertRaises<System.ArgumentOutOfRangeException>(() => list[1] = 1);
+            Test.AssertRaises<System.ArgumentOutOfRangeException>(() => placeholder = list[1]);
+            Test.Assert(list.Append(0));
+            Test.AssertNotRaises<System.ArgumentOutOfRangeException>(() => list[1] = 1);
+            Test.AssertNotRaises<System.ArgumentOutOfRangeException>(() => placeholder = list[1]);
+        }
+    }
+
+    // FIXME Add remaining list tests
 
     /* public static void TestValueHash() { */
     /*     Test.Assert(false, "Implement me."); */
