@@ -146,6 +146,21 @@ public class SetItemFailedException : Exception
     protected SetItemFailedException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 }
 
+/// <summary>Exception for methods that must have been called on a container.</summary>
+[Serializable]
+public class NotAValueContainerException : Exception
+{
+    /// <summary> Default constructor.</summary>
+    public NotAValueContainerException() : base () { }
+    /// <summary> Most commonly used contructor.</summary>
+    public NotAValueContainerException(string msg) : base(msg) { }
+    /// <summary> Wraps an inner exception.</summary>
+    public NotAValueContainerException(string msg, Exception inner) : base(msg, inner) { }
+    /// <summary> Serializable constructor.</summary>
+    protected NotAValueContainerException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+}
+
+
 /// <summary>Managed-side Enum to represent Eina_Value_Type constants</summary>
 public enum ValueType {
     /// <summary>Signed 32 bit integer. Same as 'int'</summary>
@@ -231,6 +246,9 @@ static class ValueTypeBridge
 
         ManagedToNative.Add(ValueType.Array, type_array());
         NativeToManaged.Add(type_array(), ValueType.Array);
+
+        ManagedToNative.Add(ValueType.List, type_list());
+        NativeToManaged.Add(type_list(), ValueType.List);
 
         TypesLoaded = true;
     }
@@ -359,6 +377,9 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
             case ValueType.Array:
                 ret = eina_value_array_setup_wrapper(this.Handle, native_subtype, step);
                 break;
+            case ValueType.List:
+                ret = eina_value_list_setup_wrapper(this.Handle, native_subtype);
+                break;
         }
 
         if (ret)
@@ -373,6 +394,32 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
             throw new ObjectDisposedException(GetType().Name);
         if (Flushed)
             throw new ValueFlushedException("Trying to use value that has been flushed. Setup it again.");
+    }
+
+    private void ContainerSanityChecks(int targetIndex=-1)
+    {
+        SanityChecks();
+        uint size = 0;
+        ValueType type = GetValueType();
+
+        if (!type.IsContainer())
+                throw new NotAValueContainerException("Value type must be a container");
+
+        if (targetIndex == -1)  // Some methods (e.g. append) don't care about size
+            return;
+
+        switch (type) {
+            case ValueType.Array:
+                size = eina_value_array_count_wrapper(this.Handle);
+                break;
+            case ValueType.List:
+                size = eina_value_list_count_wrapper(this.Handle);
+                break;
+        }
+
+        if (targetIndex >= size)
+                throw new System.ArgumentOutOfRangeException(
+                        $"Index {targetIndex} is larger than max array index {size-1}");
     }
 
     /// <summary>Releases the memory stored by this value. It can be reused by calling setup again.
@@ -558,46 +605,84 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
 
     // Array methods
     public bool Append(object o) {
-        SanityChecks();
+        ContainerSanityChecks();
         using (DisposableIntPtr marshalled_value = MarshalValue(o)) {
-            return eina_value_array_append_wrapper(this.Handle, marshalled_value.Handle);
+            switch (GetValueType()) {
+                case ValueType.Array:
+                    return eina_value_array_append_wrapper(this.Handle, marshalled_value.Handle);
+                case ValueType.List:
+                    return eina_value_list_append_wrapper(this.Handle, marshalled_value.Handle);
+            }
         }
+        return false;
     }
 
     public object this[int i]
     {
         get {
-            SanityChecks();
+            ContainerSanityChecks(i);
 
             IntPtr output = IntPtr.Zero;
-            // FIXME Support other integer-addressable containers (list)
-            if (!eina_value_array_get_wrapper(this.Handle, i, out output))
-                return null;
+            switch (GetValueType()) {
+                case ValueType.Array:
+                    if (!eina_value_array_get_wrapper(this.Handle, i, out output))
+                        return null;
+                    break;
+                case ValueType.List:
+                    if (!eina_value_list_get_wrapper(this.Handle, i, out output))
+                        return null;
+                    break;
+            }
             return UnMarshalPtr(output);
         }
         set {
-            SanityChecks();
-            using (DisposableIntPtr marshalled_value = MarshalValue(value))
-            {
-                if (!eina_value_array_set_wrapper(this.Handle, i, marshalled_value.Handle)) {
+            ContainerSanityChecks(i);
 
-                    uint size = eina_value_array_count_wrapper(this.Handle);
+            switch (GetValueType()) {
+                case ValueType.Array:
+                    ArraySet(i, value);
+                    break;
+                case ValueType.List:
+                    ListSet(i, value);
+                    break;
+            }
+        }
+    }
 
-                    if (i >= size)
-                        throw new System.ArgumentOutOfRangeException(
-                                $"Index {i} is larger than max array index {size-1}");
+    private void ArraySet(int i, object value) {
+        using (DisposableIntPtr marshalled_value = MarshalValue(value))
+        {
+            if (!eina_value_array_set_wrapper(this.Handle, i,
+                                              marshalled_value.Handle)) {
+                throw new SetItemFailedException($"Failed to set item at index {i}");
+            }
+        }
+    }
 
-                    throw new SetItemFailedException($"Failed to set item at index {i}");
-                }
+    private void ListSet(int i, object value) {
+        using (DisposableIntPtr marshalled_value = MarshalValue(value))
+        {
+            if (!eina_value_list_set_wrapper(this.Handle, i,
+                                             marshalled_value.Handle)) {
+                throw new SetItemFailedException($"Failed to set item at index {i}");
             }
         }
     }
 
     public ValueType GetValueSubType()
     {
-        SanityChecks();
+        ContainerSanityChecks();
 
-        IntPtr native_subtype = eina_value_array_subtype_get_wrapper(this.Handle);
+        IntPtr native_subtype = IntPtr.Zero;
+
+        switch (GetValueType()) {
+            case ValueType.Array:
+                native_subtype = eina_value_array_subtype_get_wrapper(this.Handle);
+                break;
+            case ValueType.List:
+                native_subtype = eina_value_list_subtype_get_wrapper(this.Handle);
+                break;
+        }
         return ValueTypeBridge.GetManaged(native_subtype);
     }
 
