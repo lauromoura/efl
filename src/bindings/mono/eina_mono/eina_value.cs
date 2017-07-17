@@ -603,7 +603,17 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
         return eina_value_to_string(this.Handle);
     }
 
-    // Array methods
+    // Container methods methods
+    public int Count() {
+        ContainerSanityChecks();
+        switch(GetValueType()) {
+            case ValueType.Array:
+                return (int)eina_value_array_count_wrapper(this.Handle);
+            case ValueType.List:
+                return (int)eina_value_list_count_wrapper(this.Handle);
+        }
+        return -1;
+    }
     public bool Append(object o) {
         ContainerSanityChecks();
         using (DisposableIntPtr marshalled_value = MarshalValue(o)) {
