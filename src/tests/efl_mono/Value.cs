@@ -380,10 +380,15 @@ public static class TestEinaValue {
 
     public static void TestValueArray() {
         using(eina.Value array = new eina.Value(eina.ValueType.Array, eina.ValueType.Int32)) {
+            Test.AssertEquals(0, array.Count());
             Test.Assert(array.Append(0));
+            Test.AssertEquals(1, array.Count());
             Test.Assert(array.Append(1));
+            Test.AssertEquals(2, array.Count());
             Test.Assert(array.Append(5));
+            Test.AssertEquals(3, array.Count());
             Test.Assert(array.Append(42));
+            Test.AssertEquals(4, array.Count());
 
 
             Test.AssertEquals((int)array[0], 0);
@@ -393,6 +398,7 @@ public static class TestEinaValue {
 
             array[0] = 1984;
             array[1] = -42;
+            Test.AssertEquals(4, array.Count());
 
             Test.AssertEquals((int)array[0], 1984);
             Test.AssertEquals((int)array[1], -42);
@@ -460,10 +466,15 @@ public static class TestEinaValue {
 
     public static void TestValueList() {
         using(eina.Value list = new eina.Value(eina.ValueType.List, eina.ValueType.Int32)) {
+            Test.AssertEquals(0, list.Count());
             Test.Assert(list.Append(0));
+            Test.AssertEquals(1, list.Count());
             Test.Assert(list.Append(1));
+            Test.AssertEquals(2, list.Count());
             Test.Assert(list.Append(5));
+            Test.AssertEquals(3, list.Count());
             Test.Assert(list.Append(42));
+            Test.AssertEquals(4, list.Count());
 
 
             Test.AssertEquals((int)list[0], 0);
@@ -473,6 +484,7 @@ public static class TestEinaValue {
 
             list[0] = 1984;
             list[1] = -42;
+            Test.AssertEquals(4, list.Count());
 
             Test.AssertEquals((int)list[0], 1984);
             Test.AssertEquals((int)list[1], -42);
