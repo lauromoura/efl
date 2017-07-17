@@ -398,6 +398,8 @@ public static class TestEinaValue {
             Test.AssertEquals((int)array[1], -42);
             Test.AssertEquals((int)array[2], 5);
             Test.AssertEquals((int)array[3], 42);
+
+            Test.AssertEquals("[1984, -42, 5, 42]", array.ToString());
         }
 
         using(eina.Value array = new eina.Value(eina.ValueType.Array, eina.ValueType.UInt32)) {
@@ -446,6 +448,16 @@ public static class TestEinaValue {
             Test.AssertEquals(eina.ValueType.UInt32, array.GetValueSubType());
     }
 
+    public static void TestValueArrayConvert() {
+        using(eina.Value array = new eina.Value(eina.ValueType.Array, eina.ValueType.Int32))
+        using(eina.Value other = new eina.Value(eina.ValueType.Int32)) {
+            other.Set(100);
+            other.ConvertTo(array);
+            Test.AssertEquals(100, (int)array[0]);
+            Test.AssertEquals("[100]", array.ToString());
+        }
+    }
+
     public static void TestValueList() {
         using(eina.Value list = new eina.Value(eina.ValueType.List, eina.ValueType.Int32)) {
             Test.Assert(list.Append(0));
@@ -467,6 +479,7 @@ public static class TestEinaValue {
             Test.AssertEquals((int)list[2], 5);
             Test.AssertEquals((int)list[3], 42);
 
+            Test.AssertEquals("[1984, -42, 5, 42]", list.ToString());
         }
 
         using(eina.Value list = new eina.Value(eina.ValueType.List, eina.ValueType.UInt32)) {
@@ -506,6 +519,25 @@ public static class TestEinaValue {
             Test.AssertNotRaises<System.ArgumentOutOfRangeException>(() => placeholder = list[1]);
         }
     }
+
+    public static void TestValueListSubType() {
+        using(eina.Value list = new eina.Value(eina.ValueType.List, eina.ValueType.Int32))
+            Test.AssertEquals(eina.ValueType.Int32, list.GetValueSubType());
+
+        using(eina.Value list = new eina.Value(eina.ValueType.List, eina.ValueType.UInt32))
+            Test.AssertEquals(eina.ValueType.UInt32, list.GetValueSubType());
+    }
+
+    public static void TestValueListConvert() {
+        using(eina.Value list = new eina.Value(eina.ValueType.List, eina.ValueType.Int32))
+        using(eina.Value other = new eina.Value(eina.ValueType.Int32)) {
+            other.Set(100);
+            other.ConvertTo(list);
+            Test.AssertEquals(100, (int)list[0]);
+            Test.AssertEquals("[100]", list.ToString());
+        }
+    }
+
 
     // FIXME Add remaining list tests
 
