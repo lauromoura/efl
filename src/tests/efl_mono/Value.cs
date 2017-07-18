@@ -67,6 +67,15 @@ public static class TestEinaValue {
         }
     }
 
+    public static void TestValueDispose()
+    {
+        eina.Value v = new eina.Value(eina.ValueType.Int32);
+        v.Dispose();
+        Test.AssertRaises<ObjectDisposedException>(v.Flush);
+        Test.AssertRaises<ObjectDisposedException>(() => v.ToString());
+        Test.AssertRaises<ObjectDisposedException>(() => v.Set(24));
+    }
+
     public static void TestValueFlush()
     {
         using (eina.Value v = new eina.Value(eina.ValueType.Int32)) {
