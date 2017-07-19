@@ -1,4 +1,4 @@
-struct Efl.Ui.GridView.Item_Event
+struct Efl.Ui.Gridview.Item_Event
 {
    layout: Elm.Layout;
    child: Efl.Model;
@@ -7,9 +7,9 @@ struct Efl.Ui.GridView.Item_Event
    column: int;
 }
 
-class Efl.Ui.Grid_View (Elm.Layout, Efl.Ui.View, Elm.Interface_Scrollable,
+class Efl.Ui.Gridview (Elm.Layout, Efl.Ui.View, Elm.Interface_Scrollable,
                 Elm.Interface.Atspi_Widget_Action, Elm.Interface.Atspi.Selection,
-                Efl.Ui.Clickable, Efl.Ui.Selectable)
+                Efl.Ui.Clickable, Efl.Ui.Selectable, Efl.Ui.Focus.Manager)
 {
    methods {
       @property homogeneous {
@@ -20,45 +20,33 @@ class Efl.Ui.Grid_View (Elm.Layout, Efl.Ui.View, Elm.Interface_Scrollable,
            [[Enable/disable homogeneous mode.]]
          }
          values {
-            homogeneous: bool; [[Assume the items within the Grid View are of
+            homogeneous: bool; [[Assume the items within the Gridview are of
                                  the same height and width. Default is $false.]]
          }
       }
       @property select_mode {
-         [[Grid View select mode.]]
+         [[Gridview select mode.]]
          get {}
          set {}
          values {
             mode: Elm.Object.Select_Mode(Elm.Object.Select_Mode.max); [[The select mode.]]
          }
       }
-      @property default_item_style {
-        [[Grid View default style of the layout items.]]
-         get {}
-         set {}
+      @property default_style {
          values {
             style: stringshare;
          }
       }
-      @property default_item_size {
-         [[Grid View default size of the layout items.]]
-         get {}
-         set {}
-         values {
-            width: int; [[ the default width size of layout ]]
-            height: int; [[ the default height size of layout ]]
-         }
-      }
    }
    events {
-      item,realized : Efl.Ui.Grid_View.Item_Event;
-      item,unrealized : Efl.Ui.Grid_View.Item_Event;
-      item,focused : Efl.Ui.Grid_View.Item_Event;
-      item,unfocused : Efl.Ui.Grid_View.Item_Event;
-      item,highlighted : Efl.Ui.Grid_View.Item_Event;
-      item,unhighlighted : Efl.Ui.Grid_View.Item_Event;
-      item,selected : Efl.Ui.Grid_View.Item_Event;
-      item,unselected : Efl.Ui.Grid_View.Item_Event;
+      item,realized : Efl.Ui.Gridview.Item_Event;
+      item,unrealized : Efl.Ui.Gridview.Item_Event;
+      item,focused : Efl.Ui.Gridview.Item_Event;
+      item,unfocused : Efl.Ui.Gridview.Item_Event;
+      item,highlighted : Efl.Ui.Gridview.Item_Event;
+      item,unhighlighted : Efl.Ui.Gridview.Item_Event;
+      item,selected : Efl.Ui.Gridview.Item_Event;
+      item,unselected : Efl.Ui.Gridview.Item_Event;
    }
 
    implements {
@@ -74,13 +62,13 @@ class Efl.Ui.Grid_View (Elm.Layout, Efl.Ui.View, Elm.Interface_Scrollable,
 
       // Widget
       Elm.Widget.theme_apply;
-      Elm.Widget.focus_next_manager_is;
-      Elm.Widget.focus_direction_manager_is;
-      Elm.Widget.focus_next;
-      Elm.Widget.focus_direction;
+//      Elm.Widget.focus_next_manager_is;
+//      Elm.Widget.focus_direction_manager_is;
+//      Elm.Widget.focus_next;
+//      Elm.Widget.focus_direction;
 //      Elm.Widget.activate;
 //      Elm.Widget.focused_item { get; }
-      Elm.Widget.focused_object { get; }
+//      Elm.Widget.focused_object { get; }
       Elm.Widget.widget_event;
 
       Elm.Layout.sizing_eval;
