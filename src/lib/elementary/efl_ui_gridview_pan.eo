@@ -1,6 +1,6 @@
-class Efl.Ui.Grid_View.Pan (Elm.Pan)
+class Efl.Ui.Gridview.Pan (Elm.Pan)
 {
-   [[Elementary Efl_Ui_Grid_View pan class]]
+   [[Elementary Efl_Ui_Gridview pan class]]
    implements {
       Efl.Object.destructor;
       Elm.Pan.content_size { get; }

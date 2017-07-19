@@ -1,5 +1,5 @@
-#ifndef EFL_UI_GRID_VIEW_PRIVATE_H
-#define EFL_UI_GRID_VIEW_PRIVATE_H
+#ifndef EFL_UI_GRIDVIEW_PRIVATE_H
+#define EFL_UI_GRIDVIEW_PRIVATE_H
 
 #ifdef HAVE_CONFIG_H
 # include "elementary_config.h"
@@ -12,9 +12,9 @@
 #include <Elementary.h>
 #include "elm_priv.h"
 
-typedef struct _Efl_Ui_Grid_View_Item Efl_Ui_Grid_View_Item;
+typedef struct _Efl_Ui_Gridview_Item Efl_Ui_Gridview_Item;
 
-struct _Efl_Ui_Grid_View_Item
+struct _Efl_Ui_Gridview_Item
 {
    Eo                   *obj;
    Efl_Model            *model;
@@ -30,9 +30,9 @@ struct _Efl_Ui_Grid_View_Item
    Ecore_Timer         *long_timer;
 };
 
-typedef struct _Grid_View_Block Grid_View_Block;
+typedef struct _Gridview_Block Gridview_Block;
 
-struct _Grid_View_Block
+struct _Gridview_Block
 {
    Eina_List *items;
    int index;
@@ -40,9 +40,9 @@ struct _Grid_View_Block
    Evas_Coord  x, y, w, h;
 };
 
-typedef struct _Efl_Ui_Grid_View_Data Efl_Ui_Grid_View_Data;
+typedef struct _Efl_Ui_Gridview_Data Efl_Ui_Gridview_Data;
 
-struct _Efl_Ui_Grid_View_Data
+struct _Efl_Ui_Gridview_Data
 {
    Eo                           *obj;
    Evas_Object                  *hit_rect;
@@ -77,25 +77,25 @@ struct _Efl_Ui_Grid_View_Data
    Evas_Object                  *pan_obj;
    Eina_Bool                    pan_changed : 1;
    Evas_Coord                   pan_x, pan_y, minw, minh, dx, dy;
-   Efl_Ui_Grid_View_Item        *focused;
+   Efl_Ui_Gridview_Item        *focused;
 
 };
 
-typedef struct _Efl_Ui_Grid_View_Pan_Data Efl_Ui_Grid_View_Pan_Data;
+typedef struct _Efl_Ui_Gridview_Pan_Data Efl_Ui_Gridview_Pan_Data;
 
-struct _Efl_Ui_Grid_View_Pan_Data
+struct _Efl_Ui_Gridview_Pan_Data
 {
    Eo                     *wobj;
-   Efl_Ui_Grid_View_Data  *wpd;
+   Efl_Ui_Gridview_Data  *wpd;
    Ecore_Job              *resize_job;
 };
 
 
-#define EFL_UI_GRID_VIEW_DATA_GET(o, ptr) \
-  Efl_Ui_Grid_View_Data * ptr = efl_data_scope_get(o, EFL_UI_GRID_VIEW_CLASS)
+#define EFL_UI_GRIDVIEW_DATA_GET(o, ptr) \
+  Efl_Ui_Gridview_Data * ptr = efl_data_scope_get(o, EFL_UI_GRIDVIEW_CLASS)
 
-#define EFL_UI_GRID_VIEW_DATA_GET_OR_RETURN(o, ptr)       \
-  EFL_UI_GRID_VIEW_DATA_GET(o, ptr);                      \
+#define EFL_UI_GRIDVIEW_DATA_GET_OR_RETURN(o, ptr)       \
+  EFL_UI_GRIDVIEW_DATA_GET(o, ptr);                      \
   if (EINA_UNLIKELY(!ptr))                           \
     {                                                \
        CRI("No widget data for object %p (%s)",      \
@@ -103,8 +103,8 @@ struct _Efl_Ui_Grid_View_Pan_Data
        return;                                       \
     }
 
-#define EFL_UI_GRID_VIEW_DATA_GET_OR_RETURN_VAL(o, ptr, val) \
-  EFL_UI_GRID_VIEW_DATA_GET(o, ptr);                         \
+#define EFL_UI_GRIDVIEW_DATA_GET_OR_RETURN_VAL(o, ptr, val) \
+  EFL_UI_GRIDVIEW_DATA_GET(o, ptr);                         \
   if (EINA_UNLIKELY(!ptr))                              \
     {                                                   \
        CRI("No widget data for object %p (%s)",         \

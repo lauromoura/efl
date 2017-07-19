@@ -1,4 +1,4 @@
-struct Efl.Ui.Grid_View.Item_Event
+struct Efl.Ui.GridView.Item_Event
 {
    layout: Elm.Layout;
    child: Efl.Model;
