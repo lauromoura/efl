@@ -833,7 +833,7 @@ _efl_ui_list_efl_canvas_group_group_add(Eo *obj, Efl_Ui_List_Data *pd EINA_UNUSE
    edje_object_size_min_calc(wd->resize_obj, &minw, &minh);
    evas_object_size_hint_min_set(obj, minw, minh);
 
-   elm_interface_scrollable_mirrored_set(obj, elm_widget_mirrored_get(obj));
+   elm_interface_scrollable_mirrored_set(obj, efl_ui_mirrored_get(obj));
    elm_layout_sizing_eval(obj);
 }
 
