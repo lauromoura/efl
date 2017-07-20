@@ -24,7 +24,7 @@ char edj_path[PATH_MAX];
 struct _Private_Data
 {
    Eo *model;
-   Evas_Object *li;
+   Evas_Object *gview;
 };
 typedef struct _Private_Data Private_Data;
 
@@ -33,7 +33,7 @@ _cleanup_cb(void *data, Evas *e EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void 
 {
    Private_Data *pd = data;
    efl_unref(pd->model);
-   efl_unref(pd->li);
+   efl_unref(pd->gview);
 }
 
 static void
@@ -111,19 +111,19 @@ elm_main(int argc, char **argv)
    elm_policy_set(ELM_POLICY_QUIT, ELM_POLICY_QUIT_LAST_WINDOW_CLOSED);
 
    priv->model = _make_model();
-   priv->li = efl_add(EFL_UI_GRIDVIEW_CLASS, win,
-                      efl_ui_view_model_set(efl_added, priv->model),
-                      efl_content_set(win, efl_added),
-                      efl_gfx_size_hint_weight_set(efl_added,
-                                                   EFL_GFX_SIZE_HINT_EXPAND,
-                                                   EFL_GFX_SIZE_HINT_EXPAND),
-                      efl_event_callback_add(efl_added,
-                                             EFL_UI_GRIDVIEW_EVENT_ITEM_REALIZED,
-                                             _realized_cb, priv),
-                      efl_event_callback_add(efl_added,
-                                             EFL_UI_GRIDVIEW_EVENT_ITEM_UNREALIZED,
-                                             _unrealized_cb, priv),
-                      efl_gfx_visible_set(efl_added, EINA_TRUE));
+   priv->gview = efl_add(EFL_UI_GRIDVIEW_CLASS, win,
+                         efl_ui_view_model_set(efl_added, priv->model),
+                         efl_content_set(win, efl_added),
+                         efl_gfx_size_hint_weight_set(efl_added,
+                                                      EFL_GFX_SIZE_HINT_EXPAND,
+                                                      EFL_GFX_SIZE_HINT_EXPAND),
+                         efl_event_callback_add(efl_added,
+                                                EFL_UI_GRIDVIEW_EVENT_ITEM_REALIZED,
+                                                _realized_cb, priv),
+                         efl_event_callback_add(efl_added,
+                                                EFL_UI_GRIDVIEW_EVENT_ITEM_UNREALIZED,
+                                                _unrealized_cb, priv),
+                         efl_gfx_visible_set(efl_added, EINA_TRUE));
 
    evas_object_event_callback_add(win, EVAS_CALLBACK_DEL, _cleanup_cb, priv);
    //showall
