@@ -1561,6 +1561,39 @@ _efl_ui_list_custom_layout(Efl_Ui_List *ui_list)
      }
 }
 
+EOLIAN Efl_Ui_View_Item *
+_efl_ui_list_item_new(Eo *obj, Efl_Ui_List_Data *pd, Efl_Model *model)
+{
+   return NULL;
+}
+
+EOLIAN void
+_efl_ui_list_item_remove(Eo *obj, Efl_Ui_List_Data *pd, Efl_Ui_View_Item *item)
+{
+}
+
+EOLIAN Elm_Layout *
+_efl_ui_list_item_realize(Eo *obj, Efl_Ui_List_Data *pd, Efl_Ui_View_Item *item)
+{
+   return NULL;
+}
+
+EOLIAN Elm_Layout *
+_efl_ui_list_item_unrealize(Eo *obj, Efl_Ui_List_Data *pd, Efl_Ui_View_Item *item)
+{
+   return NULL;
+}
+
+EOLIAN void
+_efl_ui_list_item_calculate(Eo *obj, Efl_Ui_List_Data *pd, Efl_Ui_View_Item *item)
+{
+}
+
+EOLIAN void
+_efl_ui_list_items_load(Eo *obj, Efl_Ui_List_Data *pd, Eina_Bool calc, Efl_Ui_View_Load_Mode type)
+{
+}
+
 /* Internal EO APIs and hidden overrides */
 
 #define EFL_UI_LIST_EXTRA_OPS \

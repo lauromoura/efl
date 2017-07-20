@@ -1,8 +1,23 @@
 struct Efl.Ui.List.Item_Event
 {
-   layout: Elm.Layout;
-   child: Efl.Model;
-   index: int;
+   [[]]
+   layout: Elm.Layout; [[]]
+   child: Efl.Model; [[]]
+   index: int; [[]]
+}
+
+struct Efl.Ui.View.Item
+{
+   [[]]
+}
+
+enum Efl.Ui.View.Load.Mode
+{
+   [[]]
+   legacy: efl_ui_view_load;
+   default = 0, [[]]
+   lazy = 1, [[]]
+   end_scroll = 2 [[]]
 }
 
 class Efl.Ui.List (Elm.Layout, Efl.Ui.View, Elm.Interface_Scrollable,
@@ -33,6 +48,47 @@ class Efl.Ui.List (Elm.Layout, Efl.Ui.View, Elm.Interface_Scrollable,
       @property default_style {
          values {
             style: stringshare;
+         }
+      }
+      // FIMXE protected feature in arrayview
+      item_new @protected {
+         [[create internal item data]]
+         return: ptr(Efl.Ui.View.Item); [[Item Data]]
+         params {
+            @in model: Efl.Model; [[model of list view]]
+         }
+      }
+      item_remove @protected {
+         [[remove internal item data]]
+         params {
+            @in item: ptr(Efl.Ui.View.Item); [[Item of list view]]
+         }
+      }
+      item_realize @protected {
+         [[realize item when item need to be loadded]]
+         return: Elm.Layout; [[ View Layout of Item Data]]
+         params {
+            @in item: ptr(Efl.Ui.View.Item); [[Item of list view]]
+         }
+      }
+      item_unrealize @protected {
+         [[unrealize item when item need to be unloadded]]
+         return: Elm.Layout; [[ View Layout of Item Data]]
+         params {
+            @in item: ptr(Efl.Ui.View.Item); [[Item of list view]]
+         }
+      }
+      item_calculate @protected {
+         [[calculate item size]]
+         params {
+            @in item: ptr(Efl.Ui.View.Item); [[Item of list view]]
+         }
+      }
+      items_load @protected {
+         [[load items weather they need to be loaded or not]]
+         params {
+            @in calc: bool; [[boolen value for item calculation]]
+            @in type: Efl.Ui.View.Load.Mode; [[Item of list view]]
          }
       }
    }
