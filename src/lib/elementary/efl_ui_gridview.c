@@ -81,7 +81,7 @@ _efl_ui_gridview_pan_elm_pan_pos_set(Eo *obj EINA_UNUSED, Efl_Ui_Gridview_Pan_Da
      }
 
    EINA_ARRAY_ITER_NEXT(pd->items, i, litem, iterator)
-     efl_gfx_position_set(litem->layout, (litem->x + 0 - pd->pan.x), (litem->y + 0 - pd->pan.y));
+      efl_gfx_position_set(litem->layout, (litem->x + 0 - pd->pan.x), (litem->y + 0 - pd->pan.y));
 }
 
 EOLIAN static void
@@ -97,7 +97,7 @@ _efl_ui_gridview_pan_elm_pan_pos_max_get(Eo *obj EINA_UNUSED, Efl_Ui_Gridview_Pa
    Evas_Coord ow, oh;
 
    elm_interface_scrollable_content_viewport_geometry_get
-              (psd->wobj, NULL, NULL, &ow, &oh);
+      (psd->wobj, NULL, NULL, &ow, &oh);
    ow = psd->wpd->minw - ow;
    if (ow < 0) ow = 0;
    oh = psd->wpd->minh - oh;
@@ -227,7 +227,7 @@ _long_press_cb(void *data, const Efl_Event *event)
    if (item->layout)
      efl_event_callback_legacy_call(item->layout, EFL_UI_EVENT_LONGPRESSED, item);
 
-  efl_del(event->object);
+   efl_del(event->object);
 }
 
 static void
@@ -557,40 +557,40 @@ _children_then(void * data, Efl_Event const* event)
      }
 
    pd->realized.start = sd->newstart;
-     EINA_ACCESSOR_FOREACH(acc, i, child_model)
-       {
-          if (idx < eina_array_count(array))
-            {
-               item = eina_array_data_get(array, idx);
-               item->model = efl_ref(child_model);
-               item->index = sd->newstart + idx - 1;
+   EINA_ACCESSOR_FOREACH(acc, i, child_model)
+     {
+        if (idx < eina_array_count(array))
+          {
+             item = eina_array_data_get(array, idx);
+             item->model = efl_ref(child_model);
+             item->index = sd->newstart + idx - 1;
 
-               if (horz)
-                 pd->realized.w -= item->minw;
-               else
-                 pd->realized.h -= item->minh;
+             if (horz)
+               pd->realized.w -= item->minw;
+             else
+               pd->realized.h -= item->minh;
 
-               _layout_realize(pd, item);
-            }
-          else
-            {
-               item = _child_new(pd, child_model);
-               eina_array_push(pd->items, item);
-            }
-          if (horz)
-            {
-               pd->realized.w += item->minw;
-               if (item->minh > pd->realized.h)
-                 pd->realized.h = item->minh;
-            }
-          else
-            {
-               pd->realized.h += item->minh;
-               if (item->minw > pd->realized.w)
-                 pd->realized.w = item->minw;
-            }
-          ++idx;
-       }
+             _layout_realize(pd, item);
+          }
+        else
+          {
+             item = _child_new(pd, child_model);
+             eina_array_push(pd->items, item);
+          }
+        if (horz)
+          {
+             pd->realized.w += item->minw;
+             if (item->minh > pd->realized.h)
+               pd->realized.h = item->minh;
+          }
+        else
+          {
+             pd->realized.h += item->minh;
+             if (item->minw > pd->realized.w)
+               pd->realized.w = item->minw;
+          }
+        ++idx;
+     }
 
    pd->avsom = horz ? pd->realized.w : pd->realized.h;
    free(sd);
@@ -804,8 +804,8 @@ _efl_ui_gridview_efl_canvas_group_group_add(Eo *obj, Efl_Ui_Gridview_Data *pd EI
    elm_widget_sub_object_parent_add(obj);
 
    pd->hit_rect = efl_add(EFL_CANVAS_RECTANGLE_CLASS, efl_provider_find(obj, EVAS_CANVAS_CLASS),
-                  efl_key_data_set(efl_added, "_elm_leaveme", obj),
-                  efl_canvas_group_member_add(obj, efl_added));
+                          efl_key_data_set(efl_added, "_elm_leaveme", obj),
+                          efl_canvas_group_member_add(obj, efl_added));
    elm_widget_sub_object_add(obj, pd->hit_rect);
 
    /* common scroller hit rectangle setup */
@@ -820,7 +820,7 @@ _efl_ui_gridview_efl_canvas_group_group_add(Eo *obj, Efl_Ui_Gridview_Data *pd EI
 
    elm_interface_scrollable_objects_set(obj, wd->resize_obj, pd->hit_rect);
    elm_interface_scrollable_bounce_allow_set
-           (obj, EINA_FALSE, _elm_config->thumbscroll_bounce_enable);
+      (obj, EINA_FALSE, _elm_config->thumbscroll_bounce_enable);
 
    pd->mode = ELM_LIST_COMPRESS;
    pd->avit = AVERAGE_SIZE_INIT;
@@ -862,7 +862,7 @@ _efl_ui_gridview_efl_object_constructor(Eo *obj, Efl_Ui_Gridview_Data *pd)
       Efl_Ui_Focus_Manager *manager;
 
       manager = efl_add(EFL_UI_FOCUS_MANAGER_CLASS, NULL,
-        efl_ui_focus_manager_root_set(efl_added, obj)
+                        efl_ui_focus_manager_root_set(efl_added, obj)
       );
 
       efl_composite_attach(obj, manager);
@@ -987,7 +987,7 @@ _efl_ui_gridview_elm_interface_atspi_selection_child_select(Eo *obj EINA_UNUSED,
      {
         Efl_Ui_Gridview_Item *item = eina_array_data_get(pd->items, child_index);
         if (item)
-           _efl_ui_gridview_item_select_set(item, EINA_TRUE);
+          _efl_ui_gridview_item_select_set(item, EINA_TRUE);
         return EINA_TRUE;
      }
    return EINA_FALSE;
@@ -1050,7 +1050,7 @@ _efl_ui_gridview_elm_interface_atspi_selection_child_deselect(Eo *obj EINA_UNUSE
    Efl_Ui_Gridview_Item *item = eina_array_data_get(pd->items, child_index);
    if (item)
      {
-      _efl_ui_gridview_item_select_set(item, EINA_FALSE);
+        _efl_ui_gridview_item_select_set(item, EINA_FALSE);
         return EINA_TRUE;
      }
    return EINA_FALSE;
@@ -1344,7 +1344,7 @@ _load_items(Eo *obj, Efl_Ui_Gridview_Data *pd, Eina_Bool recalc)
    Efl_Ui_Gridview_Item *item;
    Eina_Bool horz = _horiz(pd->orient);
    if (pd->future)
-      efl_future_cancel(pd->future);
+     efl_future_cancel(pd->future);
 
    if (pd->items)
      count = eina_array_count(pd->items);
@@ -1379,7 +1379,7 @@ _load_items(Eo *obj, Efl_Ui_Gridview_Data *pd, Eina_Bool recalc)
         if (newstart < pd->realized.start)
           {
              if(pd->realized.start - newstart < slice)
-                 slice = pd->realized.start - newstart;
+               slice = pd->realized.start - newstart;
           }
         else if (newstart < pd->realized.start + count)
           {
@@ -1390,9 +1390,9 @@ _load_items(Eo *obj, Efl_Ui_Gridview_Data *pd, Eina_Bool recalc)
 
    if (slicestart + slice > pd->item_count)
      {
-       int aux = (slicestart + slice - 1) - pd->item_count;
-       slice -= aux;
-       newstart = newstart - aux > 1 ? newstart - aux : 1;
+        int aux = (slicestart + slice - 1) - pd->item_count;
+        slice -= aux;
+        newstart = newstart - aux > 1 ? newstart - aux : 1;
      }
 
    if (slice > 0)
@@ -1408,24 +1408,24 @@ _load_items(Eo *obj, Efl_Ui_Gridview_Data *pd, Eina_Bool recalc)
      }
    else
      {
-       while (pd->realized.slice < (int)eina_array_count(pd->items))
-         {
-            item = eina_array_pop(pd->items);
-            if (!item) break;
-            if (horz)
-              pd->realized.w -= item->minw;
-            else
-              pd->realized.h -= item->minh;
-            _child_remove(pd, item);
-         }
-       pd->avsom = horz ? pd->realized.w : pd->realized.h;
-       if (eina_array_count(pd->items))
-         pd->avit = pd->avsom / eina_array_count(pd->items);
+        while (pd->realized.slice < (int)eina_array_count(pd->items))
+          {
+             item = eina_array_pop(pd->items);
+             if (!item) break;
+             if (horz)
+               pd->realized.w -= item->minw;
+             else
+               pd->realized.h -= item->minh;
+             _child_remove(pd, item);
+          }
+        pd->avsom = horz ? pd->realized.w : pd->realized.h;
+        if (eina_array_count(pd->items))
+          pd->avit = pd->avsom / eina_array_count(pd->items);
 
-       return EINA_FALSE;
+        return EINA_FALSE;
      }
 
-     return EINA_TRUE;
+   return EINA_TRUE;
 }
 
 static void
@@ -1475,7 +1475,7 @@ _efl_ui_gridview_custom_layout(Efl_Ui_Gridview *ui_grid)
      }
 
    elm_interface_scrollable_content_viewport_geometry_get
-              (ui_grid, NULL, NULL, &ow, &oh);
+      (ui_grid, NULL, NULL, &ow, &oh);
    // box outer margin
    boxw -= boxl + boxr;
    boxh -= boxt + boxb;
