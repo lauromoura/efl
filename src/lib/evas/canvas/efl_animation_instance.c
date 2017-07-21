@@ -37,10 +37,10 @@ struct _Evas_Object_Animation_Instance_Data
     * int current_loop;               //Default value is 1
     * Eina_Bool is_reverse;
     */
-   Ecore_Animator *animator;
+   Ecore_Animator                    *animator;
 
-   Ecore_Timer    *start_delay_timer;
-   double          start_delay_time;
+   Ecore_Timer                       *start_delay_timer;
+   double                             start_delay_time;
 
    struct
      {
@@ -49,23 +49,26 @@ struct _Evas_Object_Animation_Instance_Data
         double pause_begin;
      } time;
 
-   Efl_Canvas_Object *target;
-   Target_State      *target_state;
+   Efl_Canvas_Object                 *target;
+   Target_State                      *target_state;
 
-   double             progress;
-   double             duration;
-   double             paused_time;
+   double                             progress;
+   double                             duration;
+   double                             paused_time;
 
-   int                repeat_count;
-   int                remaining_repeat_count;
+   Efl_Animation_Instance_Repeat_Mode repeat_mode;
+   int                                repeat_count;
+   int                                remaining_repeat_count;
 
-   Eina_Bool          deleted : 1;
-   Eina_Bool          started : 1;
-   Eina_Bool          cancelled : 1;
-   Eina_Bool          ended : 1;
-   Eina_Bool          paused : 1;
-   Eina_Bool          state_keep : 1;
-   Eina_Bool          is_group_member : 1;
+   Eina_Bool                          deleted : 1;
+   Eina_Bool                          started : 1;
+   Eina_Bool                          reverse_started : 1;
+   Eina_Bool                          cancelled : 1;
+   Eina_Bool                          ended : 1;
+   Eina_Bool                          paused : 1;
+   Eina_Bool                          state_keep : 1;
+   Eina_Bool                          is_group_member : 1;
+   Eina_Bool                          direction_forward : 1;
 };
 
 static void
@@ -125,6 +128,27 @@ _efl_animation_instance_duration_get(const Eo *eo_obj,
 }
 
 EOLIAN static void
+_efl_animation_instance_repeat_mode_set(Eo *eo_obj,
+                                        Evas_Object_Animation_Instance_Data *pd,
+                                        Efl_Animation_Instance_Repeat_Mode mode)
+{
+   EFL_ANIMATION_INSTANCE_CHECK_OR_RETURN(eo_obj);
+
+   if ((mode == EFL_ANIMATION_INSTANCE_REPEAT_MODE_RESTART) ||
+       (mode == EFL_ANIMATION_INSTANCE_REPEAT_MODE_REVERSE))
+     pd->repeat_mode = mode;
+}
+
+EOLIAN static Efl_Animation_Instance_Repeat_Mode
+_efl_animation_instance_repeat_mode_get(const Eo *eo_obj,
+                                        Evas_Object_Animation_Instance_Data *pd)
+{
+   EFL_ANIMATION_INSTANCE_CHECK_OR_RETURN((Eo *)eo_obj, EFL_ANIMATION_INSTANCE_REPEAT_MODE_RESTART);
+
+   return pd->repeat_mode;
+}
+
+EOLIAN static void
 _efl_animation_instance_repeat_count_set(Eo *eo_obj,
                                          Evas_Object_Animation_Instance_Data *pd,
                                          int count)
@@ -145,7 +169,6 @@ _efl_animation_instance_repeat_count_get(const Eo *eo_obj,
 
    return pd->repeat_count;
 }
-
 
 EOLIAN static Eina_Bool
 _efl_animation_instance_is_deleted(Eo *eo_obj,
@@ -240,10 +263,19 @@ _animator_cb(void *data)
    if ((duration == 0.0) || ((elapsed_time - paused_time) > duration))
      {
         elapsed_time = duration + paused_time;
-        pd->progress = 1.0;
+
+        if (pd->direction_forward)
+          pd->progress = 1.0;
+        else
+          pd->progress = 0.0;
      }
    else
-     pd->progress = (elapsed_time - paused_time) / duration;
+     {
+        if (pd->direction_forward)
+          pd->progress = (elapsed_time - paused_time) / duration;
+        else
+          pd->progress = 1.0 - ((elapsed_time - paused_time) / duration);
+     }
 
    Efl_Animation_Instance_Animate_Event_Info event_info;
    event_info.progress = pd->progress;
@@ -272,6 +304,9 @@ end:
              pd->time.begin = ecore_loop_time_get();
              pd->paused_time = 0.0;
 
+             if (pd->repeat_mode == EFL_ANIMATION_INSTANCE_REPEAT_MODE_REVERSE)
+               pd->direction_forward = !pd->direction_forward;
+
              _target_state_restore(pd->target, pd->target_state);
 
              return ECORE_CALLBACK_RENEW;
@@ -281,6 +316,9 @@ end:
      {
         pd->time.begin = ecore_loop_time_get();
         pd->paused_time = 0.0;
+
+        if (pd->repeat_mode == EFL_ANIMATION_INSTANCE_REPEAT_MODE_REVERSE)
+          pd->direction_forward = !pd->direction_forward;
 
         _target_state_restore(pd->target, pd->target_state);
 
@@ -314,6 +352,11 @@ _init_start(Eo *eo_obj, Evas_Object_Animation_Instance_Data *pd)
    pd->paused_time = 0.0;
 
    pd->remaining_repeat_count = pd->repeat_count;
+
+   if (pd->reverse_started)
+     pd->direction_forward = EINA_FALSE;
+   else
+     pd->direction_forward = EINA_TRUE;
 
    ecore_animator_del(pd->animator);
    pd->animator = NULL;
@@ -367,6 +410,7 @@ _efl_animation_instance_start(Eo *eo_obj,
    if (pd->start_delay_timer) return;
 
    pd->is_group_member = EINA_FALSE;
+   pd->reverse_started = EINA_FALSE;
 
    if (pd->start_delay_time > 0.0)
      {
@@ -386,11 +430,33 @@ _efl_animation_instance_member_start(Eo *eo_obj,
 
    if (pd->paused) return;
 
+   if (pd->start_delay_timer) return;
+
+   pd->is_group_member = EINA_TRUE;
+   pd->reverse_started = EINA_FALSE;
+
+   if (pd->start_delay_time > 0.0)
+     {
+        pd->start_delay_timer = ecore_timer_add(pd->start_delay_time,
+                                                _start_delay_timer_cb, eo_obj);
+        return;
+     }
+
+   _start(eo_obj, pd);
+}
+
+EOLIAN static void
+_efl_animation_instance_reverse_member_start(Eo *eo_obj,
+                                             Evas_Object_Animation_Instance_Data *pd)
+{
+   EFL_ANIMATION_INSTANCE_CHECK_OR_RETURN(eo_obj);
+
    if (pd->paused) return;
 
    if (pd->start_delay_timer) return;
 
    pd->is_group_member = EINA_TRUE;
+   pd->reverse_started = EINA_TRUE;
 
    if (pd->start_delay_time > 0.0)
      {
@@ -523,6 +589,7 @@ _efl_animation_instance_efl_object_constructor(Eo *eo_obj,
    pd->progress = 0.0;
    pd->duration = 0.0;
 
+   pd->repeat_mode = EFL_ANIMATION_INSTANCE_REPEAT_MODE_RESTART;
    pd->repeat_count = 0;
 
    pd->deleted = EINA_FALSE;
@@ -577,12 +644,17 @@ EOAPI EFL_FUNC_BODY_CONST(efl_animation_instance_duration_get, double, 0);
 EOAPI EFL_VOID_FUNC_BODYV(efl_animation_instance_start_delay_set, EFL_FUNC_CALL(delay_time), double delay_time);
 EOAPI EFL_FUNC_BODY_CONST(efl_animation_instance_start_delay_get, double, 0);
 
+EOAPI EFL_VOID_FUNC_BODYV(efl_animation_instance_repeat_mode_set, EFL_FUNC_CALL(mode), Efl_Animation_Instance_Repeat_Mode mode);
+EOAPI EFL_FUNC_BODY_CONST(efl_animation_instance_repeat_mode_get, Efl_Animation_Instance_Repeat_Mode, 0);
+
 EOAPI EFL_VOID_FUNC_BODYV(efl_animation_instance_repeat_count_set, EFL_FUNC_CALL(count), int count);
 EOAPI EFL_FUNC_BODY_CONST(efl_animation_instance_repeat_count_get, int, 0);
 
 EOAPI EFL_FUNC_BODY(efl_animation_instance_is_deleted, Eina_Bool, 0);
 
 EOAPI EFL_VOID_FUNC_BODY(efl_animation_instance_member_start);
+
+EOAPI EFL_VOID_FUNC_BODY(efl_animation_instance_reverse_member_start);
 
 EOAPI EFL_VOID_FUNC_BODY(efl_animation_instance_map_reset);
 
@@ -604,10 +676,13 @@ EWAPI const Efl_Event_Description _EFL_ANIMATION_INSTANCE_EVENT_POST_END =
    EFL_OBJECT_OP_FUNC(efl_animation_instance_duration_get, _efl_animation_instance_duration_get), \
    EFL_OBJECT_OP_FUNC(efl_animation_instance_start_delay_set, _efl_animation_instance_start_delay_set), \
    EFL_OBJECT_OP_FUNC(efl_animation_instance_start_delay_get, _efl_animation_instance_start_delay_get), \
+   EFL_OBJECT_OP_FUNC(efl_animation_instance_repeat_mode_set, _efl_animation_instance_repeat_mode_set), \
+   EFL_OBJECT_OP_FUNC(efl_animation_instance_repeat_mode_get, _efl_animation_instance_repeat_mode_get), \
    EFL_OBJECT_OP_FUNC(efl_animation_instance_repeat_count_set, _efl_animation_instance_repeat_count_set), \
    EFL_OBJECT_OP_FUNC(efl_animation_instance_repeat_count_get, _efl_animation_instance_repeat_count_get), \
    EFL_OBJECT_OP_FUNC(efl_animation_instance_is_deleted, _efl_animation_instance_is_deleted), \
    EFL_OBJECT_OP_FUNC(efl_animation_instance_member_start, _efl_animation_instance_member_start), \
+   EFL_OBJECT_OP_FUNC(efl_animation_instance_reverse_member_start, _efl_animation_instance_reverse_member_start), \
    EFL_OBJECT_OP_FUNC(efl_animation_instance_map_reset, _efl_animation_instance_map_reset), \
    EFL_OBJECT_OP_FUNC(efl_animation_instance_final_state_show, NULL)
 
