@@ -91,7 +91,7 @@ struct _Code
    char      *shared;
    char      *original;
    Eina_List *programs;
-   int		is_lua;
+   Eina_Bool  is_lua : 1;
 };
 
 struct _Code_Program
@@ -160,8 +160,10 @@ struct _Edje_Part_Collection_Parser
    Eina_List *target_groups;
    Eina_List *links;
    Eina_Hash *link_hash;
+   Eina_List *base_codes;
    Eina_Bool default_mouse_events;
    Eina_Bool inherit_only;
+   Eina_Bool script_override : 1;
 };
 
 typedef enum
@@ -298,7 +300,6 @@ void color_tree_root_free(void);
 void convert_color_code(char *str, int *r, int *g, int *b, int *a);
 
 Svg_Node* _svg_load(Eina_File *f, const char *key EINA_UNUSED);
-
 
 /* global vars */
 extern Eina_List             *ext_dirs;
