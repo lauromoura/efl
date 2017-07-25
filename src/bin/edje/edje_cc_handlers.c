@@ -5327,6 +5327,39 @@ st_collections_group_nooverride(void)
    pcp->script_override = EINA_FALSE;
 }
 
+static void
+_script_flush(void)
+{
+   Edje_Part_Collection_Parser *pcp;
+   Code *code;
+
+   pcp = eina_list_last_data_get(edje_collections);
+   code = eina_list_last_data_get(codes);
+
+   if (!pcp->script_override || code->is_lua) return;
+
+   // If script is replaceable and overridable, code->shared will be inherited
+   // script. Free it to avoid duplication.
+   if (script_is_replaceable)
+     {
+        if (code->shared)
+          {
+             free(code->shared);
+             code->shared = NULL;
+          }
+        if (code->original)
+          {
+             free(code->original);
+             code->original = NULL;
+          }
+     }
+
+   script_rewrite(code);
+
+   eina_list_free(pcp->base_codes);
+}
+
+
 /**
     @page edcref
     @property
@@ -15878,7 +15911,10 @@ edje_cc_handlers_pop_notify(const char *token)
    else if (current_program && (!strcmp(token, "link")))
      current_program = NULL;
    else if (current_de && (!strcmp(token, "group")))
-     _link_combine();
+     {
+        _link_combine();
+        _script_flush();
+     }
    else if (current_desc && (!strcmp(token, "description")))
      free_anchors();
 }

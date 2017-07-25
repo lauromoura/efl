@@ -91,6 +91,9 @@ struct _Code
    char      *shared;
    char      *original;
    Eina_List *programs;
+   Eina_List *vars;
+   Eina_List *func;
+   Eina_Bool  parsed : 1;
    Eina_Bool  is_lua : 1;
 };
 
@@ -300,6 +303,8 @@ void color_tree_root_free(void);
 void convert_color_code(char *str, int *r, int *g, int *b, int *a);
 
 Svg_Node* _svg_load(Eina_File *f, const char *key EINA_UNUSED);
+
+void script_rewrite(Code *code);
 
 /* global vars */
 extern Eina_List             *ext_dirs;
