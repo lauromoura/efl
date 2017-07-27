@@ -123,17 +123,15 @@ public static class TestEinaValue {
 
             // Sets expectation
             int expected = 1984;
-            Test.Assert(a.Set(eina.ValueType.Int32, expected));
+            Test.Assert(a.Set(expected));
             Test.Assert(a.Optional);
             Test.Assert(!a.Empty);
 
             Test.Assert(a.Reset());
             Test.Assert(a.Empty);
 
-            Test.AssertRaises<eina.InvalidValueTypeException>(() => a.Set(eina.ValueType.Int32, "Hello, world!"));
-
             expected = -4891;
-            Test.Assert(a.Set(eina.ValueType.Int32, expected));
+            Test.Assert(a.Set(expected)); // Set() automatically infers the subtype from the argument.
             Test.Assert(!a.Empty);
 
             int actual = 0;
@@ -149,17 +147,15 @@ public static class TestEinaValue {
 
             // Sets expectation
             uint expected = 1984;
-            Test.Assert(a.Set(eina.ValueType.UInt32, expected));
+            Test.Assert(a.Set(expected));
             Test.Assert(a.Optional);
             Test.Assert(!a.Empty);
 
             Test.Assert(a.Reset());
             Test.Assert(a.Empty);
 
-            Test.AssertRaises<eina.InvalidValueTypeException>(() => a.Set(eina.ValueType.Int32, "Hello, world!"));
-
             expected = 0xdeadbeef;
-            Test.Assert(a.Set(eina.ValueType.UInt32, expected));
+            Test.Assert(a.Set(expected));
             Test.Assert(!a.Empty);
 
             uint actual = 0;
@@ -181,17 +177,15 @@ public static class TestEinaValue {
 
             // Sets expectation
             string expected = "Hello, world!";
-            Test.Assert(a.Set(eina.ValueType.String, expected));
+            Test.Assert(a.Set(expected));
             Test.Assert(a.Optional);
             Test.Assert(!a.Empty);
 
             Test.Assert(a.Reset());
             Test.Assert(a.Empty);
 
-            Test.AssertRaises<eina.InvalidValueTypeException>(() => a.Set(eina.ValueType.String, 1942));
-
             expected = "!dlrow olleH";
-            Test.Assert(a.Set(eina.ValueType.String, expected));
+            Test.Assert(a.Set(expected));
             Test.Assert(!a.Empty);
 
             string actual = String.Empty;
@@ -214,17 +208,15 @@ public static class TestEinaValue {
             Test.Assert(expected.Append(0));
             Test.Assert(expected.Append(2));
 
-            Test.Assert(a.Set(eina.ValueType.Array, expected));
+            Test.Assert(a.Set(expected));
             Test.Assert(a.Optional);
             Test.Assert(!a.Empty);
 
             Test.Assert(a.Reset());
             Test.Assert(a.Empty);
 
-            Test.AssertRaises<eina.InvalidValueTypeException>(() => a.Set(eina.ValueType.String, expected));
-
             expected.Append(-42);
-            Test.Assert(a.Set(eina.ValueType.Array, expected));
+            Test.Assert(a.Set(expected));
             Test.Assert(!a.Empty);
 
             eina.Value actual = null;
@@ -232,7 +224,7 @@ public static class TestEinaValue {
             Test.AssertEquals(expected, actual);
 
             Test.Assert(a.Reset());
-            Test.Assert(a.Set(eina.ValueType.List, expected));
+            Test.Assert(a.Set(expected));
         }
     }
     public static void TestValueOptionalLists()
@@ -250,17 +242,15 @@ public static class TestEinaValue {
             Test.Assert(expected.Append(0));
             Test.Assert(expected.Append(2));
 
-            Test.Assert(a.Set(eina.ValueType.List, expected));
+            Test.Assert(a.Set(expected));
             Test.Assert(a.Optional);
             Test.Assert(!a.Empty);
 
             Test.Assert(a.Reset());
             Test.Assert(a.Empty);
 
-            Test.AssertRaises<eina.InvalidValueTypeException>(() => a.Set(eina.ValueType.String, expected));
-
             expected.Append(-42);
-            Test.Assert(a.Set(eina.ValueType.List, expected));
+            Test.Assert(a.Set(expected));
             Test.Assert(!a.Empty);
 
             eina.Value actual = null;
@@ -740,14 +730,6 @@ public static class TestEinaValue {
     /* } */
 
     /* public static void TestValueArrayOfStructs() { */
-    /*     Test.Assert(false, "Implement me."); */
-    /* } */
-
-    /* public static void TestValueOptionalInt() { */
-    /*     Test.Assert(false, "Implement me."); */
-    /* } */
-
-    /* public static void TestValueOptionalString() { */
     /*     Test.Assert(false, "Implement me."); */
     /* } */
 

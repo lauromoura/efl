@@ -402,7 +402,7 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
     }
     public bool Empty {
         get {
-            SanityChecks();
+            OptionalSanityChecks();
             bool empty;
             if (!eina_value_optional_empty_is_wrapper(this.Handle, out empty))
                 throw new System.InvalidOperationException("Couldn't get the empty information");
@@ -579,6 +579,12 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
     public bool Set(uint value)
     {
         SanityChecks();
+
+        if (this.Optional)
+            return eina_value_optional_pset(this.Handle,
+                                            ValueTypeBridge.GetNative(ValueType.UInt32),
+                                            ref value);
+
         if (!GetValueType().IsNumeric())
             throw (new ArgumentException(
                         "Trying to set numeric value on a non-numeric eina.Value"));
@@ -589,6 +595,12 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
     public bool Set(int value)
     {
         SanityChecks();
+
+        if (this.Optional)
+            return eina_value_optional_pset(this.Handle,
+                                            ValueTypeBridge.GetNative(ValueType.Int32),
+                                            ref value);
+
         if (!GetValueType().IsNumeric())
             throw (new ArgumentException(
                         "Trying to set numeric value on a non-numeric eina.Value"));
@@ -599,6 +611,12 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
     public bool Set(string value)
     {
         SanityChecks();
+
+        if (this.Optional)
+            return eina_value_optional_pset(this.Handle,
+                                            ValueTypeBridge.GetNative(ValueType.String),
+                                            ref value);
+
         if (!GetValueType().IsString())
             throw (new ArgumentException(
                         "Trying to set non-string value on a string eina.Value"));
@@ -606,58 +624,11 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
         return eina_value_set_wrapper(this.Handle, value);
     }
 
-    // TODO The following methods are Set() for optional values. They mimic the C behavior
-    // by asking the developer to pass the type explicitly. This could be moved into the
-    // normal set methods and use introspection to check it. Just like get and it's single
-    // signature.
-
-    /// <summary>
-    /// Stores the given integer into an optional eina.Value.
-    /// Any previously contained value will be freed.
-    /// </summary>
-    public bool Set(eina.ValueType subtype, int value)
+    /// <summary>Stores the given value into this value. The target value must be an optional.</summary>
+    public bool Set(Value value)
     {
         OptionalSanityChecks();
-        if (!subtype.IsNumeric())
-            throw new InvalidValueTypeException("Type must match the passed value");
-        return eina_value_optional_pset(this.Handle, ValueTypeBridge.GetNative(subtype), ref value);
-    }
-
-    /// <summary>
-    /// Stores the given integer into an optional eina.Value.
-    /// Any previously contained value will be freed.
-    /// </summary>
-    public bool Set(eina.ValueType subtype, uint value)
-    {
-        OptionalSanityChecks();
-        if (!subtype.IsNumeric())
-            throw new InvalidValueTypeException("Type must match the passed value");
-        return eina_value_optional_pset(this.Handle, ValueTypeBridge.GetNative(subtype), ref value);
-    }
-
-    /// <summary>
-    /// Stores the given string into an optional eina.Value.
-    /// Any previously contained value will be freed.
-    /// </summary>
-    public bool Set(eina.ValueType subtype, string value)
-    {
-        OptionalSanityChecks();
-
-        if (!subtype.IsString())
-            throw new InvalidValueTypeException("Type must match the passed value");
-        return eina_value_optional_pset(this.Handle, ValueTypeBridge.GetNative(subtype), ref value);
-    }
-
-    /// <summary>
-    /// Stores the given complex eina.Value into an optional eina.Value.
-    /// Any previously contained value will be freed.
-    /// </summary>
-    public bool Set(eina.ValueType subtype, eina.Value value)
-    {
-        OptionalSanityChecks();
-
-        if (!subtype.IsContainer())
-            throw new InvalidValueTypeException("Only containers can be passed as raw eina.Values");
+        ValueType subtype = value.GetValueType();
 
         IntPtr ptr_val = IntPtr.Zero;
         IntPtr native_type = ValueTypeBridge.GetNative(subtype);
@@ -671,7 +642,7 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
                     return false;
                 break;
             default:
-                return false;
+                throw new InvalidValueTypeException("Only containers can be passed as raw eina.Values");
         }
         return eina_value_optional_pset(this.Handle, native_type, ref ptr_val);
     }
@@ -718,7 +689,6 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
     public bool Get(out Value value)
     {
         SanityChecks();
-        IntPtr output = IntPtr.Zero;
         value = null;
 
         if (!this.Optional)
