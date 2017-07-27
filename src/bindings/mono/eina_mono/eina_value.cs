@@ -16,6 +16,23 @@ namespace eina {
 
 namespace EinaNative {
 
+// Structs to be passed from/to C when dealing with containers and
+// optional values.
+[StructLayout(LayoutKind.Sequential)]
+struct Value_Array
+{
+    public IntPtr subtype;
+    public uint step;
+    public IntPtr subarray;
+}
+
+[StructLayout(LayoutKind.Sequential)]
+struct Value_List
+{
+    public IntPtr subtype;
+    public IntPtr sublist;
+}
+
 [SuppressUnmanagedCodeSecurityAttribute]
 static internal class UnsafeNativeMethods {
 
@@ -42,6 +59,10 @@ static internal class UnsafeNativeMethods {
 
     [DllImport("eflcustomexportsmono")]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
+    internal static extern bool eina_value_set_wrapper(IntPtr handle, IntPtr value);
+
+    [DllImport("eflcustomexportsmono")]
+    [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_setup_wrapper(IntPtr handle, IntPtr type);
 
     [DllImport("eflcustomexportsmono")]
@@ -53,6 +74,14 @@ static internal class UnsafeNativeMethods {
     [DllImport("eflcustomexportsmono")]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_get_wrapper(IntPtr handle, out IntPtr output);
+
+    [DllImport("eflcustomexportsmono")]
+    [return: MarshalAsAttribute(UnmanagedType.U1)]
+    internal static extern bool eina_value_get_wrapper(IntPtr handle, out int output);
+
+    [DllImport("eflcustomexportsmono")]
+    [return: MarshalAsAttribute(UnmanagedType.U1)]
+    internal static extern bool eina_value_get_wrapper(IntPtr handle, out uint output);
 
     [DllImport("eflcustomexportsmono")]
     internal static extern int eina_value_compare_wrapper(IntPtr handle, IntPtr other);
@@ -104,6 +133,61 @@ static internal class UnsafeNativeMethods {
     [DllImport("eflcustomexportsmono")]
     internal static extern uint eina_value_list_count_wrapper(IntPtr handle);
 
+    [DllImport("eflcustomexportsmono")]
+    [return: MarshalAsAttribute(UnmanagedType.U1)]
+    internal static extern bool eina_value_optional_empty_is_wrapper(IntPtr handle, [MarshalAsAttribute(UnmanagedType.U1)] out bool empty);
+
+    [DllImport("eina")]
+    [return: MarshalAsAttribute(UnmanagedType.U1)]
+    internal static extern bool eina_value_optional_pset(IntPtr handle, IntPtr subtype, ref int value);
+
+    [DllImport("eina")]
+    [return: MarshalAsAttribute(UnmanagedType.U1)]
+    internal static extern bool eina_value_optional_pset(IntPtr handle, IntPtr subtype, ref uint value);
+
+    [DllImport("eina", CharSet=CharSet.Auto)]
+    [return: MarshalAsAttribute(UnmanagedType.U1)]
+    internal static extern bool eina_value_optional_pset(IntPtr handle, IntPtr subtype, ref string value);
+
+    [DllImport("eina")]
+    [return: MarshalAsAttribute(UnmanagedType.U1)]
+    internal static extern bool eina_value_optional_pset(IntPtr handle, IntPtr subtype, ref IntPtr value);
+
+    [DllImport("eina")]
+    [return: MarshalAsAttribute(UnmanagedType.U1)]
+    internal static extern bool eina_value_optional_reset(IntPtr handle);
+
+    [DllImport("eina")]
+    [return: MarshalAsAttribute(UnmanagedType.U1)]
+    internal static extern bool eina_value_optional_pget(IntPtr handle, out eina.EinaNative.Value_Array output);
+
+    [DllImport("eina")]
+    [return: MarshalAsAttribute(UnmanagedType.U1)]
+    internal static extern bool eina_value_optional_pget(IntPtr handle, out eina.EinaNative.Value_List output);
+
+    [DllImport("eina")]
+    [return: MarshalAsAttribute(UnmanagedType.U1)]
+    internal static extern bool eina_value_optional_pget(IntPtr handle, out IntPtr output);
+
+    [DllImport("eina")]
+    [return: MarshalAsAttribute(UnmanagedType.U1)]
+    internal static extern bool eina_value_optional_pget(IntPtr handle, out int output);
+
+    [DllImport("eina")]
+    [return: MarshalAsAttribute(UnmanagedType.U1)]
+    internal static extern bool eina_value_optional_pget(IntPtr handle, out uint output);
+
+    [DllImport("eflcustomexportsmono")]
+    internal static extern IntPtr eina_value_optional_type_get_wrapper(IntPtr handle);
+
+    [DllImport("eflcustomexportsmono")]
+    [return: MarshalAsAttribute(UnmanagedType.U1)]
+    internal static extern bool eina_value_pset_wrapper(IntPtr handle, ref eina.EinaNative.Value_Array ptr);
+
+    [DllImport("eflcustomexportsmono")]
+    [return: MarshalAsAttribute(UnmanagedType.U1)]
+    internal static extern bool eina_value_pset_wrapper(IntPtr handle, ref eina.EinaNative.Value_List ptr);
+
     // Supported types
     [DllImport("eflcustomexportsmono")]
     internal static extern IntPtr type_int32();
@@ -115,6 +199,8 @@ static internal class UnsafeNativeMethods {
     internal static extern IntPtr type_array();
     [DllImport("eflcustomexportsmono")]
     internal static extern IntPtr type_list();
+    [DllImport("eflcustomexportsmono")]
+    internal static extern IntPtr type_optional();
 }
 }
 
@@ -148,16 +234,16 @@ public class SetItemFailedException : Exception
 
 /// <summary>Exception for methods that must have been called on a container.</summary>
 [Serializable]
-public class NotAValueContainerException : Exception
+public class InvalidValueTypeException: Exception
 {
     /// <summary> Default constructor.</summary>
-    public NotAValueContainerException() : base () { }
+    public InvalidValueTypeException() : base () { }
     /// <summary> Most commonly used contructor.</summary>
-    public NotAValueContainerException(string msg) : base(msg) { }
+    public InvalidValueTypeException(string msg) : base(msg) { }
     /// <summary> Wraps an inner exception.</summary>
-    public NotAValueContainerException(string msg, Exception inner) : base(msg, inner) { }
+    public InvalidValueTypeException(string msg, Exception inner) : base(msg, inner) { }
     /// <summary> Serializable constructor.</summary>
-    protected NotAValueContainerException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+    protected InvalidValueTypeException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 }
 
 
@@ -175,6 +261,8 @@ public enum ValueType {
     List,
     /// <summary>Map of string keys to Value items.</summary>
     Hash,
+    /// <summary>Optional (aka empty) values.</summary>
+    Optional,
 }
 
 static class ValueTypeMethods {
@@ -209,6 +297,11 @@ static class ValueTypeMethods {
             default:
                 return false;
         }
+    }
+
+    public static bool IsOptional(this ValueType val)
+    {
+        return val == ValueType.Optional;
     }
 }
 static class ValueTypeBridge
@@ -250,6 +343,9 @@ static class ValueTypeBridge
         ManagedToNative.Add(ValueType.List, type_list());
         NativeToManaged.Add(type_list(), ValueType.List);
 
+        ManagedToNative.Add(ValueType.Optional, type_optional());
+        NativeToManaged.Add(type_optional(), ValueType.Optional);
+
         TypesLoaded = true;
     }
 }
@@ -281,8 +377,8 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
     // EINA_VALUE_TYPE_DOUBLE: double -- double
     // EINA_VALUE_TYPE_STRINGSHARE: const char * -- string
     // Ok EINA_VALUE_TYPE_STRING: const char * -- string
-    // EINA_VALUE_TYPE_ARRAY: Eina_Value_Array -- eina.Array?
-    // EINA_VALUE_TYPE_LIST: Eina_Value_List -- eina.List?
+    // Ok EINA_VALUE_TYPE_ARRAY: Eina_Value_Array -- eina.Array?
+    // Ok EINA_VALUE_TYPE_LIST: Eina_Value_List -- eina.List?
     // EINA_VALUE_TYPE_HASH: Eina_Value_Hash -- eina.Hash?
     // EINA_VALUE_TYPE_TIMEVAL: struct timeval -- FIXME
     // EINA_VALUE_TYPE_BLOB: Eina_Value_Blob -- FIXME
@@ -291,16 +387,34 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
 
     private IntPtr Handle;
     private bool Disposed;
-    private bool Flushed;
+    public bool Flushed { get; protected set;}
+    public bool Optional {
+        get {
+            return GetValueType() == eina.ValueType.Optional;
+        }
+        /* protected set {
+            // Should we expose this?
+            // Something like {
+            //    flush(handle)/free(handle)
+            //    handle = eina_value_optional_empty_new()
+            // }
+         } */
+    }
+    public bool Empty {
+        get {
+            SanityChecks();
+            bool empty;
+            if (!eina_value_optional_empty_is_wrapper(this.Handle, out empty))
+                throw new System.InvalidOperationException("Couldn't get the empty information");
+            else
+                return empty;
+        }
+    }
 
-    /// <summary>Create a wrapper around the given value storage.</summary>
-    /* public Value(IntPtr Ptr) */
-    /* { */
-    /*     if (!TypesLoaded) */
-    /*         LoadTypes(); */
-
-    /*     this.Handle = Ptr; */
-    /* } */
+    // Constructor to be used by the "FromContainerDesc" methods.
+    private Value() {
+        this.Handle = Marshal.AllocHGlobal(eina_value_sizeof());
+    }
 
     /// <summary>Creates a new value storage for values of type 'type'.</summary>
     public Value(ValueType type)
@@ -320,6 +434,26 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
         this.Handle = Marshal.AllocHGlobal(eina_value_sizeof());
 
         Setup(containerType, subtype, step);
+    }
+
+    /// <summary>Creates an Value instance from a given array description.</summary>
+    private static Value FromArrayDesc(eina.EinaNative.Value_Array arrayDesc)
+    {
+        Value value = new Value();
+        value.Setup(ValueType.Array, ValueType.String); // Placeholder values to be overwritten by the following pset call.
+
+        eina_value_pset_wrapper(value.Handle, ref arrayDesc);
+        return value;
+    }
+
+    /// <summary>Creates an Value instance from a given array description.</summary>
+    private static Value FromListDesc(eina.EinaNative.Value_List listDesc)
+    {
+        Value value = new Value();
+        value.Setup(ValueType.List, ValueType.String); // Placeholder values to be overwritten by the following pset call.
+
+        eina_value_pset_wrapper(value.Handle, ref listDesc);
+        return value;
     }
 
     /// <summary>Public method to explicitly free the wrapped eina value.</summary>
@@ -403,7 +537,7 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
         ValueType type = GetValueType();
 
         if (!type.IsContainer())
-                throw new NotAValueContainerException("Value type must be a container");
+                throw new InvalidValueTypeException("Value type must be a container");
 
         if (targetIndex == -1)  // Some methods (e.g. append) don't care about size
             return;
@@ -420,6 +554,15 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
         if (targetIndex >= size)
                 throw new System.ArgumentOutOfRangeException(
                         $"Index {targetIndex} is larger than max array index {size-1}");
+    }
+
+    private void OptionalSanityChecks()
+    {
+        SanityChecks();
+        ValueType type = GetValueType();
+
+        if (!type.IsOptional())
+            throw new InvalidValueTypeException("Value is not an Optional one");
     }
 
     /// <summary>Releases the memory stored by this value. It can be reused by calling setup again.
@@ -463,30 +606,94 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
         return eina_value_set_wrapper(this.Handle, value);
     }
 
+    // TODO The following methods are Set() for optional values. They mimic the C behavior
+    // by asking the developer to pass the type explicitly. This could be moved into the
+    // normal set methods and use introspection to check it. Just like get and it's single
+    // signature.
+
+    /// <summary>
+    /// Stores the given integer into an optional eina.Value.
+    /// Any previously contained value will be freed.
+    /// </summary>
+    public bool Set(eina.ValueType subtype, int value)
+    {
+        OptionalSanityChecks();
+        if (!subtype.IsNumeric())
+            throw new InvalidValueTypeException("Type must match the passed value");
+        return eina_value_optional_pset(this.Handle, ValueTypeBridge.GetNative(subtype), ref value);
+    }
+
+    /// <summary>
+    /// Stores the given integer into an optional eina.Value.
+    /// Any previously contained value will be freed.
+    /// </summary>
+    public bool Set(eina.ValueType subtype, uint value)
+    {
+        OptionalSanityChecks();
+        if (!subtype.IsNumeric())
+            throw new InvalidValueTypeException("Type must match the passed value");
+        return eina_value_optional_pset(this.Handle, ValueTypeBridge.GetNative(subtype), ref value);
+    }
+
+    /// <summary>
+    /// Stores the given string into an optional eina.Value.
+    /// Any previously contained value will be freed.
+    /// </summary>
+    public bool Set(eina.ValueType subtype, string value)
+    {
+        OptionalSanityChecks();
+
+        if (!subtype.IsString())
+            throw new InvalidValueTypeException("Type must match the passed value");
+        return eina_value_optional_pset(this.Handle, ValueTypeBridge.GetNative(subtype), ref value);
+    }
+
+    /// <summary>
+    /// Stores the given complex eina.Value into an optional eina.Value.
+    /// Any previously contained value will be freed.
+    /// </summary>
+    public bool Set(eina.ValueType subtype, eina.Value value)
+    {
+        OptionalSanityChecks();
+
+        if (!subtype.IsContainer())
+            throw new InvalidValueTypeException("Only containers can be passed as raw eina.Values");
+
+        IntPtr ptr_val = IntPtr.Zero;
+        IntPtr native_type = ValueTypeBridge.GetNative(subtype);
+
+        switch (subtype) {
+            case ValueType.Array:
+            case ValueType.List:
+                // PSet on Container types require an Eina_Value_<Container>, which is the structure
+                // that contains subtype, etc.
+                if (!eina_value_get_wrapper(value.Handle, out ptr_val))
+                    return false;
+                break;
+            default:
+                return false;
+        }
+        return eina_value_optional_pset(this.Handle, native_type, ref ptr_val);
+    }
+
     /// <summary>Gets the currently stored value as an int.</summary>
     public bool Get(out int value)
     {
         SanityChecks();
-        IntPtr output = IntPtr.Zero;
-        if (!eina_value_get_wrapper(this.Handle, out output)) {
-            value = 0;
-            return false;
-        }
-        value = Convert.ToInt32(output.ToInt64());
-        return true;
+        if (this.Optional)
+            return eina_value_optional_pget(this.Handle, out value);
+        else
+            return eina_value_get_wrapper(this.Handle, out value);
     }
 
     /// <summary>Gets the currently stored value as an uint.</summary>
     public bool Get(out uint value)
     {
         SanityChecks();
-        IntPtr output = IntPtr.Zero;
-        if (!eina_value_get_wrapper(this.Handle, out output)) {
-            value = 0;
-            return false;
-        }
-        value = Convert.ToUInt32(output.ToInt64());
-        return true;
+        if (this.Optional)
+            return eina_value_optional_pget(this.Handle, out value);
+        else
+            return eina_value_get_wrapper(this.Handle, out value);
     }
 
     /// <summary>Gets the currently stored value as a string.</summary>
@@ -494,11 +701,49 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
     {
         SanityChecks();
         IntPtr output = IntPtr.Zero;
-        if (!eina_value_get_wrapper(this.Handle, out output)) {
+        if (this.Optional) {
+            if (!eina_value_optional_pget(this.Handle, out output)) {
+                value = String.Empty;
+                return false;
+            }
+        } else if (!eina_value_get_wrapper(this.Handle, out output)) {
             value = String.Empty;
             return false;
         }
         value = Marshal.PtrToStringAuto(output);
+        return true;
+    }
+
+    /// <summary>Gets the currently stored value as an complex (e.g. container) eina.Value.</summary>
+    public bool Get(out Value value)
+    {
+        SanityChecks();
+        IntPtr output = IntPtr.Zero;
+        value = null;
+
+        if (!this.Optional)
+            throw new InvalidValueTypeException("Values can only be retreived");
+
+        IntPtr nativeType = eina_value_optional_type_get_wrapper(this.Handle);
+        ValueType managedType = ValueTypeBridge.GetManaged(nativeType);
+
+        switch (managedType) {
+            case ValueType.Array:
+                eina.EinaNative.Value_Array array_desc;
+
+                if (!eina_value_optional_pget(this.Handle, out array_desc))
+                    return false;
+                value = Value.FromArrayDesc(array_desc);
+                break;
+            case ValueType.List:
+                eina.EinaNative.Value_List list_desc;
+
+                if (!eina_value_optional_pget(this.Handle, out list_desc))
+                    return false;
+                value = Value.FromListDesc(list_desc);
+                break;
+        }
+
         return true;
     }
 
@@ -601,6 +846,13 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
     {
         SanityChecks();
         return eina_value_to_string(this.Handle);
+    }
+
+    /// <summary>Empties an optional eina.Value, freeing what was previously contained.</summary>
+    public bool Reset()
+    {
+        OptionalSanityChecks();
+        return eina_value_optional_reset(this.Handle);
     }
 
     // Container methods methods
