@@ -17,6 +17,10 @@ public static class TestEinaValue {
             int x;
             Test.Assert(v.Get(out x));
             Test.AssertEquals(32, x);
+
+            Test.Assert(v.Set(-45));
+            Test.Assert(v.Get(out x));
+            Test.AssertEquals(-45, x);
         }
     }
 
@@ -80,7 +84,9 @@ public static class TestEinaValue {
     {
         using (eina.Value v = new eina.Value(eina.ValueType.Int32)) {
             Test.Assert(v.Set(44));
+            Test.Assert(!v.Flushed);
             v.Flush();
+            Test.Assert(v.Flushed);
 
             int x;
             Test.AssertRaises<eina.ValueFlushedException>(() => v.Get(out x));
@@ -105,6 +111,161 @@ public static class TestEinaValue {
 
             Test.AssertRaises<eina.ValueFlushedException>(() => v.GetValueSubType());
 
+        }
+    }
+
+    private delegate bool BoolRet();
+    public static void TestValueOptionalInt()
+    {
+        using (eina.Value a = new eina.Value(eina.ValueType.Optional)) {
+            Test.Assert(a.Optional);
+            Test.Assert(a.Empty); // By default, optional values are empty
+
+            // Sets expectation
+            int expected = 1984;
+            Test.Assert(a.Set(eina.ValueType.Int32, expected));
+            Test.Assert(a.Optional);
+            Test.Assert(!a.Empty);
+
+            Test.Assert(a.Reset());
+            Test.Assert(a.Empty);
+
+            Test.AssertRaises<eina.InvalidValueTypeException>(() => a.Set(eina.ValueType.Int32, "Hello, world!"));
+
+            expected = -4891;
+            Test.Assert(a.Set(eina.ValueType.Int32, expected));
+            Test.Assert(!a.Empty);
+
+            int actual = 0;
+            Test.Assert(a.Get(out actual));
+            Test.AssertEquals(expected, actual);
+        }
+    }
+    public static void TestValueOptionalUint()
+    {
+        using (eina.Value a = new eina.Value(eina.ValueType.Optional)) {
+            Test.Assert(a.Optional);
+            Test.Assert(a.Empty); // By default, optional values are empty
+
+            // Sets expectation
+            uint expected = 1984;
+            Test.Assert(a.Set(eina.ValueType.UInt32, expected));
+            Test.Assert(a.Optional);
+            Test.Assert(!a.Empty);
+
+            Test.Assert(a.Reset());
+            Test.Assert(a.Empty);
+
+            Test.AssertRaises<eina.InvalidValueTypeException>(() => a.Set(eina.ValueType.Int32, "Hello, world!"));
+
+            expected = 0xdeadbeef;
+            Test.Assert(a.Set(eina.ValueType.UInt32, expected));
+            Test.Assert(!a.Empty);
+
+            uint actual = 0;
+            Test.Assert(a.Get(out actual));
+            Test.AssertEquals(expected, actual);
+        }
+    }
+    public static void TestValueOptionalString()
+    {
+        using (eina.Value a = new eina.Value(eina.ValueType.Int32)) {
+            Test.Assert(!a.Optional);
+            BoolRet dummy = () => a.Empty;
+            Test.AssertRaises<eina.InvalidValueTypeException>(() => dummy());
+        }
+
+        using (eina.Value a = new eina.Value(eina.ValueType.Optional)) {
+            Test.Assert(a.Optional);
+            Test.Assert(a.Empty); // By default, optional values are empty
+
+            // Sets expectation
+            string expected = "Hello, world!";
+            Test.Assert(a.Set(eina.ValueType.String, expected));
+            Test.Assert(a.Optional);
+            Test.Assert(!a.Empty);
+
+            Test.Assert(a.Reset());
+            Test.Assert(a.Empty);
+
+            Test.AssertRaises<eina.InvalidValueTypeException>(() => a.Set(eina.ValueType.String, 1942));
+
+            expected = "!dlrow olleH";
+            Test.Assert(a.Set(eina.ValueType.String, expected));
+            Test.Assert(!a.Empty);
+
+            string actual = String.Empty;
+            Test.Assert(a.Get(out actual));
+            Test.AssertEquals(expected, actual);
+        }
+    }
+    public static void TestValueOptionalArrays()
+    {
+        using (eina.Value a = new eina.Value(eina.ValueType.Optional))
+        using (eina.Value expected = new eina.Value(eina.ValueType.Array,
+                                                 eina.ValueType.Int32))
+        {
+
+            Test.Assert(a.Optional);
+            Test.Assert(a.Empty); // By default, optional values are empty
+
+            // Sets expectation
+            Test.Assert(expected.Append(-1));
+            Test.Assert(expected.Append(0));
+            Test.Assert(expected.Append(2));
+
+            Test.Assert(a.Set(eina.ValueType.Array, expected));
+            Test.Assert(a.Optional);
+            Test.Assert(!a.Empty);
+
+            Test.Assert(a.Reset());
+            Test.Assert(a.Empty);
+
+            Test.AssertRaises<eina.InvalidValueTypeException>(() => a.Set(eina.ValueType.String, expected));
+
+            expected.Append(-42);
+            Test.Assert(a.Set(eina.ValueType.Array, expected));
+            Test.Assert(!a.Empty);
+
+            eina.Value actual = null;
+            Test.Assert(a.Get(out actual));
+            Test.AssertEquals(expected, actual);
+
+            Test.Assert(a.Reset());
+            Test.Assert(a.Set(eina.ValueType.List, expected));
+        }
+    }
+    public static void TestValueOptionalLists()
+    {
+        using (eina.Value a = new eina.Value(eina.ValueType.Optional))
+        using (eina.Value expected = new eina.Value(eina.ValueType.List,
+                                                 eina.ValueType.Int32))
+        {
+
+            Test.Assert(a.Optional);
+            Test.Assert(a.Empty); // By default, optional values are empty
+
+            // Sets expectation
+            Test.Assert(expected.Append(-1));
+            Test.Assert(expected.Append(0));
+            Test.Assert(expected.Append(2));
+
+            Test.Assert(a.Set(eina.ValueType.List, expected));
+            Test.Assert(a.Optional);
+            Test.Assert(!a.Empty);
+
+            Test.Assert(a.Reset());
+            Test.Assert(a.Empty);
+
+            Test.AssertRaises<eina.InvalidValueTypeException>(() => a.Set(eina.ValueType.String, expected));
+
+            expected.Append(-42);
+            Test.Assert(a.Set(eina.ValueType.List, expected));
+            Test.Assert(!a.Empty);
+
+            eina.Value actual = null;
+            Test.Assert(a.Get(out actual));
+            Test.AssertEquals(expected, actual);
         }
     }
 
@@ -381,9 +542,9 @@ public static class TestEinaValue {
     public static void TestValueContainerWithNonContainerAccess()
     {
         using(eina.Value array = new eina.Value(eina.ValueType.Int32)) {
-            Test.AssertRaises<eina.NotAValueContainerException>(() => array[0] = 1);
+            Test.AssertRaises<eina.InvalidValueTypeException>(() => array[0] = 1);
             object val = null;
-            Test.AssertRaises<eina.NotAValueContainerException>(() => val = array[0]);
+            Test.AssertRaises<eina.InvalidValueTypeException>(() => val = array[0]);
         }
     }
 

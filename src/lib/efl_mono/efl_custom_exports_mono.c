@@ -284,6 +284,10 @@ EAPI const Eina_Value_Type *type_list() {
    return EINA_VALUE_TYPE_LIST;
 }
 
+EAPI const Eina_Value_Type *type_optional() {
+   return EINA_VALUE_TYPE_OPTIONAL;
+}
+
 EAPI size_t eina_value_sizeof()
 {
    return sizeof(Eina_Value);
@@ -383,4 +387,19 @@ EAPI unsigned int eina_value_array_count_wrapper(const Eina_Value *array)
 EAPI unsigned int eina_value_list_count_wrapper(const Eina_Value *list)
 {
    return eina_value_list_count(list);
+}
+
+EAPI Eina_Bool eina_value_optional_empty_is_wrapper(const Eina_Value *value, Eina_Bool *empty)
+{
+   return eina_value_optional_empty_is(value, empty);
+}
+
+EAPI const Eina_Value_Type *eina_value_optional_type_get_wrapper(const Eina_Value *value)
+{
+   return eina_value_optional_type_get(value);
+}
+
+EAPI Eina_Bool eina_value_pset_wrapper(Eina_Value *value, void *ptr)
+{
+   return eina_value_pset(value, ptr);
 }
