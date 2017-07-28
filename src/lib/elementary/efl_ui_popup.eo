@@ -1,0 +1,15 @@
+import elm_general;
+
+class Efl.Ui.Popup(Elm.Layout, Elm.Interface.Atspi_Widget_Action)
+{
+   legacy_prefix: elm_popup;
+   implements {
+      class.constructor;
+      Efl.Object.constructor;
+      Efl.Gfx.position { set; }
+      Efl.Gfx.size { set; }
+      Elm.Widget.theme_apply;
+      Elm.Widget.widget_parent { set; }
+      Elm.Layout.sizing_eval;
+   }
+}
