@@ -40,6 +40,7 @@ typedef struct Test_Testing_Data
   void *cb_data;
   Eina_Free_Cb free_cb;
   Eina_Error error_code;
+  Eina_Value *stored_value;
 
 } Test_Testing_Data;
 
@@ -3155,6 +3156,48 @@ void _test_numberwrapper_number_set(EINA_UNUSED Eo *obj, Test_Numberwrapper_Data
 int _test_numberwrapper_number_get(EINA_UNUSED Eo *obj, Test_Numberwrapper_Data *pd)
 {
    return pd->number;
+}
+
+void _test_testing_set_value_ptr(EINA_UNUSED Eo *obj, Test_Testing_Data *pd, Eina_Value *value)
+{
+    if (pd->stored_value) {
+        eina_value_free(pd->stored_value);
+        free(pd->stored_value);
+    }
+
+    pd->stored_value = malloc(sizeof(Eina_Value));
+
+    eina_value_copy(value, pd->stored_value);
+}
+
+void _test_testing_set_value_ptr_own(EINA_UNUSED Eo *obj, Test_Testing_Data *pd, Eina_Value *value)
+{
+    if (pd->stored_value) {
+        eina_value_free(pd->stored_value);
+        free(pd->stored_value);
+    }
+
+    pd->stored_value = value;
+}
+
+Eina_Value *_test_testing_get_value_ptr_own(EINA_UNUSED Eo *obj, Test_Testing_Data *pd)
+{
+    Eina_Value *val = pd->stored_value;
+    pd->stored_value = NULL;
+    return val;
+}
+
+Eina_Value *_test_testing_get_value_ptr(EINA_UNUSED Eo *obj, Test_Testing_Data *pd)
+{
+    return pd->stored_value;
+}
+
+void _test_testing_clear_value(EINA_UNUSED Eo *obj, Test_Testing_Data *pd)
+{
+    if (pd->stored_value) {
+        eina_value_free(pd->stored_value);
+        free(pd->stored_value);
+    }
 }
 
 #include "test_testing.eo.c"

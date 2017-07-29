@@ -107,10 +107,10 @@ struct visitor_generate
                 return replace_base_type(r, " System.String");
               }}
            , {"generic_value", true, [&]
-              { return regular_type_def{" int", regular.base_qualifier, {}};
+              { return regular_type_def{" eina.Value", regular.base_qualifier, {}};
               }}
            , {"generic_value", false, [&]
-              { return regular_type_def{" int", regular.base_qualifier, {}};
+              { return regular_type_def{" eina.Value", regular.base_qualifier, {}};
               }}
            // , {"generic_value", true, [&]
            //    { return regular_type_def{" ::efl::eina::value", regular.base_qualifier, {}};

@@ -246,6 +246,13 @@ public class InvalidValueTypeException: Exception
     protected InvalidValueTypeException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 }
 
+/// <summary>Internal enum to handle value ownership between managed and unmanaged code.</summary>
+public enum ValueOwnership {
+    /// <summary> The value is owned by the managed code. It'll free the handle on disposal.</summary>
+    Managed,
+    /// <summary> The value is owned by the unmanaged code. It won't be freed on disposal.</summary>
+    Unmanaged
+}
 
 /// <summary>Managed-side Enum to represent Eina_Value_Type constants</summary>
 public enum ValueType {
@@ -385,7 +392,8 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
     // EINA_VALUE_TYPE_STRUCT: Eina_Value_Struct -- FIXME
 
 
-    private IntPtr Handle;
+    public IntPtr Handle { get; protected set;}
+    public ValueOwnership Ownership { get; protected set;}
     private bool Disposed;
     public bool Flushed { get; protected set;}
     public bool Optional {
@@ -414,6 +422,12 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
     // Constructor to be used by the "FromContainerDesc" methods.
     private Value() {
         this.Handle = Marshal.AllocHGlobal(eina_value_sizeof());
+        this.Ownership = ValueOwnership.Managed;
+    }
+
+    internal Value(IntPtr handle, ValueOwnership ownership=ValueOwnership.Managed) {
+        this.Handle = handle;
+        this.Ownership = ownership;
     }
 
     /// <summary>Creates a new value storage for values of type 'type'.</summary>
@@ -422,6 +436,7 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
         if (type.IsContainer())
             throw new ArgumentException("To use container types you must provide a subtype");
         this.Handle = Marshal.AllocHGlobal(eina_value_sizeof());
+        this.Ownership = ValueOwnership.Managed;
         Setup(type);
     }
 
@@ -432,6 +447,7 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
             throw new ArgumentException("First type must be a container type.");
 
         this.Handle = Marshal.AllocHGlobal(eina_value_sizeof());
+        this.Ownership = ValueOwnership.Managed;
 
         Setup(containerType, subtype, step);
     }
@@ -456,6 +472,18 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
         return value;
     }
 
+    /// <summary>Releases the ownership of the underlying value to C.</summary>
+    public void ReleaseOwnership()
+    {
+        this.Ownership = ValueOwnership.Unmanaged;
+    }
+
+    /// <summary>Takes the ownership of the underlying value to the Managed runtime.</summary>
+    public void TakeOwnership()
+    {
+        this.Ownership = ValueOwnership.Managed;
+    }
+
     /// <summary>Public method to explicitly free the wrapped eina value.</summary>
     public void Dispose()
     {
@@ -466,6 +494,11 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
     /// <summary>Actually free the wrapped eina value. Can be called from Dispose() or through the GC.</summary>
     protected virtual void Dispose(bool disposing)
     {
+        if (this.Ownership == ValueOwnership.Unmanaged) {
+            Disposed = true;
+            return;
+        }
+
         if (!Disposed && (Handle != IntPtr.Zero)) {
             if (!Flushed)
                 eina_value_flush_wrapper(this.Handle);
@@ -965,5 +998,84 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
         }
     }
 
+}
+
+/// <summary> Custom marshaler to convert value pointers to managed values and back,
+/// without changing ownership.</summary>
+public class ValueMarshaler : ICustomMarshaler {
+
+    /// <summary>Creates a managed value from a C pointer, whitout taking ownership of it.</summary>
+    public object MarshalNativeToManaged(IntPtr pNativeData) {
+        return new Value(pNativeData, ValueOwnership.Unmanaged);
+    }
+
+    /// <summary>Retrieves the C pointer from a given managed value,
+    /// keeping the managed ownership.</summary>
+    public IntPtr MarshalManagedToNative(object managedObj) {
+        try {
+            Value v = (Value)managedObj;
+            return v.Handle;
+        } catch (InvalidCastException) {
+            return IntPtr.Zero;
+        }
+    }
+
+    public void CleanUpNativeData(IntPtr pNativeData) {
+    }
+
+    public void CleanUpManagedData(object managedObj) {
+    }
+
+    public int GetNativeDataSize() {
+        return -1;
+    }
+
+    public static ICustomMarshaler GetInstance(string cookie) {
+        if (marshaler == null) {
+            marshaler = new ValueMarshaler();
+        }
+        return marshaler;
+    }
+    static private ValueMarshaler marshaler;
+}
+
+/// <summary> Custom marshaler to convert value pointers to managed values and back,
+/// also transferring the ownership to the other side.</summary>
+public class ValueMarshalerOwn : ICustomMarshaler {
+    /// <summary>Creates a managed value from a C pointer, taking the ownership.</summary>
+    public object MarshalNativeToManaged(IntPtr pNativeData) {
+        return new Value(pNativeData, ValueOwnership.Managed);
+    }
+
+    /// <summary>Retrieves the C pointer from a given managed value,
+    /// transferring the ownership to the unmanaged side, which should release it
+    /// when not needed. </summary>
+    public IntPtr MarshalManagedToNative(object managedObj) {
+        try {
+            Value v = (Value)managedObj;
+            v.ReleaseOwnership();
+            return v.Handle;
+        } catch (InvalidCastException) {
+            return IntPtr.Zero;
+        }
+    }
+
+    public void CleanUpNativeData(IntPtr pNativeData) {
+    }
+
+    public void CleanUpManagedData(object managedObj) {
+    }
+
+    public int GetNativeDataSize() {
+        return -1;
+    }
+
+    public static ICustomMarshaler GetInstance(string cookie) {
+        if (marshaler == null) {
+            marshaler = new ValueMarshalerOwn();
+        }
+        return marshaler;
+    }
+    static private ValueMarshalerOwn marshaler;
 }
 }
