@@ -1181,6 +1181,30 @@ class Test.Testing (Efl.Object) {
       returns_error {
          return: Eina.Error;
       }
+
+      /* Eina Values */
+      set_value_ptr {
+         params {
+            value: ptr(generic_value);
+         }
+      }
+
+      set_value_ptr_own {
+         params {
+            value: own(ptr(generic_value));
+         }
+      }
+
+      get_value_ptr_own {
+         return: own(ptr(generic_value));
+      }
+
+      get_value_ptr {
+         return: ptr(generic_value);
+      }
+
+      clear_value {
+      }
    }
    implements {
       class.constructor;

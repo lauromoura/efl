@@ -69,6 +69,12 @@ struct marshall_annotation_visitor_generate
           {"stringshare", false, [&] {
                 return "";
           }},
+          {"generic_value", true, [&] {
+                return " [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef=typeof(eina.ValueMarshalerOwn))]";
+          }},
+          {"generic_value", false, [&] {
+                return " [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef=typeof(eina.ValueMarshaler))]";
+          }},
         };
       match const return_match_table[] =
         {
@@ -85,7 +91,13 @@ struct marshall_annotation_visitor_generate
           }},
           {"stringshare", false, [&] {
                 return "";
-          }}
+          }},
+          {"generic_value", true, [&] {
+                return " [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef=typeof(eina.ValueMarshalerOwn))]";
+          }},
+          {"generic_value", false, [&] {
+                return " [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef=typeof(eina.ValueMarshaler))]";
+          }},
         };
 
         if(eina::optional<bool> b = call_annotation_match
