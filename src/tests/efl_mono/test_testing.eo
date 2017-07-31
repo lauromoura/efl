@@ -1205,6 +1205,18 @@ class Test.Testing (Efl.Object) {
 
       clear_value {
       }
+
+      out_value_ptr {
+         params {
+            @out value: ptr(generic_value);
+         }
+      }
+
+      out_value_ptr_own {
+         params {
+            @out value: own(ptr(generic_value));
+         }
+      }
    }
    implements {
       class.constructor;
