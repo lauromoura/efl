@@ -47,10 +47,34 @@ public static class TestEinaValueEolian {
 
     public static void TestEolianEinaValueOut()
     {
+        test.Testing obj = new test.TestingConcrete();
+
+        using (eina.Value v = new eina.Value(eina.ValueType.String)) {
+            eina.Value v_out = null;
+
+            v.Set("hello!");
+            obj.set_value_ptr(v);
+            obj.out_value_ptr(out v_out);
+
+            Test.AssertEquals(v, v_out);
+            Test.AssertEquals(eina.ValueOwnership.Unmanaged, v_out.Ownership);
+        }
     }
 
     public static void TestEolianEinaValueOutOwn()
     {
+        test.Testing obj = new test.TestingConcrete();
+
+        using (eina.Value v = new eina.Value(eina.ValueType.String)) {
+            eina.Value v_out = null;
+
+            v.Set("hello!");
+            obj.set_value_ptr(v);
+            obj.out_value_ptr_own(out v_out);
+
+            Test.AssertEquals(v, v_out);
+            Test.AssertEquals(eina.ValueOwnership.Managed, v_out.Ownership);
+        }
     }
 
 }

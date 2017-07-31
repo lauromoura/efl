@@ -3200,6 +3200,17 @@ void _test_testing_clear_value(EINA_UNUSED Eo *obj, Test_Testing_Data *pd)
     }
 }
 
+void _test_testing_out_value_ptr(EINA_UNUSED Eo *obj, Test_Testing_Data *pd, Eina_Value **value)
+{
+    *value = pd->stored_value;
+}
+
+void _test_testing_out_value_ptr_own(EINA_UNUSED Eo *obj, Test_Testing_Data *pd, Eina_Value **value)
+{
+    *value = pd->stored_value;
+    pd->stored_value = NULL;
+}
+
 #include "test_testing.eo.c"
 #include "test_numberwrapper.eo.c"
 
