@@ -55,6 +55,7 @@ public static class All {
         efl.ui.Config.Init();
         ecore_init();
         evas_init();
+        eldbus.Config.Init();
     }
 
     /// <summary>Shutdowns all EFL subsystems.</summary>
@@ -63,6 +64,7 @@ public static class All {
         System.GC.Collect();
         System.GC.WaitForPendingFinalizers();
 
+        eldbus.Config.Shutdown();
         evas_shutdown();
         ecore_shutdown();
         efl.ui.Config.Shutdown();

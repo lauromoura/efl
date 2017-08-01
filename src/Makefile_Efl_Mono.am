@@ -148,10 +148,10 @@ lib_efl_mono_libeflcustomexportsmono_la_SOURCES = \
 lib_efl_mono_libeflcustomexportsmono_la_CPPFLAGS = \
 -DEFL_BETA_API_SUPPORT \
 -I$(top_builddir)/src/lib/efl \
-@EINA_CFLAGS@ @EO_CFLAGS@
+@EINA_CFLAGS@ @EO_CFLAGS@ @ELDBUS_CFLAGS@
 lib_efl_mono_libeflcustomexportsmono_la_LDFLAGS = -no-undefined
-lib_efl_mono_libeflcustomexportsmono_la_LIBADD = @USE_EINA_LIBS@ @USE_EO_LIBS@
-lib_efl_mono_libeflcustomexportsmono_la_DEPENDENCIES = @USE_EINA_INTERNAL_LIBS@ @USE_EO_INTERNAL_LIBS@
+lib_efl_mono_libeflcustomexportsmono_la_LIBADD = @USE_EINA_LIBS@ @USE_EO_LIBS@ @USE_ELDBUS_LIBS@
+lib_efl_mono_libeflcustomexportsmono_la_DEPENDENCIES = @USE_EINA_INTERNAL_LIBS@ @USE_EO_INTERNAL_LIBS@ @USE_ELDBUS_INTERNAL_LIBS@
 
 bin_PROGRAMS += lib/efl_mono/libefl_mono.dll
 
@@ -177,10 +177,21 @@ efl_eina_mono_files = \
 	bindings/mono/eina_mono/eina_error.cs \
 	bindings/mono/eina_mono/eina_value.cs
 
+efl_eldbus_mono_files = \
+	bindings/mono/eldbus_mono/eldbus_common.cs \
+	bindings/mono/eldbus_mono/eldbus_config.cs \
+	bindings/mono/eldbus_mono/eldbus_connection.cs \
+	bindings/mono/eldbus_mono/eldbus_message.cs \
+	bindings/mono/eldbus_mono/eldbus_object.cs \
+	bindings/mono/eldbus_mono/eldbus_pending.cs \
+	bindings/mono/eldbus_mono/eldbus_proxy.cs \
+	bindings/mono/eldbus_mono/eldbus_service.cs
+
 lib_efl_mono_libefl_mono_dll_SOURCES = \
 	bindings/mono/efl_mono/efl_all.cs \
 	$(efl_eo_mono_files) \
-	$(efl_eina_mono_files)
+	$(efl_eina_mono_files) \
+	$(efl_eldbus_mono_files)
 
 lib/efl_mono/libefl_mono.dll$(EXEEXT): $(lib_efl_mono_libefl_mono_dll_SOURCES) lib/efl_mono/$(am__dirstamp) $(efl_eolian_mono_files)
 	@rm -f lib/efl_mono/libefl_mono.dll$(EXEEXT)
@@ -219,6 +230,7 @@ noinst_DATA += ../libefl_mono.csproj
 if EFL_ENABLE_TESTS
 
 check_LTLIBRARIES += tests/efl_mono/libefl_mono_native_test.la
+
 tests_efl_mono_libefl_mono_native_test_la_CPPFLAGS =  \
 -I$(builddir)/tests/efl_mono \
 -DTESTS_WD=\"`pwd`\" \
@@ -226,11 +238,11 @@ tests_efl_mono_libefl_mono_native_test_la_CPPFLAGS =  \
 -DPACKAGE_BUILD_DIR=\"$(abs_top_builddir)/src/tests/efl_mono\" \
 -DPACKAGE_DATA_DIR=\"$(datadir)/efl_js\" \
 -DTESTS_BUILD_DIR=\"$(top_builddir)/src/tests/efl_mono\" \
-@CHECK_CFLAGS@  @EOLIAN_CFLAGS@ @EINA_CFLAGS@ @EO_CFLAGS@ @ECORE_CFLAGS@
+@CHECK_CFLAGS@  @EOLIAN_CFLAGS@ @EINA_CFLAGS@ @EO_CFLAGS@ @ECORE_CFLAGS@ @ELDBUS_CFLAGS@
 tests_efl_mono_libefl_mono_native_test_la_LIBADD = \
-@CHECK_LIBS@ @USE_EO_LIBS@ @USE_EINA_LIBS@ @USE_EOLIAN_LIBS@
+@CHECK_LIBS@ @USE_EO_LIBS@ @USE_EINA_LIBS@ @USE_EOLIAN_LIBS@ @USE_ELDBUS_LIBS@
 tests_efl_mono_libefl_mono_native_test_la_LDFLAGS = -rpath $(abs_top_builddir)/tests/efl_mono @EFL_LTLIBRARY_FLAGS@
-tests_efl_mono_libefl_mono_native_test_la_DEPENDENCIES = @USE_EINA_INTERNAL_LIBS@ @USE_EO_INTERNAL_LIBS@
+tests_efl_mono_libefl_mono_native_test_la_DEPENDENCIES = @USE_EINA_INTERNAL_LIBS@ @USE_EO_INTERNAL_LIBS@ @USE_ELDBUS_INTERNAL_LIBS@
 tests_efl_mono_libefl_mono_native_test_la_LIBTOOLFLAGS = --tag=disable-static
 
 efl_mono_test_eolian_mono_files = tests/efl_mono/test_testing.eo.cs \
@@ -261,6 +273,7 @@ TESTS += tests/efl_mono/mono_test_driver.sh
 tests_efl_mono_efl_mono_exe_SOURCES = \
      tests/efl_mono/Main.cs \
      tests/efl_mono/Eina.cs \
+     tests/efl_mono/Eldbus.cs \
      tests/efl_mono/Eo.cs \
      tests/efl_mono/Errors.cs \
      tests/efl_mono/Evas.cs \
@@ -287,7 +300,7 @@ examples_efl_mono_libefl_mono_native_example_la_CPPFLAGS =  \
 -DEXAMPLES_SRC_DIR=\"$(top_srcdir)/src/examples/efl_mono\" \
 -DPACKAGE_BUILD_DIR=\"$(abs_top_builddir)/src/examples/efl_mono\" \
 -DEXAMPLES_BUILD_DIR=\"$(top_builddir)/src/examples/efl_mono\" \
-@EOLIAN_CFLAGS@ @EINA_CFLAGS@ @EO_CFLAGS@ @ECORE_CFLAGS@
+@EOLIAN_CFLAGS@ @EINA_CFLAGS@ @EO_CFLAGS@ @ECORE_CFLAGS@ @ELDBUS_CFLAGS@
 
 examples_efl_mono_libefl_mono_native_example_la_LIBADD = @USE_EO_LIBS@ @USE_EINA_LIBS@ @USE_EOLIAN_LIBS@
 examples_efl_mono_libefl_mono_native_example_la_LDFLAGS = @EFL_LTLIBRARY_FLAGS@
