@@ -11,6 +11,9 @@
 #include "elm_widget_layout.h"
 #include "efl_ui_panes_private.h"
 
+#include "efl_ui_panes_internal_part.eo.h"
+#include "elm_part_helper.h"
+
 #define MY_CLASS EFL_UI_PANES_CLASS
 
 #define MY_CLASS_NAME "Efl.Ui.Panes"
@@ -510,36 +513,6 @@ _efl_ui_panes_content_right_min_relative_size_get(Eo *obj EINA_UNUSED, Efl_Ui_Pa
    return _pd->right_min_relative_size;
 }
 
-EOLIAN static void
-_efl_ui_panes_content_left_min_size_set(Eo *obj, Efl_Ui_Panes_Data *_pd, Evas_Coord size)
-{
-   _pd->left_min_size = size;
-   if (_pd->left_min_size < 0) _pd->left_min_size = 0;
-   _pd->left_min_size_is_relative = EINA_FALSE;
-   _update_fixed_sides(obj);
-}
-
-EOLIAN static Evas_Coord
-_efl_ui_panes_content_left_min_size_get(Eo *obj EINA_UNUSED, Efl_Ui_Panes_Data *_pd)
-{
-   return _pd->left_min_size;
-}
-
-EOLIAN static void
-_efl_ui_panes_content_right_min_size_set(Eo *obj, Efl_Ui_Panes_Data *_pd, Evas_Coord size)
-{
-   _pd->right_min_size = size;
-   if (_pd->right_min_size < 0) _pd->right_min_size = 0;
-   _pd->right_min_size_is_relative = EINA_FALSE;
-   _update_fixed_sides(obj);
-}
-
-EOLIAN static Evas_Coord
-_efl_ui_panes_content_right_min_size_get(Eo *obj EINA_UNUSED, Efl_Ui_Panes_Data *_pd)
-{
-   return _pd->right_min_size;
-}
-
 EOLIAN static Eina_Bool
 _efl_ui_panes_elm_widget_focus_next_manager_is(Eo *obj EINA_UNUSED, Efl_Ui_Panes_Data *_pd EINA_UNUSED)
 {
@@ -562,5 +535,100 @@ _efl_ui_panes_class_constructor(Efl_Class *klass)
 
 #define EFL_UI_PANES_EXTRA_OPS \
    EFL_CANVAS_GROUP_ADD_OPS(efl_ui_panes)
+
+/* Efl.Part begin */
+
+ELM_PART_OVERRIDE(efl_ui_panes, EFL_UI_PANES, ELM_LAYOUT, Efl_Ui_Panes_Data, Elm_Part_Data)
+
+EOLIAN void
+_efl_ui_panes_internal_part_efl_gfx_size_hint_min_set(Eo *obj, Elm_Part_Data *_pd EINA_UNUSED, int w, int h)
+{
+   Elm_Part_Data *pd = efl_data_scope_get(obj, ELM_LAYOUT_INTERNAL_PART_CLASS);
+   Efl_Ui_Panes_Data *sd = efl_data_scope_get(pd->obj, EFL_UI_PANES_CLASS);
+
+   if (!strcmp(pd->part, "left"))
+     {
+       sd->first_minw = w;
+       sd->first_minh = h;
+
+       if (sd->orientation == EFL_ORIENT_HORIZONTAL)
+         {
+            sd->left_min_size = h;
+         }
+       else
+         {
+            sd->left_min_size = w;
+         }
+       if (sd->left_min_size < 0) sd->left_min_size = 0;
+       sd->left_min_relative_size = EINA_FALSE;
+     }
+   else if (!strcmp(pd->part, "right"))
+     {
+       sd->second_minw = w;
+       sd->second_minh = h;
+
+       if (sd->orientation == EFL_ORIENT_HORIZONTAL)
+         {
+            sd->right_min_size = h;
+         }
+       else
+         {
+            sd->right_min_size = w;
+         }
+       if (sd->right_min_size < 0) sd->right_min_size = 0;
+       sd->right_min_size_is_relative = EINA_FALSE;
+     }
+     _update_fixed_sides(pd->obj);
+}
+
+EOLIAN void
+_efl_ui_panes_internal_part_efl_gfx_size_hint_min_get(Eo *obj, Elm_Part_Data *_pd EINA_UNUSED, int *w, int *h)
+{
+   Elm_Part_Data *pd = efl_data_scope_get(obj, ELM_LAYOUT_INTERNAL_PART_CLASS);
+   Efl_Ui_Panes_Data *sd = efl_data_scope_get(pd->obj, EFL_UI_PANES_CLASS);
+
+   if (!strcmp(pd->part, "left"))
+   {
+     if (w) *w = sd->first_minw;
+     if (h) *h = sd->first_minh;
+   }
+   else if (!strcmp(pd->part, "right"))
+   {
+     if (w) *w = sd->second_minw;
+     if (h) *h = sd->second_minh;
+   }
+}
+
+#include "efl_ui_panes_internal_part.eo.h"
+/* Efl.Part end */
+
+/* Legacy APIs */
+void
+elm_panes_content_left_min_size_set(Evas_Object *obj, int size)
+{
+   efl_gfx_size_hint_min_set(efl_part(obj, "left"), size, size);
+}
+
+int
+elm_panes_content_left_min_size_get(const Evas_Object *obj)
+{
+   EFL_UI_PANES_DATA_GET_OR_RETURN_VAL(obj, sd, -1);
+   return sd->left_min_size;
+}
+
+void
+elm_panes_content_right_min_size_set(Evas_Object *obj, int size)
+{
+   efl_gfx_size_hint_min_set(efl_part(obj, "right"), size, size);
+}
+
+int
+elm_panes_content_right_min_size_get(const Evas_Object *obj)
+{
+   EFL_UI_PANES_DATA_GET_OR_RETURN_VAL(obj, sd, -1);
+   return sd->right_min_size;
+}
+
+/* Legacy APIs end */
 
 #include "efl_ui_panes.eo.c"
