@@ -966,3 +966,29 @@ test_efl_ui_popup(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *ev
 
    efl_content_set(efl_ui_popup, btn);
 }
+
+void
+test_efl_ui_popup_scroll(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED)
+{
+   Evas_Object *win;
+   char buf[PATH_MAX];
+
+   win = elm_win_util_standard_add("Efl UI ScrollPopup", "Efl UI ScrollPopup");
+   elm_win_autodel_set(win, EINA_TRUE);
+
+   evas_object_resize(win, 320, 320);
+   evas_object_show(win);
+
+   Evas_Object *efl_ui_popup= efl_add(EFL_UI_POPUP_SCROLL_CLASS, win);
+
+   evas_object_move(efl_ui_popup, 80, 80);
+   evas_object_resize(efl_ui_popup, 160, 160);
+   evas_object_show(efl_ui_popup);
+
+   Evas_Object *layout = elm_layout_add(efl_ui_popup);
+   snprintf(buf, sizeof(buf), "%s/objects/test.edj", elm_app_data_dir_get());
+   elm_layout_file_set(layout, buf, "efl_ui_popup_scroll_content");
+   evas_object_show(layout);
+
+   efl_content_set(efl_ui_popup, layout);
+}
