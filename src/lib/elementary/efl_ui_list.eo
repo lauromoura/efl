@@ -50,6 +50,7 @@ class Efl.Ui.List (Elm.Layout, Efl.Ui.View, Elm.Interface_Scrollable,
             style: stringshare;
          }
       }
+<<<<<<< HEAD
       // FIMXE protected feature in arrayview
       item_new @protected {
          [[create internal item data]]
@@ -89,6 +90,13 @@ class Efl.Ui.List (Elm.Layout, Efl.Ui.View, Elm.Interface_Scrollable,
          params {
             @in calc: bool; [[boolen value for item calculation]]
             @in type: Efl.Ui.View.Load.Mode; [[Item of list view]]
+         }
+      }
+      @property layout_factory {
+         [[Listview layout factory set.]]
+         set {}
+         values {
+            factory: Efl.Ui.Factory; [[The factory.]]
          }
       }
    }
