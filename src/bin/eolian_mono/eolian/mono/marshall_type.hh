@@ -24,13 +24,13 @@ struct marshall_type_generator
    template <typename OutputIterator, typename Context>
    bool generate(OutputIterator sink, attributes::type_def const& type, Context const& context) const
    {
-      return type.original_type.visit(detail::marshall_type_visitor_generate<OutputIterator, Context>{sink, &context, type.c_type, false, is_return});
+      return type.original_type.visit(detail::marshall_type_visitor_generate<OutputIterator, Context>{sink, &context, type.c_type, false, is_return, type.is_ptr });
    }
    template <typename OutputIterator, typename Context>
    bool generate(OutputIterator sink, attributes::parameter_def const& param, Context const& context) const
    {
       return param.type.original_type.visit(detail::marshall_type_visitor_generate<OutputIterator, Context>{sink, &context, param.type.c_type
-            , param.direction != attributes::parameter_direction::in, false});
+            , param.direction != attributes::parameter_direction::in, false, param.type.is_ptr});
    }
 
    bool is_return;
@@ -44,13 +44,13 @@ struct marshall_annotation_generator
    template <typename OutputIterator, typename Context>
    bool generate(OutputIterator sink, attributes::type_def const& type, Context const& context) const
    {
-      return type.original_type.visit(detail::marshall_annotation_visitor_generate<OutputIterator, Context>{sink, &context, type.c_type, false, is_return});
+      return type.original_type.visit(detail::marshall_annotation_visitor_generate<OutputIterator, Context>{sink, &context, type.c_type, false, is_return, type.is_ptr});
    }
    template <typename OutputIterator, typename Context>
    bool generate(OutputIterator sink, attributes::parameter_def const& param, Context const& context) const
    {
       return param.type.original_type.visit(detail::marshall_annotation_visitor_generate<OutputIterator, Context>{sink, &context, param.type.c_type
-            , param.direction != attributes::parameter_direction::in, false});
+            , param.direction != attributes::parameter_direction::in, false, param.type.is_ptr});
    }
 
    bool is_return;
@@ -64,13 +64,13 @@ struct marshall_native_annotation_generator
    template <typename OutputIterator, typename Context>
    bool generate(OutputIterator sink, attributes::type_def const& type, Context const& context) const
    {
-      return type.original_type.visit(detail::marshall_native_annotation_visitor_generate<OutputIterator, Context>{sink, &context, type.c_type, false, is_return});
+      return type.original_type.visit(detail::marshall_native_annotation_visitor_generate<OutputIterator, Context>{sink, &context, type.c_type, false, is_return, type.is_ptr});
    }
    template <typename OutputIterator, typename Context>
    bool generate(OutputIterator sink, attributes::parameter_def const& param, Context const& context) const
    {
       return param.type.original_type.visit(detail::marshall_native_annotation_visitor_generate<OutputIterator, Context>{sink, &context, param.type.c_type
-            , param.direction != attributes::parameter_direction::in, false});
+            , param.direction != attributes::parameter_direction::in, false, param.type.is_ptr});
    }
 
    bool is_return;
