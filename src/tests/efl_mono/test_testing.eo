@@ -1195,6 +1195,12 @@ class Test.Testing (Efl.Object) {
          }
       }
 
+      set_value {
+         params {
+            value: generic_value;
+         }
+      }
+
       get_value_ptr_own {
          return: own(ptr(generic_value));
       }
@@ -1202,6 +1208,15 @@ class Test.Testing (Efl.Object) {
       get_value_ptr {
          return: ptr(generic_value);
       }
+
+      /* Commented out due to issues regarding eolian treatment of generic_value.
+       * Somehow eolian is giving 0 as the default value when declaring the function below,
+       * leading to compiler errors.
+       */
+      /* get_value {
+         return: generic_value;
+      }
+      */
 
       clear_value {
       }
@@ -1215,6 +1230,12 @@ class Test.Testing (Efl.Object) {
       out_value_ptr_own {
          params {
             @out value: own(ptr(generic_value));
+         }
+      }
+
+      out_value {
+         params {
+            @out value: generic_value;
          }
       }
    }
