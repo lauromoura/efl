@@ -207,6 +207,7 @@ struct type_def
    variant_type original_type;
    std::string c_type;
    bool has_own;
+   bool is_ptr;
 
    type_def() {}
    type_def(variant_type original_type, std::string c_type, bool has_own)
@@ -250,6 +251,7 @@ inline void type_def::set(Eolian_Type const* eolian_type, Eolian_Unit const* uni
    c_type = ::eolian_type_c_type_get(eolian_type);
    // ::eina_stringshare_del(stringshare); // this crashes
    has_own = !!::eolian_type_is_own(eolian_type);
+   is_ptr = !!::eolian_type_is_ptr(eolian_type);
    switch( ::eolian_type_type_get(eolian_type))
      {
      case EOLIAN_TYPE_VOID:
