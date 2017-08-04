@@ -20,10 +20,9 @@ struct _Efl_Ui_Gridview_Item
    Efl_Model            *model;
    Elm_Layout           *layout;
    Efl_Future           *future;
-   unsigned int         index;
+   unsigned int         index, pos[2]; // row(0),col(1)
    Evas_Coord           x, y, minw, minh;
    double               h, v, wx, wy;
-   unsigned int         row, col;
    Eina_Bool            down: 1;
    Eina_Bool            selected: 1;
    Eina_Bool            longpressed : 1;
@@ -91,7 +90,7 @@ struct _Efl_Ui_Gridview_Data
 
    Evas_Coord                   minw, minh;
    Efl_Ui_Gridview_Item             *focused;
-   int                          avit, avsom, item_count;
+   int                          avgitw, avgith, avgsum, item_count, line_count;
    Efl_Future                   *future;
 };
 

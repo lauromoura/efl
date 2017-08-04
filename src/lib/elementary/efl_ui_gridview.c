@@ -10,7 +10,7 @@
 #define SIG_CHILD_ADDED "child,added"
 #define SIG_CHILD_REMOVED "child,removed"
 #define SELECTED_PROP "selected"
-#define AVERAGE_SIZE_INIT 10
+#define AVERAGE_SIZE_INIT 30
 
 static const Evas_Smart_Cb_Description _smart_callbacks[] = {
    {SIG_CHILD_ADDED, ""},
@@ -38,6 +38,11 @@ static const Elm_Action key_actions[] = {
    {"escape", _key_action_escape},
    {NULL, NULL}
 };
+
+// Debug Macros : Should be removed before master merge
+#define GVDBG(...) DBG("GridView:: "__VA_ARGS__)
+#define GVNAME(_OBJ) efl_class_name_get(efl_class_get(_OBJ))
+// End
 
 static inline Eina_Bool
 _horiz(Efl_Orient dir)
@@ -497,6 +502,7 @@ _children_then(void * data, Efl_Event const* event)
    Eo *child_model;
    Efl_Ui_Gridview_Item *item;
    unsigned i, idx, count, diff;
+   int w = 0, h = 0, line = 0, linemax = 0, linesum = 0; //cvw = 0, cvh = 0;
    Eina_Bool horz = _horiz(pd->orient);
    Eina_Array *array = pd->items;
 
@@ -504,9 +510,13 @@ _children_then(void * data, Efl_Event const* event)
 
    pd->future = NULL;
    EINA_SAFETY_ON_NULL_RETURN(acc);
-
    ELM_WIDGET_DATA_GET_OR_RETURN(pd->obj, wd);
+
    count = eina_array_count(pd->items);
+   efl_gfx_geometry_get(pd->obj, NULL, NULL, &w, &h);
+   //elm_interface_scrollable_content_viewport_geometry_get(obj, NULL, NULL, &cvw, &cvh);
+
+   GVDBG("children then [%p][%d] -- geo[%d,%d]", pd->items, count, w, h);
 
    if (sd->slicestart < pd->realized.start)
      {
@@ -557,6 +567,8 @@ _children_then(void * data, Efl_Event const* event)
      }
 
    pd->realized.start = sd->newstart;
+   count = 1;
+
    EINA_ACCESSOR_FOREACH(acc, i, child_model)
      {
         if (idx < eina_array_count(array))
@@ -566,9 +578,23 @@ _children_then(void * data, Efl_Event const* event)
              item->index = sd->newstart + idx - 1;
 
              if (horz)
-               pd->realized.w -= item->minw;
+               {
+                  if (line + item->minh > h)
+                    {
+                       pd->realized.w -= linemax;
+                       //GVDBG("realw[%d] --- line[%d] linemax[%d], count[%d]", pd->realized.w, line, linemax, count);
+                    }
+               }
              else
-               pd->realized.h -= item->minh;
+               {
+                  if (line + item->minw > w)
+                    {
+                       pd->realized.h -= linemax;
+                       //GVDBG("realh[%d] --- line[%d] linemax[%d], count[%d]", pd->realized.h, line, linemax, count);
+                    }
+               }
+
+             GVDBG("IDX[%d]-REAL[%d]:: Realized [%d][%d]", idx, item->index, pd->realized.w, pd->realized.h);
 
              _layout_realize(pd, item);
           }
@@ -576,25 +602,64 @@ _children_then(void * data, Efl_Event const* event)
           {
              item = _child_new(pd, child_model);
              eina_array_push(pd->items, item);
+              GVDBG("IDX[%d]-item new [%d, %d]", idx, pd->realized.w, pd->realized.h);
+
           }
+
         if (horz)
           {
-             pd->realized.w += item->minw;
-             if (item->minh > pd->realized.h)
-               pd->realized.h = item->minh;
+               {
+                  linesum += item->minh;
+                  if (line + item->minh > h)
+                    {
+                       pd->realized.w += linemax;
+                       line = item->minh;
+                       linemax = item->minw;
+                       count++;
+                       GVDBG("realw[%d] --- line[%d] linemax[%d], count[%d]", pd->realized.w, line, linemax, count);
+                    }
+                  else
+                    {
+                       line += item->minh;
+                       linemax = MAX(linemax, item->minw);
+                    }
+               }
           }
         else
           {
-             pd->realized.h += item->minh;
-             if (item->minw > pd->realized.w)
-               pd->realized.w = item->minw;
+                  linesum += item->minw;
+                  if (line + item->minw > w)
+                    {
+                       pd->realized.h += linemax;
+                       line = item->minw;
+                       linemax = item->minh;
+                       count++;
+                       GVDBG("realh[%d] --- line[%d] linemax[%d], count[%d]", pd->realized.h, line, linemax, count);
+                    }
+                  else
+                    {
+                       line += item->minw;
+                       linemax = MAX(linemax, item->minh);
+                    }
           }
         ++idx;
      }
 
-   pd->avsom = horz ? pd->realized.w : pd->realized.h;
+   pd->avgsum = horz ? pd->realized.w : pd->realized.h;
+   pd->line_count = MAX(pd->line_count, count);
+
+   count = eina_array_count(pd->items);
+
+   if (pd->line_count && count)
+     {
+        int avgline = linesum / count;
+        int avgit = pd->avgsum / pd->line_count;
+        pd->avgitw = horz ? avgit : avgline;
+        pd->avgith = horz ? avgline : avgit;
+     }
+
    free(sd);
-   pd->avit = pd->avsom / eina_array_count(pd->items);
+
    efl_canvas_group_change(pd->obj);
 }
 
@@ -752,6 +817,7 @@ _efl_ui_gridview_efl_gfx_size_set(Eo *obj, Efl_Ui_Gridview_Data *pd, Evas_Coord 
         if (h != oldh) load = EINA_TRUE;
      }
 
+   ERR("GFX SIZE SET [%d, %d]", w, h);
 
    if (load && _load_items(obj, pd, EINA_TRUE))
      return;
@@ -823,7 +889,8 @@ _efl_ui_gridview_efl_canvas_group_group_add(Eo *obj, Efl_Ui_Gridview_Data *pd EI
       (obj, EINA_FALSE, _elm_config->thumbscroll_bounce_enable);
 
    pd->mode = ELM_LIST_COMPRESS;
-   pd->avit = AVERAGE_SIZE_INIT;
+   pd->avgitw = AVERAGE_SIZE_INIT;
+   pd->avgith = AVERAGE_SIZE_INIT;
 
    elm_interface_atspi_accessible_type_set(obj, ELM_ATSPI_TYPE_DISABLED);
    pd->pan.obj = efl_add(MY_PAN_CLASS, efl_provider_find(obj, EVAS_CANVAS_CLASS));
@@ -1226,90 +1293,6 @@ _efl_ui_gridview_item_select_set(Efl_Ui_Gridview_Item *item, Eina_Bool selected)
      efl_event_callback_legacy_call(item->layout, EFL_UI_EVENT_UNSELECTED, item);
 }
 
-/*
-#define CACHE_COUNT_MAX 10;
-
-static Gridview_Block *
-_gridview_block_cache_pop(Efl_Ui_Gridview_Data* pd, int max)
-{
-   Eina_List *l = NULL;
-   Gridview_Block *block = NULL;
-   if (!sd->block_cache) return NULL;
-
-   EINA_LIST_FOREACH(pd->block_cache, l, block)
-     {
-        if (block->max == max) break;
-     }
-
-   return block;
-}
-
-static Eina_Bool
-_gridview_block_cache_push(Efl_Ui_Gridview_Data* pd, Gridview_Block *block)
-{
-   if (eina_list_count(pd->block_cache) >= CACHE_COUNT_MAX) return EINA_FALSE;
-
-   block->x = block->y = block->w = block->h = 0;
-   block->index = 0;
-   block->count = 0;
-
-   // FIXME : Hash might be better than list? max could be idenfier?
-   sd->block_cache = eina_list_push(sd->block_cache, block);
-   return EINA_TRUE;
-}
-
-static Gridview_Block *
-_gridview_block_new(Efl_Ui_Gridview_Data* pd, int max)
-{
-   Gridview_Block *block = _gridview_block_cache_pop(pd, max);
-   if (!block) block = calloc(1, size_of(Gridview_Block));
-   block->count = 0;
-   block->max = max;
-   pd->blocks = eina_list_append(pd->blocks, block);
-
-   return block;
-}
-
-static int
-_gridview_block_free(Efl_Ui_Gridview_Data* pd, Gridview_Block *block)
-{
-   int count = 0;
-   Eina_List *l = NULL, *ll = NULL;
-   Efl_Ui_Gridview_Item *item = NULL;
-
-   EINA_LIST_FREE(block->items, item)
-     {
-        gridview_item_free(item);
-        count++;
-     }
-   if (count != block->count)
-    {
-       //DEBUG : COUNT IS FAILED!
-    }
-
-   pd->blocks = eina_list_remove(pd->blocks, block);
-
-   if (!_gridview_block_cache_push(pd, block))
-     free(block);
-
-   return count;
-}
-
-static Eina_Bool
-_gridview_block_item_add(Efl_Ui_Gridview_Data* pd,
-                          Gridview_Block *block,
-                          Item_Calc *item)
-{
-   if (eina_list_count(block->items) == block->max) return EINA_FALSE;
-
-   
-
-   block->items = eina_list_append(block->items, item->gv_item);
-
-
-}
-*/
-
 static void
 _item_calc(Efl_Ui_Gridview_Data *pd, Efl_Ui_Gridview_Item *item)
 {
@@ -1339,8 +1322,7 @@ static Eina_Bool
 _load_items(Eo *obj, Efl_Ui_Gridview_Data *pd, Eina_Bool recalc)
 {
    Efl_Ui_Gridview_Slice *sd;
-   int slice, slicestart, newstart, count = 0;
-   Evas_Coord w = 0, h = 0;
+   int slice, slicestart, newstart, count = 0, w = 0, h = 0, cvw = 0, cvh = 0;
    Efl_Ui_Gridview_Item *item;
    Eina_Bool horz = _horiz(pd->orient);
    if (pd->future)
@@ -1349,30 +1331,36 @@ _load_items(Eo *obj, Efl_Ui_Gridview_Data *pd, Eina_Bool recalc)
    if (pd->items)
      count = eina_array_count(pd->items);
 
-   if ((!recalc && count == pd->item_count) || pd->avit < 1)
+   if ((!recalc && count == pd->item_count) || pd->avgitw < 1 || pd->avgith < 1)
      return EINA_FALSE;
 
    efl_gfx_geometry_get(obj, NULL, NULL, &w, &h);
+   elm_interface_scrollable_content_viewport_geometry_get(obj, NULL, NULL, &cvw, &cvh);
+
+   slice  = 2 * (w / pd->avgitw) * (h / pd->avgith);
    if (horz)
      {
-        slice  = (w / pd->avit) * 2;
-        newstart = (pd->pan.x / pd->avit) - (slice / 4);
+        newstart = (pd->pan.x / pd->avgitw) - (slice / 4);
      }
    else
      {
-        slice =  (h / pd->avit) * 2;
-        newstart = (pd->pan.y / pd->avit) - (slice / 4);
+        newstart = (pd->pan.y / pd->avgith) - (slice / 4);
      }
 
-   slice = slice > 8 ? slice : 8;
+   GVDBG("[%s] --- geo[%d,%d] cvgeo[%d,%d] count [%d], itcount[%d] avgw[%d] avgh[%d] slice[%d] newstart[%d]", GVNAME(obj), w, h, cvw, cvh, count, pd->item_count, pd->avgitw, pd->avgith, slice, newstart);
+   slice = slice > 20 ? slice : 20;
    slicestart = newstart = newstart > 1 ? newstart : 1;
+   GVDBG(" --- rearrage slice[%d] slicestart[%d] newstart[%d]", slice, slicestart, newstart);
 
    if (!recalc && newstart == pd->realized.start && slice == pd->realized.slice)
      return EINA_FALSE;
 
    pd->realized.slice = slice;
    if (!pd->items)
-     pd->items = eina_array_new(8);
+     {
+        pd->items = eina_array_new(20);
+        GVDBG("array items are Generated [%p][%d]", pd->items, eina_array_count(pd->items));
+     }
 
    if (count)
      {
@@ -1397,6 +1385,7 @@ _load_items(Eo *obj, Efl_Ui_Gridview_Data *pd, Eina_Bool recalc)
 
    if (slice > 0)
      {
+       GVDBG("Slice call chidren then slice[%d]sstart[%d]newstart[%d]", slice, slicestart, newstart);
         sd = malloc(sizeof(Efl_Ui_Gridview_Slice));
         sd->pd = pd;
         sd->slicestart = slicestart;
@@ -1408,19 +1397,60 @@ _load_items(Eo *obj, Efl_Ui_Gridview_Data *pd, Eina_Bool recalc)
      }
    else
      {
+        int line = 0, linemax = 0, linesum = 0, count = 1;
         while (pd->realized.slice < (int)eina_array_count(pd->items))
           {
              item = eina_array_pop(pd->items);
              if (!item) break;
              if (horz)
-               pd->realized.w -= item->minw;
+               {
+                  linesum += item->minh;
+                  if (line + item->minh > cvh)
+                    {
+                       pd->realized.w -= linemax;
+                       line = item->minh;
+                       linemax = item->minw;
+                       count++;
+                       GVDBG("realw[%d] --- line[%d] linemax[%d], count[%d] pos[%d,%d]", pd->realized.w, line, linemax, count, item->pos[0], item->pos[1]);
+                    }
+                  else
+                    {
+                       line += item->minh;
+                       linemax = MAX(linemax, item->minw);
+                    }
+               }
              else
-               pd->realized.h -= item->minh;
+               {
+                  linesum += item->minw;
+                  if (line + item->minw > cvw)
+                    {
+                       pd->realized.h -= linemax;
+                       line = item->minw;
+                       linemax = item->minh;
+                       count++;
+                       GVDBG("realh[%d] --- line[%d] linemax[%d], count[%d] pos[%d,%d]", pd->realized.h, line, linemax, count, item->pos[0], item->pos[1]);
+                    }
+                  else
+                    {
+                       line += item->minw;
+                       linemax = MAX(linemax, item->minh);
+                    }
+               }
              _child_remove(pd, item);
           }
-        pd->avsom = horz ? pd->realized.w : pd->realized.h;
-        if (eina_array_count(pd->items))
-          pd->avit = pd->avsom / eina_array_count(pd->items);
+        pd->avgsum = horz ? pd->realized.w : pd->realized.h;
+        pd->line_count = MAX(pd->line_count, count);
+
+        count = eina_array_count(pd->items);
+
+        if (pd->line_count && count)
+          {
+             int avgline = linesum / count;
+             int avgit = pd->avgsum / pd->line_count;
+             pd->avgitw = horz ? avgit : avgline;
+             pd->avgith = horz ? avgline : avgit;
+          }
+       GVDBG("[%s] --- avgw[%d] avgh[%d] realw[%d] realh[%d] count[%d] itcount[%d]", GVNAME(obj), pd->avgitw, pd->avgith, pd->realized.w, pd->realized.h, pd->line_count, eina_array_count(pd->items));
 
         return EINA_FALSE;
      }
@@ -1438,11 +1468,11 @@ _efl_ui_gridview_custom_layout(Efl_Ui_Gridview *ui_grid)
    Evas_Coord ow, oh, want;
    int boxx, boxy, boxw, boxh, length, pad, extra = 0, rounding = 0;
    int boxl = 0, boxr = 0, boxt = 0, boxb = 0;
-   double cur_pos = 0, scale, box_align[2],  weight[2] = { 0, 0 };
+   double cur_pos = 0, scale, box_align[2],  weight[2] = { 0, 0 }, linesum = 0;
    Eina_Bool box_fill[2] = { EINA_FALSE, EINA_FALSE };
    Eina_Array_Iterator iterator;
    unsigned int i;
-   int id, count = 0;
+   int id, count = 0, avgit, row = 0, col = 0;
 
    ELM_WIDGET_DATA_GET_OR_RETURN(ui_grid, wd);
 
@@ -1452,6 +1482,7 @@ _efl_ui_gridview_custom_layout(Efl_Ui_Gridview *ui_grid)
    scale = efl_ui_scale_get(ui_grid);
    // Box align: used if "item has max size and fill" or "no item has a weight"
    // Note: cells always expand on the orthogonal direction
+   GVDBG("[%s] --- geo[%d, %d, %d, %d] margin[%d, %d, %d, %d] scale[%.2f]", GVNAME(ui_grid), boxx, boxy, boxw, boxh, boxl, boxr, boxt, boxb, scale);
    box_align[0] = pd->align.h;
    box_align[1] = pd->align.v;
    if (box_align[0] < 0)
@@ -1482,138 +1513,6 @@ _efl_ui_gridview_custom_layout(Efl_Ui_Gridview *ui_grid)
    boxx += boxl;
    boxy += boxt;
 
-/*
-   Evas_Coord ow, oh;
-   elm_interface_scrollable_content_viewport_geometry_get
-              (ui_gridview, NULL, NULL, &ow, &oh);
-   // scan all items, get their properties, calculate total weight & min size
-   EINA_LIST_FOREACH(pd->items, li, gv_item)
-     {
-        item = &items[id];
-        o = item->obj = gv_item->layout;
-        item->gv_item = gv_item;
-
-        efl_gfx_size_hint_weight_get(o, &item->weight[0], &item->weight[1]);
-        efl_gfx_size_hint_align_get(o, &item->align[0], &item->align[1]);
-        efl_gfx_size_hint_margin_get(o, &item->pad[0], &item->pad[1], &item->pad[2], &item->pad[3]);
-        efl_gfx_size_hint_max_get(o, &item->max[0], &item->max[1]);
-        efl_gfx_size_hint_combined_min_get(o, &item->want[0], &item->want[1]);
-
-        if (item->weight[0] < 0) item->weight[0] = 0;
-        if (item->weight[1] < 0) item->weight[1] = 0;
-
-        if (item->align[0] < 0) item->align[0] = -1;
-        if (item->align[1] < 0) item->align[1] = -1;
-        if (item->align[0] > 1) item->align[0] = 1;
-        if (item->align[1] > 1) item->align[1] = 1;
-
-        if (item->want[0] < 0) item->want[0] = 0;
-        if (item->want[1] < 0) item->want[1] = 0;
-
-        if (item->max[0] <= 0) item->max[0] = INT_MAX;
-        if (item->max[1] <= 0) item->max[1] = INT_MAX;
-
-        if (pd->homogeneous)
-          {
-             if (item->max[0] > pd->item.width) item->want[0] = item->max[0];
-             if (item->max[1] > pd->item.height) item->want[1] = item->max[1];
-             item->want[0] = item->max[0] = pd->item.width;
-             item->want[1] = item->max[1] = pd->item.height;
-          }
-        else
-          {
-             if (item->max[0] < item->want[0]) item->max[0] = item->want[0];
-             if (item->max[1] < item->want[1]) item->max[1] = item->want[1];
-             if (item->want[0] == 0) item->want[0] = item->max[0] = pd.item->width;
-             if (item->want[1] == 0) item->want[1] = item->max[1] = pd.item->height;
-          }
-
-        item->want[0] += item->pad[0] + item->pad[1];
-        item->want[1] += item->pad[2] + item->pad[3];
-
-        weight[0] += item->weight[0];
-        weight[1] += item->weight[1];
-
-        if (pd->homogeneous && item->want[0] && item->want[1])
-          nmax = (horiz ? (boxh / item->want[1]) : (boxw / item->want[0]));
-
-        if (horiz)
-          {
-             if (pd->homogeneous)
-               {
-                  if (nmax > row)
-                    {
-                       row++;
-                    }
-                  else
-                    {
-                       wantw += item->want[0];
-                       row = 0;
-                       col++;
-                    }             
-               }
-             else
-               {
-                  if (boxh > (wantsum + item->want[1]))
-                    {
-                       wantsum += item->want[1];
-                       if (wantmax < item->want[0])
-                         wantmax = item->want[0];
-                       row++;
-                    }
-                  else
-                    {
-                       wantw += wantmax;
-                       wantsum = item->want[1];
-                       wantmax = item->want[0];
-                       row = 0;
-                       col++;
-                    }
-               }
-          }
-        else
-          {
-             if (pd->homogeneous)
-               {
-                  if (nmax > col)
-                    {
-                      col++;
-                    }
-                  else
-                    {
-                       wanth += item->want[1];
-                       col = 0;
-                       row++;
-                    }             
-               }
-             else
-               {
-                  if (boxw > (wantsum + item->want[0]))
-                    {
-                       wantsum += item->want[0];
-                       if (wantmax < item->want[1])
-                         wantmax = item->want[1];
-                       col++;
-                    }
-                  else
-                    {
-                       wanth += wantmax;
-                       wantsum = item->want[0];
-                       wantmax = item->want[1];
-                       col = 0;
-                       row++;
-                    }
-               }
-          }
-        if (row < 0) row = 0;
-        if (col < 0) col = 0;
-        gv_item->row = row;
-        gv_item->column = col;
-        item->id = id++;
-     }
-
-*/
-
    // total space & available space
    if (horiz)
      {
@@ -1626,10 +1525,11 @@ _efl_ui_gridview_custom_layout(Efl_Ui_Gridview *ui_grid)
         // available space. if <0 we overflow
         extra = length - want;
 
-        pd->minw = pd->realized.w + boxl + boxr + pad * (count - 1);
+        pd->minw = pd->realized.w + boxl + boxr + pad * (pd->line_count);
         pd->minh = pd->realized.h + boxt + boxb;
-        if (pd->item_count > count)
-          pd->minw = pd->item_count * pd->avit;
+        if (!pd->item_count && pd->avgith)
+          pd->minw = pd->avgitw * (oh / pd->avgith);
+        avgit = pd->avgitw;
      }
    else
      {
@@ -1643,10 +1543,12 @@ _efl_ui_gridview_custom_layout(Efl_Ui_Gridview *ui_grid)
         extra = length - want;
 
         pd->minw = pd->realized.w + boxl + boxr;
-        pd->minh = pd->realized.h + pad * (count - 1) + boxt + boxb;
-        if (pd->item_count > count)
-          pd->minh = pd->item_count * pd->avit;
+        pd->minh = pd->realized.h + pad * (pd->line_count) + boxt + boxb;
+        if (!pd->item_count && pd->avgitw)
+          pd->minh = pd->avgith * (ow / pd->avgitw);
+        avgit = pd->avgith;
      }
+   GVDBG("MIN[%d,%d], AVG[%d,%d]", pd->minw, pd->minh, pd->avgitw, pd->avgith);
 
    efl_gfx_size_hint_min_set(wd->resize_obj, pd->minw, pd->minh);
 
@@ -1669,9 +1571,11 @@ _efl_ui_gridview_custom_layout(Efl_Ui_Gridview *ui_grid)
         weight[!horiz] = count;
      }
 
-   cur_pos += pd->avit * (pd->realized.start -1);
+   cur_pos += avgit * (pd->realized.start -1);
 
+   GVDBG("--- length[%d] want[%d] pad[%d] extra[%d] :: curpos[%.0f]", length, want, pad, extra, cur_pos);
    id = 0;
+
    // scan all items, get their properties, calculate total weight & min size
    EINA_ARRAY_ITER_NEXT(pd->items, i, litem, iterator)
      {
@@ -1700,21 +1604,18 @@ _efl_ui_gridview_custom_layout(Efl_Ui_Gridview *ui_grid)
         if ((id == (count - 1)) && (cur_pos - floor(cur_pos) >= 0.5))
           rounding = 1;
 
+        cw = litem->minw + rounding + (zeroweight ? 1.0 : litem->wx) * extra / weight[0];
+        ch = litem->minh + rounding + (zeroweight ? 1.0 : litem->wy) * extra / weight[1];
+
         if (horiz)
           {
              cx = boxx + cur_pos;
              cy = boxy;
-             cw = litem->minw + rounding + (zeroweight ? 1.0 : litem->wx) * extra / weight[0];
-             ch = boxh;
-             cur_pos += cw + pad;
           }
         else
           {
              cx = boxx;
              cy = boxy + cur_pos;
-             cw = boxw;
-             ch = litem->minh + rounding + (zeroweight ? 1.0 : litem->wy) * extra / weight[1];
-             cur_pos += ch + pad;
           }
 
         // horizontally
@@ -1765,23 +1666,55 @@ _efl_ui_gridview_custom_layout(Efl_Ui_Gridview *ui_grid)
              y = cy + ((ch - h) * align[1]) + item_pad[2];
           }
 
+        if (h > oh) h = oh;
+        if (w > ow) w = ow;
+
         if (horiz)
           {
-             if (h < pd->minh) h = pd->minh;
-             if (h > oh) h = oh;
+             if (oh < linesum + h)
+               {
+                  cur_pos += w + pad;
+                  linesum = h;
+                  row = 0;
+                  col++;
+               }
+             else
+               {
+                  y += linesum;
+                  linesum += h;
+                  row++;
+               }
           }
         else
           {
-             if (w < pd->minw) w = pd->minw;
-             if (w > ow) w = ow;
+             if (ow < linesum + w)
+               {
+                  cur_pos += h + pad;
+                  linesum = w;
+                  col = 0;
+                  row++;
+               }
+             else
+               {
+                  x += linesum;
+                  linesum += w;
+                  col++;
+               }
           }
-
         litem->x = x;
         litem->y = y;
-        efl_gfx_geometry_set(o, (x + 0 - pd->pan.x), (y + 0 - pd->pan.y), w, h);
-//        printf("obj=%d currpos=%.2f moved to X=%.2f, Y=%.2f\n", litem->index, cur_pos, x, y);
+        litem->pos[0] = row;
+        litem->pos[1] = col;
+
+        GVDBG("[%d]--- [%.0f,%.0f,%.0f,%.0f::%.0f] --> GFX[%.0f,%.0f,%.0f,%.0f][%d,%d] lsum[%.0f]",
+            i, cx, cy, cw, ch, cur_pos, x, y, w, h, row,col, linesum);
+
+        efl_gfx_geometry_set(o, (int)(x + 0 - pd->pan.x), (int)(y + 0 - pd->pan.y), (int)w, (int)h);
+        //GVDBG("o[%d] cur=%.2f moved to X=%.2f, Y=%.2f", litem->index, cur_pos, x, y);
      }
 }
+
+
 
 /* Internal EO APIs and hidden overrides */
 

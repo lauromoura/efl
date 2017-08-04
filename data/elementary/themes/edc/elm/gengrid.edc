@@ -3,6 +3,7 @@ group { name: "elm/gengrid/item/group_index/default";
 }
 
 group { name: "elm/gengrid/item/default/default";
+   alias: "elm/gridview/child/default/default"; //alias: "efl/ui/gridview/child/default/default";
    data.item: "selectraise" "on";
    data.item: "focusraise" "on";
    data.item: "texts" "elm.text";

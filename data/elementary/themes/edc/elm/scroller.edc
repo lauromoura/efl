@@ -6,6 +6,7 @@ group { name: "elm/scroller/base/default";
    alias: "elm/genscroller/base/default";
    alias: "elm/scroller/base/popup/default";
    alias: "elm/scroller/base/popup/transparent";
+   alias: "elm/gridview/base/default"; // alias: "efl/ui/gridview/base/default";
 
    images.image: "inset_shadow.png" COMP;
    images.image: "bevel_in.png" COMP;
