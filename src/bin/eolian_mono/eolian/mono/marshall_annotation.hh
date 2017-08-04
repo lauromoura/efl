@@ -34,6 +34,7 @@ struct marshall_annotation_visitor_generate
    std::string c_type;
    bool is_out;
    bool is_return;
+   bool is_ptr;
 
    typedef marshall_type_visitor_generate<OutputIterator, Context> visitor_type;
    typedef bool result_type;
@@ -145,6 +146,7 @@ struct marshall_native_annotation_visitor_generate
    std::string c_type;
    bool is_out;
    bool is_return;
+   bool is_ptr;
 
    typedef marshall_type_visitor_generate<OutputIterator, Context> visitor_type;
    typedef bool result_type;
