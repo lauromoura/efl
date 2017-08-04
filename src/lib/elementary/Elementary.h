@@ -278,6 +278,7 @@ EAPI extern Elm_Version *elm_version;
 # include <efl_page_transition.eo.h>
 # include <efl_page_transition_scroll.eo.h>
 # include <efl_page_transition_cube.eo.h>
+# include <efl_page_transition_rotate.eo.h>
 # include <efl_ui_pagescroller.eo.h>
 #endif
 
