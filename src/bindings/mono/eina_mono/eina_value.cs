@@ -204,6 +204,15 @@ static internal class UnsafeNativeMethods {
 }
 }
 
+/// <summary>Struct for passing Values by value to Unmanaged functions.</summary>
+[StructLayout(LayoutKind.Sequential)]
+public struct Value_Native
+{
+    IntPtr type;
+    IntPtr value; // Atually an Eina_Value_Union, but it is padded to 8 bytes.
+}
+
+
 /// <summary>Exception for trying to access flushed values.</summary>
 [Serializable]
 public class ValueFlushedException : Exception
@@ -452,6 +461,19 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
         Setup(containerType, subtype, step);
     }
 
+    /// <summary>Constructor to build value from Values_Natives passed by value from C
+    public Value(Value_Native value)
+    {
+        this.Handle = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(Value_Native)));
+        try {
+            Marshal.StructureToPtr(value, this.Handle, false);
+        } catch {
+            Marshal.FreeHGlobal(this.Handle);
+            throw;
+        }
+        this.Ownership = ValueOwnership.Managed;
+    }
+
     /// <summary>Creates an Value instance from a given array description.</summary>
     private static Value FromArrayDesc(eina.EinaNative.Value_Array arrayDesc)
     {
@@ -606,6 +628,13 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
             throw new ObjectDisposedException(GetType().Name);
         eina_value_flush_wrapper(this.Handle);
         Flushed = true;
+    }
+
+    /// <summary>Get a Value_Native struct with the *value* pointed by this eina.Value.</summary>
+    public Value_Native GetNative()
+    {
+        Value_Native value = (Value_Native)Marshal.PtrToStructure(this.Handle, typeof(Value_Native));
+        return value;
     }
 
     /// <summary>Stores the given uint value.</summary>
