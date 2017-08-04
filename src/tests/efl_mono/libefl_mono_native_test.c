@@ -3180,6 +3180,16 @@ void _test_testing_set_value_ptr_own(EINA_UNUSED Eo *obj, Test_Testing_Data *pd,
     pd->stored_value = value;
 }
 
+void _test_testing_set_value(EINA_UNUSED Eo *obj, Test_Testing_Data *pd, Eina_Value value)
+{
+    if (pd->stored_value) {
+        eina_value_free(pd->stored_value);
+    } else {
+        pd->stored_value = malloc(sizeof(Eina_Value));
+    }
+    eina_value_copy(&value, pd->stored_value);
+}
+
 Eina_Value *_test_testing_get_value_ptr_own(EINA_UNUSED Eo *obj, Test_Testing_Data *pd)
 {
     Eina_Value *val = pd->stored_value;
@@ -3191,6 +3201,14 @@ Eina_Value *_test_testing_get_value_ptr(EINA_UNUSED Eo *obj, Test_Testing_Data *
 {
     return pd->stored_value;
 }
+
+/* Currently the Eolian declaration FUNC_BODY in the .eo.c file seems to be broken for
+ * generic value.
+ */
+/* Eina_Value _test_testing_get_value(EINA_UNUSED Eo *obj, Test_Testing_Data *pd)
+{
+    return *pd->stored_value;
+}*/
 
 void _test_testing_clear_value(EINA_UNUSED Eo *obj, Test_Testing_Data *pd)
 {
@@ -3209,6 +3227,11 @@ void _test_testing_out_value_ptr_own(EINA_UNUSED Eo *obj, Test_Testing_Data *pd,
 {
     *value = pd->stored_value;
     pd->stored_value = NULL;
+}
+
+void _test_testing_out_value(EINA_UNUSED Eo *obj, Test_Testing_Data *pd, Eina_Value *value)
+{
+    *value = *pd->stored_value;
 }
 
 #include "test_testing.eo.c"
