@@ -256,6 +256,8 @@ inline bool param_should_use_out_var(attributes::parameter_def const& param)
            || param_is_acceptable(param, "Eina_Iterator *", WANT_OWN, WANT_OUT)
            || param_is_acceptable(param, "const Eina_Iterator *", !WANT_OWN, WANT_OUT)
            || param_is_acceptable(param, "const Eina_Iterator *", WANT_OWN, WANT_OUT)
+           || param_is_acceptable(param, "Eina_Value", WANT_OWN, WANT_OUT)
+           || param_is_acceptable(param, "Eina_Value", !WANT_OWN, WANT_OUT)
       )
      return true;
 
@@ -292,6 +294,8 @@ inline bool param_should_use_in_var(attributes::parameter_def const& param)
         || param_is_acceptable(param, "Eina_Iterator *", WANT_OWN, !WANT_OUT)
         || param_is_acceptable(param, "const Eina_Iterator *", !WANT_OWN, !WANT_OUT)
         || param_is_acceptable(param, "const Eina_Iterator *", WANT_OWN, !WANT_OUT)
+        || param_is_acceptable(param, "Eina_Value", WANT_OWN, !WANT_OUT)
+        || param_is_acceptable(param, "Eina_Value", !WANT_OWN, !WANT_OUT)
        )
         return true;
 
@@ -482,6 +486,12 @@ struct native_convert_in_variable_generator
                << ");\n"
             ).generate(sink, std::make_tuple(in_variable_name(param.param_name), param.type), context);
        }
+     else if (param.type.c_type == "Eina_Value")
+       {
+          return as_generator(
+                "var " << string << " = new " << type << "(" << string << ");\n"
+                  ).generate(sink, std::make_tuple(in_variable_name(param.param_name), param.type, param.param_name), context);
+       }
       return true;
    }
 
@@ -557,6 +567,12 @@ struct convert_in_variable_generator
                   ).generate(sink, attributes::unused, context))
              return false;
         }
+     else if (param.type.c_type == "Eina_Value")
+       {
+          return as_generator(
+                "var " << string << " = " << string << ".GetNative();\n"
+                  ).generate(sink, std::make_tuple(in_variable_name(param.param_name), param.param_name), context);
+       }
       return true;
    }
 
@@ -619,6 +635,13 @@ struct convert_out_variable_generator
                "System.IntPtr " << string << " = System.IntPtr.Zero;\n"
              ).generate(sink, out_variable_name(param.param_name), context);
         }
+      else if (param_is_acceptable(param, "Eina_Value", WANT_OWN, WANT_OUT)
+               || param_is_acceptable(param, "Eina_Value", !WANT_OWN, WANT_OUT))
+        {
+           return as_generator(
+                 marshall_type << " " << string << ";\n"
+                   ).generate(sink, std::make_tuple(param.type, out_variable_name(param.param_name)), context);
+        }
       return true;
    }
 
@@ -678,6 +701,14 @@ struct native_convert_out_variable_generator
            return as_generator(
                type << " " << string << " = default(" << type << ");\n"
              ).generate(sink, std::make_tuple(param.type, out_variable_name(param.param_name), param.type), context);
+        }
+      else if (param_is_acceptable(param, "Eina_Value", WANT_OWN, WANT_OUT)
+               || param_is_acceptable(param, "Eina_Value", !WANT_OWN, WANT_OUT))
+        {
+           return as_generator(
+                 string << " = default(" << marshall_type << ");\n"
+                 << type << " " << string << " =  null;\n"
+                   ).generate(sink, std::make_tuple(param.param_name, param, param, out_variable_name(param.param_name)), context);
         }
       else if (param.direction == attributes::parameter_direction::out)
         {
@@ -776,6 +807,13 @@ struct convert_out_assign_generator
                << ", " << (complex->subtypes.front().has_own ? "true" : "false")
                << ");\n"
              ).generate(sink, std::make_tuple(escape_keyword(param.param_name), param.type, out_variable_name(param.param_name)), context);
+        }
+      else if (param_is_acceptable(param, "Eina_Value", WANT_OWN, WANT_OUT)
+               || param_is_acceptable(param, "Eina_Value", !WANT_OWN, WANT_OUT))
+        {
+           return as_generator(
+                 string << " = new " << type << "(" << string << ");\n"
+                   ).generate(sink, std::make_tuple(param.param_name, param.type, out_variable_name(param.param_name)), context);
         }
       return true;
    }
