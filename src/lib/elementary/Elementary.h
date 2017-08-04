@@ -275,6 +275,8 @@ EAPI extern Elm_Version *elm_version;
 # include <efl_ui_clock.eo.h>
 # include <efl_ui_image_factory.eo.h>
 # include <efl_ui_pagecontrol.eo.h>
+# include <efl_page_transition.eo.h>
+# include <efl_ui_pagescroller.eo.h>
 #endif
 
 /* include deprecated calls last of all */
