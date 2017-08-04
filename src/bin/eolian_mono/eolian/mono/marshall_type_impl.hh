@@ -83,6 +83,26 @@ struct marshall_type_visitor_generate
                 r.namespaces.clear();
                 return r;
               }}
+           , {"generic_value", true, [&]
+               {
+                regular_type_def r = regular;
+                r.namespaces.clear();
+                if (is_ptr)
+                    r.base_type = " eina.Value";
+                else
+                    r.base_type = " eina.Value_Native";
+                return r;
+               }}
+           , {"generic_value", false, [&]
+               {
+                regular_type_def r = regular;
+                r.namespaces.clear();
+                if (is_ptr)
+                    r.base_type = " eina.Value";
+                else
+                    r.base_type = " eina.Value_Native";
+                return r;
+               }}
            // , {"generic_value", true, [&]
            //    { return regular_type_def{" int", regular.base_qualifier, {}};
            //    }}

@@ -71,10 +71,16 @@ struct marshall_annotation_visitor_generate
                 return "";
           }},
           {"generic_value", true, [&] {
-                return " [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef=typeof(eina.ValueMarshalerOwn))]";
+                if (is_ptr)
+                    return " [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef=typeof(eina.ValueMarshalerOwn))]";
+                else
+                    return "";
           }},
           {"generic_value", false, [&] {
-                return " [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef=typeof(eina.ValueMarshaler))]";
+                if (is_ptr)
+                    return " [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef=typeof(eina.ValueMarshaler))]";
+                else
+                    return "";
           }},
         };
       match const return_match_table[] =
@@ -94,10 +100,16 @@ struct marshall_annotation_visitor_generate
                 return "";
           }},
           {"generic_value", true, [&] {
-                return " [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef=typeof(eina.ValueMarshalerOwn))]";
+                if (is_ptr)
+                    return " [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef=typeof(eina.ValueMarshalerOwn))]";
+                else
+                    return "";
           }},
           {"generic_value", false, [&] {
-                return " [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef=typeof(eina.ValueMarshaler))]";
+                if (is_ptr)
+                    return " [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef=typeof(eina.ValueMarshaler))]";
+                else
+                    return "";
           }},
         };
 
