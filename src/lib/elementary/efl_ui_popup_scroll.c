@@ -55,7 +55,36 @@ _efl_ui_popup_scroll_efl_container_content_set(Eo *obj, Efl_Ui_Popup_Scroll_Data
    evas_object_size_hint_align_set(pd->content, EVAS_HINT_FILL, EVAS_HINT_FILL);
 
    efl_content_set(efl_part(pd->scroller, "default"), pd->content);
+   pd->message = NULL;
+
    return EINA_TRUE;
+}
+
+Efl_Gfx *
+_efl_ui_popup_scroll_efl_container_content_get(Eo *obj, Efl_Ui_Popup_Scroll_Data *pd)
+{
+   return pd->content;
+}
+
+EOLIAN static void
+_efl_ui_popup_scroll_efl_text_text_set(Eo *obj, Efl_Ui_Popup_Scroll_Data *pd, const char *text)
+{
+   if (!pd->message)
+     {
+        pd->message = elm_label_add(obj);
+        elm_label_line_wrap_set(pd->message, ELM_WRAP_MIXED);
+        efl_content_set(efl_part(pd->scroller, "default"), pd->message);
+        pd->content = NULL;
+     }
+   elm_object_text_set(pd->message, text);
+}
+
+EOLIAN static const char *
+_efl_ui_popup_scroll_efl_text_text_get(Eo *obj, Efl_Ui_Popup_Scroll_Data *pd)
+{
+   if (pd->message)
+     return elm_object_text_get(pd->message);
+   return NULL;
 }
 
 EOLIAN static void
@@ -69,7 +98,6 @@ _efl_ui_popup_scroll_efl_canvas_group_group_add(Eo *obj, Efl_Ui_Popup_Scroll_Dat
    pd->scroller = elm_scroller_add(obj);
    elm_object_style_set(pd->scroller, "popup/no_inset_shadow");
    elm_scroller_policy_set(pd->scroller, ELM_SCROLLER_POLICY_OFF, ELM_SCROLLER_POLICY_OFF);
-   evas_object_show(pd->scroller);
 
    efl_content_set(efl_super(obj, MY_CLASS), pd->scroller);
 }

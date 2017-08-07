@@ -9,6 +9,7 @@ struct _Efl_Ui_Popup_Scroll_Data
 {
    Evas_Object *scroller;
    Evas_Object *content;
+   Evas_Object *message;
 };
 
 #endif

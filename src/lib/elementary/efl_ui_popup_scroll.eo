@@ -1,12 +1,13 @@
 import elm_general;
 
-class Efl.Ui.Popup.Scroll(Efl.Ui.Popup)
+class Efl.Ui.Popup.Scroll(Efl.Ui.Popup, Efl.Text)
 {
    implements {
       class.constructor;
       Efl.Object.constructor;
       Elm.Widget.theme_apply;
-      Efl.Container.content { set; }
+      Efl.Container.content { set; get; }
       Elm.Layout.sizing_eval;
+      Efl.Text.text { set; get; }
    }
 }
