@@ -3,6 +3,16 @@ import elm_general;
 class Efl.Ui.Popup(Elm.Layout, Elm.Interface.Atspi_Widget_Action)
 {
    legacy_prefix: elm_popup;
+   methods {
+       @property parent_window @protected {
+           get {
+              [[Get the parent window of Popup.]]
+           }
+           values {
+               window: Efl.Canvas.Object;
+           }
+       }
+   }
    implements {
       class.constructor;
       Efl.Object.constructor;
