@@ -4,6 +4,7 @@
 
 #define ELM_WIDGET_PROTECTED
 #define ELM_WIDGET_ITEM_PROTECTED
+#define EFL_UI_POPUP_PROTECTED
 
 #include <Elementary.h>
 
@@ -80,6 +81,12 @@ _efl_ui_popup_elm_widget_widget_parent_set(Eo *obj, Efl_Ui_Popup_Data *pd, Evas_
 
    efl_event_callback_add(pd->win_parent, EFL_GFX_EVENT_RESIZE, _parent_geom_cb, pd->event_bg);
    efl_event_callback_add(pd->win_parent, EFL_GFX_EVENT_MOVE, _parent_geom_cb, pd->event_bg);
+}
+
+EOLIAN static Efl_Canvas_Object *
+_efl_ui_popup_parent_window_get(Eo *obj, Efl_Ui_Popup_Data *pd)
+{
+   return pd->win_parent;
 }
 
 EOLIAN static void
