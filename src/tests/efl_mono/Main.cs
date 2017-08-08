@@ -33,21 +33,60 @@ class TestMain
         foreach(var testCase in cases)
         {
             var localTestCases = testCase.GetMethods(BindingFlags.Static | BindingFlags.Public);
+
+            var setUp = Array.Find(localTestCases, m => String.Equals(m.Name, "SetUp", StringComparison.Ordinal));
+            var tearDown = Array.Find(localTestCases, m => String.Equals(m.Name, "TearDown", StringComparison.Ordinal));
+
             foreach(var localTestCase in localTestCases)
             {
+                if (localTestCase == setUp || localTestCase == tearDown)
+                    continue;
 
                 Console.WriteLine("[ RUN         ] " + testCase.Name + "." + localTestCase.Name);
                 bool caseResult = true;
-                try
+
+                if (setUp != null)
                 {
-                    localTestCase.Invoke(null, null);
+                    try
+                    {
+                        setUp.Invoke(null, null);
+                    }
+                    catch (Exception e)
+                    {
+                        pass = false;
+                        caseResult = false;
+                        Console.WriteLine("[ ERROR       ] SetUp fail: " + e.InnerException.ToString());
+                    }
                 }
-                catch (Exception e)
+
+                if (caseResult)
                 {
-                    pass = false;
-                    caseResult = false;
-                    Console.WriteLine("[ ERROR       ] " + e.InnerException.ToString());
+                    try
+                    {
+                        localTestCase.Invoke(null, null);
+                    }
+                    catch (Exception e)
+                    {
+                        pass = false;
+                        caseResult = false;
+                        Console.WriteLine("[ ERROR       ] " + e.InnerException.ToString());
+                    }
                 }
+
+                if (caseResult && tearDown != null)
+                {
+                    try
+                    {
+                        tearDown.Invoke(null, null);
+                    }
+                    catch (Exception e)
+                    {
+                        pass = false;
+                        caseResult = false;
+                        Console.WriteLine("[ ERROR       ] TearDown failed: " + e.InnerException.ToString());
+                    }
+                }
+
                 Console.WriteLine("[        " + (caseResult ? "PASS" : "FAIL") + " ] " + testCase.Name + "." + localTestCase.Name);
             }
         }
