@@ -77,6 +77,14 @@ static internal class UnsafeNativeMethods {
 
     [DllImport("eflcustomexportsmono")]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
+    internal static extern bool eina_value_get_wrapper(IntPtr handle, out Value_List output);
+
+    [DllImport("eflcustomexportsmono")]
+    [return: MarshalAsAttribute(UnmanagedType.U1)]
+    internal static extern bool eina_value_get_wrapper(IntPtr handle, out Value_Array output);
+
+    [DllImport("eflcustomexportsmono")]
+    [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_get_wrapper(IntPtr handle, out int output);
 
     [DllImport("eflcustomexportsmono")]
@@ -151,7 +159,7 @@ static internal class UnsafeNativeMethods {
 
     [DllImport("eina")]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
-    internal static extern bool eina_value_optional_pset(IntPtr handle, IntPtr subtype, ref IntPtr value);
+    internal static extern bool eina_value_optional_pset(IntPtr handle, IntPtr subtype, IntPtr value);
 
     [DllImport("eina")]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
@@ -318,6 +326,19 @@ static class ValueTypeMethods {
     public static bool IsOptional(this ValueType val)
     {
         return val == ValueType.Optional;
+    }
+
+    /// <summary>Returns the Marshal.SizeOf for the given ValueType native structure.</summary>
+    public static int MarshalSizeOf(this ValueType val)
+    {
+        switch (val) {
+            case ValueType.Array:
+                return Marshal.SizeOf(typeof(EinaNative.Value_Array));
+            case ValueType.List:
+                return Marshal.SizeOf(typeof(EinaNative.Value_List));
+            default:
+                return 0;
+        }
     }
 }
 static class ValueTypeBridge
@@ -692,21 +713,33 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
         OptionalSanityChecks();
         ValueType subtype = value.GetValueType();
 
-        IntPtr ptr_val = IntPtr.Zero;
+        IntPtr ptr_val = Marshal.AllocHGlobal(subtype.MarshalSizeOf());
         IntPtr native_type = ValueTypeBridge.GetNative(subtype);
 
-        switch (subtype) {
-            case ValueType.Array:
-            case ValueType.List:
+        try {
+            switch (subtype) {
                 // PSet on Container types require an Eina_Value_<Container>, which is the structure
                 // that contains subtype, etc.
-                if (!eina_value_get_wrapper(value.Handle, out ptr_val))
-                    return false;
-                break;
-            default:
-                throw new InvalidValueTypeException("Only containers can be passed as raw eina.Values");
+                case ValueType.Array:
+                    EinaNative.Value_Array value_array;
+                    if (!eina_value_get_wrapper(value.Handle, out value_array))
+                        return false;
+                    Marshal.StructureToPtr(value_array, ptr_val, false);
+                    break;
+                case ValueType.List:
+                    EinaNative.Value_List value_list;
+                    if (!eina_value_get_wrapper(value.Handle, out value_list))
+                        return false;
+                    Marshal.StructureToPtr(value_list, ptr_val, false);
+                    break;
+                default:
+                    throw new InvalidValueTypeException("Only containers can be passed as raw eina.Values");
+            }
+
+            return eina_value_optional_pset(this.Handle, native_type, ptr_val);
+        } finally {
+            Marshal.FreeHGlobal(ptr_val);
         }
-        return eina_value_optional_pset(this.Handle, native_type, ref ptr_val);
     }
 
     /// <summary>Gets the currently stored value as an int.</summary>
