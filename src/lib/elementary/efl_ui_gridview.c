@@ -1,10 +1,12 @@
 #include "efl_ui_gridview_private.h"
+//#include "efl_ui_gridview.eo.h"
 
 #include <assert.h>
 
+#define EFL_UI_GRIDVIEW_PROTECTED
+
 #define MY_CLASS EFL_UI_GRIDVIEW_CLASS
 #define MY_CLASS_NAME "Efl.Ui.Gridview"
-
 #define MY_PAN_CLASS EFL_UI_GRIDVIEW_PAN_CLASS
 
 #define SIG_CHILD_ADDED "child,added"
@@ -12,13 +14,13 @@
 #define SELECTED_PROP "selected"
 #define AVERAGE_SIZE_INIT 30
 
+
 static const Evas_Smart_Cb_Description _smart_callbacks[] = {
    {SIG_CHILD_ADDED, ""},
    {SIG_CHILD_REMOVED, ""},
    {NULL, NULL}
 };
 
-static void _efl_ui_gridview_custom_layout(Efl_Ui_Gridview *);
 static void _efl_ui_gridview_item_select_set(Efl_Ui_Gridview_Item *, Eina_Bool);
 static Eina_Bool _efl_ui_gridview_item_select_clear(Eo *);
 static Efl_Ui_Gridview_Item *_child_new(Efl_Ui_Gridview_Data *, Efl_Model *);
@@ -27,6 +29,7 @@ static void _item_calc(Efl_Ui_Gridview_Data *, Efl_Ui_Gridview_Item *);
 static void _layout_realize(Efl_Ui_Gridview_Data *, Efl_Ui_Gridview_Item *);
 static void _layout_unrealize(Efl_Ui_Gridview_Data *, Efl_Ui_Gridview_Item *);
 static Eina_Bool _load_items(Eo *, Efl_Ui_Gridview_Data *, Eina_Bool);
+static Eina_Bool _view_update_internal(Eo *);
 
 static Eina_Bool _key_action_move(Evas_Object *obj, const char *params);
 static Eina_Bool _key_action_select(Evas_Object *obj, const char *params);
@@ -40,10 +43,10 @@ static const Elm_Action key_actions[] = {
 };
 
 // Debug Macros : Should be removed before master merge
-#define GVDBG(...) DBG("GridView:: "__VA_ARGS__)
-#define GVNAME(_OBJ) efl_class_name_get(efl_class_get(_OBJ))
+#include "sh_log.h"
 // End
 
+//FIXME : Need to change new direction enum interface. orient should means degree.
 static inline Eina_Bool
 _horiz(Efl_Orient dir)
 {
@@ -51,61 +54,75 @@ _horiz(Efl_Orient dir)
 }
 
 EOLIAN static void
-_efl_ui_gridview_pan_elm_pan_pos_set(Eo *obj EINA_UNUSED, Efl_Ui_Gridview_Pan_Data *psd, Evas_Coord x, Evas_Coord y)
+_efl_ui_gridview_pan_elm_pan_pos_set(Eo *obj,
+                                     Efl_Ui_Gridview_Pan_Data * ppd,
+                                     Evas_Coord x,
+                                     Evas_Coord y)
 {
+   Efl_Ui_Gridview_Data *pd = ppd->wpd;
+  /*
    Evas_Coord ox, oy, ow, oh, cw;
-   Efl_Ui_Gridview_Data *pd = psd->wpd;
    Efl_Ui_Gridview_Item *litem;
    Eina_Array_Iterator iterator;
    unsigned int i;
-
+*/
    EINA_SAFETY_ON_NULL_RETURN(pd);
+
    if (((x == pd->pan.x) && (y == pd->pan.y))) return;
 
-   efl_gfx_geometry_get(pd->obj, &ox, &oy, &ow, &oh);
    if (_horiz(pd->orient))
      {
         pd->pan.diff += x - pd->pan.x;
-        cw = ow / 4;
      }
    else
      {
         pd->pan.diff += y - pd->pan.y;
-        cw = oh / 4;
      }
 
    pd->pan.x = x;
    pd->pan.y = y;
 
+   efl_canvas_group_change(obj);
+/*
    if (abs(pd->pan.diff) > cw)
      {
         pd->pan.diff = 0;
+        pd->need_reload = EINA_TRUE;
         _load_items(obj, pd, EINA_FALSE);
-//        _efl_ui_gridview_custom_layout(pd->obj);
+        pd->need_reload = EINA_FALSE;
+        //efl_ui_gridview_view_update(pd->obj, EINA_FALSE);
         return;
      }
 
+
    EINA_ARRAY_ITER_NEXT(pd->items, i, litem, iterator)
-      efl_gfx_position_set(litem->layout, (litem->x + 0 - pd->pan.x), (litem->y + 0 - pd->pan.y));
+      efl_gfx_position_set(litem->layout, (litem->x + 0 - pd->pan.x), (litem->y + 0 - pd->pan.y));8
+*/
 }
 
 EOLIAN static void
-_efl_ui_gridview_pan_elm_pan_pos_get(Eo *obj EINA_UNUSED, Efl_Ui_Gridview_Pan_Data *psd, Evas_Coord *x, Evas_Coord *y)
+_efl_ui_gridview_pan_elm_pan_pos_get(Eo *obj EINA_UNUSED,
+                                     Efl_Ui_Gridview_Pan_Data *ppd,
+                                     Evas_Coord *x,
+                                     Evas_Coord *y)
 {
-   if (x) *x = psd->wpd->pan.x;
-   if (y) *y = psd->wpd->pan.y;
+   if (x) *x = ppd->wpd->pan.x;
+   if (y) *y = ppd->wpd->pan.y;
 }
 
 EOLIAN static void
-_efl_ui_gridview_pan_elm_pan_pos_max_get(Eo *obj EINA_UNUSED, Efl_Ui_Gridview_Pan_Data *psd, Evas_Coord *x, Evas_Coord *y)
+_efl_ui_gridview_pan_elm_pan_pos_max_get(Eo *obj EINA_UNUSED,
+                                         Efl_Ui_Gridview_Pan_Data *ppd,
+                                         Evas_Coord *x,
+                                         Evas_Coord *y)
 {
    Evas_Coord ow, oh;
 
    elm_interface_scrollable_content_viewport_geometry_get
-      (psd->wobj, NULL, NULL, &ow, &oh);
-   ow = psd->wpd->minw - ow;
+      (ppd->wobj, NULL, NULL, &ow, &oh);
+   ow = ppd->wpd->minw - ow;
    if (ow < 0) ow = 0;
-   oh = psd->wpd->minh - oh;
+   oh = ppd->wpd->minh - oh;
    if (oh < 0) oh = 0;
 
    if (x) *x = ow;
@@ -113,16 +130,22 @@ _efl_ui_gridview_pan_elm_pan_pos_max_get(Eo *obj EINA_UNUSED, Efl_Ui_Gridview_Pa
 }
 
 EOLIAN static void
-_efl_ui_gridview_pan_elm_pan_pos_min_get(Eo *obj EINA_UNUSED, Efl_Ui_Gridview_Pan_Data *psd EINA_UNUSED, Evas_Coord *x, Evas_Coord *y)
+_efl_ui_gridview_pan_elm_pan_pos_min_get(Eo *obj EINA_UNUSED,
+                                         Efl_Ui_Gridview_Pan_Data * ppd EINA_UNUSED,
+                                         Evas_Coord * x,
+                                         Evas_Coord * y)
 {
    if (x) *x = 0;
    if (y) *y = 0;
 }
 
 EOLIAN static void
-_efl_ui_gridview_pan_elm_pan_content_size_get(Eo *obj EINA_UNUSED, Efl_Ui_Gridview_Pan_Data *psd, Evas_Coord *w, Evas_Coord *h)
+_efl_ui_gridview_pan_elm_pan_content_size_get(Eo *obj EINA_UNUSED,
+                                              Efl_Ui_Gridview_Pan_Data *ppd,
+                                              Evas_Coord *w,
+                                              Evas_Coord *h)
 {
-   Efl_Ui_Gridview_Data *pd = psd->wpd;
+   Efl_Ui_Gridview_Data *pd = ppd->wpd;
    EINA_SAFETY_ON_NULL_RETURN(pd);
 
    if (w) *w = pd->minw;
@@ -130,16 +153,87 @@ _efl_ui_gridview_pan_elm_pan_content_size_get(Eo *obj EINA_UNUSED, Efl_Ui_Gridvi
 }
 
 EOLIAN static void
-_efl_ui_gridview_pan_efl_object_destructor(Eo *obj, Efl_Ui_Gridview_Pan_Data *psd)
+_efl_ui_gridview_pan_efl_object_destructor(Eo *obj,
+                                           Efl_Ui_Gridview_Pan_Data *ppd)
 {
-   efl_data_unref(psd->wobj, psd->wpd);
+   efl_data_unref(ppd->wobj, ppd->wpd);
    efl_destructor(efl_super(obj, MY_PAN_CLASS));
+}
+
+EOLIAN static void
+_efl_ui_gridview_pan_efl_gfx_size_set(Eo *obj,
+                                      Efl_Ui_Gridview_Pan_Data *ppd EINA_UNUSED,
+                                      Evas_Coord w,
+                                      Evas_Coord h)
+{
+  if (_evas_object_intercept_call(obj, EVAS_OBJECT_INTERCEPT_CB_RESIZE, 0, w, h))
+     return;
+
+   efl_gfx_size_set(efl_super(obj, MY_PAN_CLASS), w, h);
+}
+EOLIAN static void
+_efl_ui_gridview_pan_efl_gfx_position_set(Eo *obj,
+                                          Efl_Ui_Gridview_Pan_Data *ppd EINA_UNUSED,
+                                          Evas_Coord x,
+                                          Evas_Coord y)
+{
+   if (_evas_object_intercept_call(obj, EVAS_OBJECT_INTERCEPT_CB_MOVE, 0, x, y))
+     return;
+
+   efl_gfx_position_set(efl_super(obj, MY_PAN_CLASS), x, y);
+}
+
+EOLIAN static void
+_efl_ui_gridview_pan_efl_canvas_group_group_calculate(Eo *obj,
+                                                      Efl_Ui_Gridview_Pan_Data *ppd)
+{
+   Efl_Ui_Gridview_Data *pd = ppd->wpd;
+   Eina_Bool changed = EINA_FALSE;
+   Eina_Bool skipped = EINA_FALSE;
+   Evas_Coord ow, oh, cw;
+   Efl_Ui_Gridview_Item *litem;
+   Eina_Array_Iterator iterator;
+   unsigned int i;
+
+   efl_gfx_size_get(pd->obj, &ow, &oh);
+
+   if (_horiz(pd->orient)) cw = ow / 4;
+   else cw = oh / 4;
+
+   if (abs(pd->pan.diff) > cw)
+     {
+        pd->pan.diff = 0;
+        pd->need_reload = EINA_TRUE;
+        skipped = EINA_TRUE;
+     }
+
+   SHINF("Group Need to Re-Load Items");
+   if (pd->need_reload)
+     {
+        pd->on_load = _load_items(pd->obj, pd, pd->need_recalc);
+        pd->need_reload = EINA_FALSE;
+        pd->need_recalc = EINA_FALSE;
+     }
+   if (!pd->on_load && pd->need_update)
+     {
+        SHDBG("Group Need to be Update");
+        changed = _view_update_internal(pd->obj);
+     }
+
+     if (skipped || (ow < 1 || oh < 1)) goto super;
+
+     EINA_ARRAY_ITER_NEXT(pd->items, i, litem, iterator)
+       efl_gfx_position_set(litem->layout, (litem->x + 0 - pd->pan.x), (litem->y + 0 - pd->pan.y));
+
+super :
+   efl_canvas_group_calculate(efl_super(obj, MY_PAN_CLASS));
 }
 
 #include "efl_ui_gridview_pan.eo.c"
 
 static Eina_Bool
-_efl_model_properties_has(Efl_Model *model, Eina_Stringshare *propfind)
+_efl_model_properties_has(Efl_Model *model,
+                          Eina_Stringshare *propfind)
 {
    const Eina_Array *properties;
    Eina_Array_Iterator iter_prop;
@@ -165,20 +259,22 @@ _efl_model_properties_has(Efl_Model *model, Eina_Stringshare *propfind)
 }
 
 static void
-_child_added_cb(void *data, const Efl_Event *event EINA_UNUSED)
+_child_added_cb(void *data,
+                const Efl_Event *event EINA_UNUSED)
 {
    //Efl_Model_Children_Event* evt = event->info;
    Efl_Ui_Gridview *obj = data;
    EFL_UI_GRIDVIEW_DATA_GET_OR_RETURN(obj, pd);
    pd->item_count++;
 
-//FIXME: the new data is visible? is yes reload sliced children and test if have changes
-//   _child_new(pd, evt->child);
-   efl_canvas_group_change(pd->obj);
+   //FIXME: the new data is visible? is yes reload sliced children and test if have changes
+   //_child_new(pd, evt->child);
+   efl_canvas_group_change(pd->pan.obj);
 }
 
 static void
-_child_removed_cb(void *data, const Efl_Event *event)
+_child_removed_cb(void *data,
+                  const Efl_Event *event)
 {
    Efl_Model_Children_Event* evt = event->info;
    Efl_Ui_Gridview *obj = data;
@@ -195,14 +291,15 @@ _child_removed_cb(void *data, const Efl_Event *event)
           {
              _child_remove(pd, item);
              //FIXME pd->items = eina_list_remove_list(pd->items, li);
-             efl_canvas_group_change(pd->obj);
+             efl_canvas_group_change(pd->pan.obj);
              break;
           }
      }
 }
 
 static void
-_on_item_focused(void *data, const Efl_Event *event EINA_UNUSED)
+_on_item_focused(void *data,
+                 const Efl_Event *event EINA_UNUSED)
 {
    Efl_Ui_Gridview_Item *item = data;
    EFL_UI_GRIDVIEW_DATA_GET_OR_RETURN(item->obj, pd);
@@ -214,7 +311,8 @@ _on_item_focused(void *data, const Efl_Event *event EINA_UNUSED)
 }
 
 static void
-_on_item_unfocused(void *data, const Efl_Event *event EINA_UNUSED)
+_on_item_unfocused(void *data,
+                   const Efl_Event *event EINA_UNUSED)
 {
    Efl_Ui_Gridview_Item *item = data;
    EFL_UI_GRIDVIEW_DATA_GET_OR_RETURN(item->obj, pd);
@@ -223,7 +321,8 @@ _on_item_unfocused(void *data, const Efl_Event *event EINA_UNUSED)
 }
 
 static void
-_long_press_cb(void *data, const Efl_Event *event)
+_long_press_cb(void *data,
+               const Efl_Event *event)
 {
    Efl_Ui_Gridview_Item *item = data;
 
@@ -236,7 +335,10 @@ _long_press_cb(void *data, const Efl_Event *event)
 }
 
 static void
-_on_item_mouse_down(void *data, Evas *evas EINA_UNUSED, Evas_Object *o EINA_UNUSED, void *event_info)
+_on_item_mouse_down(void *data,
+                    Evas *evas EINA_UNUSED,
+                    Evas_Object *o EINA_UNUSED,
+                    void *event_info)
 {
    Evas_Event_Mouse_Down *ev = event_info;
    Efl_Ui_Gridview_Item *item = data;
@@ -260,7 +362,10 @@ _on_item_mouse_down(void *data, Evas *evas EINA_UNUSED, Evas_Object *o EINA_UNUS
 }
 
 static void
-_on_item_mouse_up(void *data, Evas *evas EINA_UNUSED, Evas_Object *o EINA_UNUSED, void *event_info)
+_on_item_mouse_up(void *data,
+                  Evas *evas EINA_UNUSED,
+                  Evas_Object *o EINA_UNUSED,
+                  void *event_info)
 {
    Evas_Event_Mouse_Down *ev = event_info;
    Efl_Ui_Gridview_Item *item = data;
@@ -288,7 +393,8 @@ _on_item_mouse_up(void *data, Evas *evas EINA_UNUSED, Evas_Object *o EINA_UNUSED
 }
 
 static void
-_item_selected_then(void * data, Efl_Event const* event)
+_item_selected_then(void *data,
+                    Efl_Event const *event)
 {
    Efl_Ui_Gridview_Item *item = data;
    EINA_SAFETY_ON_NULL_RETURN(item);
@@ -316,25 +422,31 @@ _item_selected_then(void * data, Efl_Event const* event)
 }
 
 static void
-_count_then(void * data, Efl_Event const* event)
+_count_then(void *data,
+            Efl_Event const *event)
 {
    Efl_Ui_Gridview_Data *pd = data;
    EINA_SAFETY_ON_NULL_RETURN(pd);
    int *count = ((Efl_Future_Event_Success*)event->info)->value;
 
    pd->item_count = *count;
-   _load_items(pd->obj, pd, EINA_TRUE);
+   //_load_items(pd->obj, pd, EINA_TRUE);
+   pd->need_reload = EINA_TRUE;
+   pd->need_recalc = EINA_TRUE;
+   efl_canvas_group_change(pd->pan.obj);
 }
 
 static void
-_count_error(void * data, Efl_Event const* event EINA_UNUSED)
+_count_error(void *data,
+             Efl_Event const *event EINA_UNUSED)
 {
    Efl_Ui_Gridview_Data *pd = data;
    EINA_SAFETY_ON_NULL_RETURN(pd);
 }
 
 static void
-_item_property_then(void * data, Efl_Event const* event)
+_item_property_then(void *data,
+                    Efl_Event const *event)
 {
    Efl_Ui_Gridview_Item *item = data;
    EINA_SAFETY_ON_NULL_RETURN(item);
@@ -350,7 +462,8 @@ _item_property_then(void * data, Efl_Event const* event)
 }
 
 static void
-_item_property_error(void * data, Efl_Event const* event EINA_UNUSED)
+_item_property_error(void *data,
+                     Efl_Event const *event EINA_UNUSED)
 {
    Efl_Ui_Gridview_Item *item = data;
    EINA_SAFETY_ON_NULL_RETURN(item);
@@ -359,7 +472,8 @@ _item_property_error(void * data, Efl_Event const* event EINA_UNUSED)
 }
 
 static void
-_efl_model_properties_changed_cb(void *data, const Efl_Event *event)
+_efl_model_properties_changed_cb(void *data,
+                                 const Efl_Event *event)
 {
    Efl_Ui_Gridview_Item *item = data;
    EINA_SAFETY_ON_NULL_RETURN(item);
@@ -382,7 +496,8 @@ _efl_model_properties_changed_cb(void *data, const Efl_Event *event)
 }
 
 static void
-_child_remove(Efl_Ui_Gridview_Data *pd, Efl_Ui_Gridview_Item *item)
+_child_remove(Efl_Ui_Gridview_Data *pd,
+              Efl_Ui_Gridview_Item *item)
 {
    EINA_SAFETY_ON_NULL_RETURN(item);
    EINA_SAFETY_ON_NULL_RETURN(item->model);
@@ -394,7 +509,8 @@ _child_remove(Efl_Ui_Gridview_Data *pd, Efl_Ui_Gridview_Item *item)
 }
 
 static void
-_layout_realize(Efl_Ui_Gridview_Data *pd, Efl_Ui_Gridview_Item *item)
+_layout_realize(Efl_Ui_Gridview_Data *pd,
+                Efl_Ui_Gridview_Item *item)
 {
    Efl_Ui_Gridview_Item_Event evt;
 
@@ -423,7 +539,8 @@ _layout_realize(Efl_Ui_Gridview_Data *pd, Efl_Ui_Gridview_Item *item)
 }
 
 static void
-_layout_unrealize(Efl_Ui_Gridview_Data *pd, Efl_Ui_Gridview_Item *item)
+_layout_unrealize(Efl_Ui_Gridview_Data *pd,
+                  Efl_Ui_Gridview_Item *item)
 {
    Efl_Ui_Gridview_Item_Event evt;
    EINA_SAFETY_ON_NULL_RETURN(item);
@@ -464,7 +581,8 @@ _layout_unrealize(Efl_Ui_Gridview_Data *pd, Efl_Ui_Gridview_Item *item)
 }
 
 Efl_Ui_Gridview_Item *
-_child_new(Efl_Ui_Gridview_Data *pd, Efl_Model *model)
+_child_new(Efl_Ui_Gridview_Data *pd,
+           Efl_Model *model)
 {
    EINA_SAFETY_ON_NULL_RETURN_VAL(pd, NULL);
 
@@ -494,7 +612,8 @@ _child_new(Efl_Ui_Gridview_Data *pd, Efl_Model *model)
 }
 
 static void
-_children_then(void * data, Efl_Event const* event)
+_children_then(void *data,
+               Efl_Event const *event)
 {
    Efl_Ui_Gridview_Slice *sd = data;
    Efl_Ui_Gridview_Data *pd = sd->pd;
@@ -516,7 +635,7 @@ _children_then(void * data, Efl_Event const* event)
    efl_gfx_geometry_get(pd->obj, NULL, NULL, &w, &h);
    //elm_interface_scrollable_content_viewport_geometry_get(obj, NULL, NULL, &cvw, &cvh);
 
-   GVDBG("children then [%p][%d] -- geo[%d,%d]", pd->items, count, w, h);
+   SHDBG("children then [%p][%d] -- geo[%d,%d]", pd->items, count, w, h);
 
    if (sd->slicestart < pd->realized.start)
      {
@@ -582,7 +701,7 @@ _children_then(void * data, Efl_Event const* event)
                   if (line + item->minh > h)
                     {
                        pd->realized.w -= linemax;
-                       //GVDBG("realw[%d] --- line[%d] linemax[%d], count[%d]", pd->realized.w, line, linemax, count);
+                       //SHINF("realw[%d] --- line[%d] linemax[%d], count[%d]", pd->realized.w, line, linemax, count);
                     }
                }
              else
@@ -590,11 +709,11 @@ _children_then(void * data, Efl_Event const* event)
                   if (line + item->minw > w)
                     {
                        pd->realized.h -= linemax;
-                       //GVDBG("realh[%d] --- line[%d] linemax[%d], count[%d]", pd->realized.h, line, linemax, count);
+                       //SHINF("realh[%d] --- line[%d] linemax[%d], count[%d]", pd->realized.h, line, linemax, count);
                     }
                }
 
-             GVDBG("IDX[%d]-REAL[%d]:: Realized [%d][%d]", idx, item->index, pd->realized.w, pd->realized.h);
+             SHINF("IDX[%d]-REAL[%d]:: Realized [%d][%d]", idx, item->index, pd->realized.w, pd->realized.h);
 
              _layout_realize(pd, item);
           }
@@ -602,7 +721,7 @@ _children_then(void * data, Efl_Event const* event)
           {
              item = _child_new(pd, child_model);
              eina_array_push(pd->items, item);
-              GVDBG("IDX[%d]-item new [%d, %d]", idx, pd->realized.w, pd->realized.h);
+              SHINF("IDX[%d]-item new [%d, %d]", idx, pd->realized.w, pd->realized.h);
 
           }
 
@@ -616,7 +735,7 @@ _children_then(void * data, Efl_Event const* event)
                        line = item->minh;
                        linemax = item->minw;
                        count++;
-                       GVDBG("realw[%d] --- line[%d] linemax[%d], count[%d]", pd->realized.w, line, linemax, count);
+                       SHINF("realw[%d] --- line[%d] linemax[%d], count[%d]", pd->realized.w, line, linemax, count);
                     }
                   else
                     {
@@ -634,7 +753,7 @@ _children_then(void * data, Efl_Event const* event)
                        line = item->minw;
                        linemax = item->minh;
                        count++;
-                       GVDBG("realh[%d] --- line[%d] linemax[%d], count[%d]", pd->realized.h, line, linemax, count);
+                       SHINF("realh[%d] --- line[%d] linemax[%d], count[%d]", pd->realized.h, line, linemax, count);
                     }
                   else
                     {
@@ -660,11 +779,15 @@ _children_then(void * data, Efl_Event const* event)
 
    free(sd);
 
-   efl_canvas_group_change(pd->obj);
+   pd->on_load = EINA_FALSE;
+   //pd->view_update = EINA_TRUE;
+   efl_ui_gridview_view_update(pd->obj, EINA_FALSE);
+   efl_canvas_group_change(pd->pan.obj);
 }
 
 static void
-_efl_ui_gridview_children_free(Eo *obj EINA_UNUSED, Efl_Ui_Gridview_Data *pd)
+_efl_ui_gridview_children_free(Eo *obj EINA_UNUSED,
+                               Efl_Ui_Gridview_Data *pd)
 {
    Eina_Array_Iterator iterator;
    Efl_Ui_Gridview_Item *item;
@@ -694,7 +817,8 @@ _children_error(void * data EINA_UNUSED, Efl_Event const* event EINA_UNUSED)
 }
 
 static void
-_show_region_hook(void *data EINA_UNUSED, Evas_Object *obj)
+_show_region_hook(void *data EINA_UNUSED,
+                  Evas_Object *obj)
 {
    Evas_Coord x, y, w, h;
 
@@ -704,7 +828,9 @@ _show_region_hook(void *data EINA_UNUSED, Evas_Object *obj)
 }
 
 EOLIAN static void
-_efl_ui_gridview_select_mode_set(Eo *obj EINA_UNUSED, Efl_Ui_Gridview_Data *pd, Elm_Object_Select_Mode mode)
+_efl_ui_gridview_select_mode_set(Eo *obj EINA_UNUSED,
+                                 Efl_Ui_Gridview_Data *pd,
+                                 Elm_Object_Select_Mode mode)
 {
    Eina_Array_Iterator iterator;
    Efl_Ui_Gridview_Item *item;
@@ -738,52 +864,65 @@ _efl_ui_gridview_select_mode_set(Eo *obj EINA_UNUSED, Efl_Ui_Gridview_Data *pd, 
 }
 
 EOLIAN static Elm_Object_Select_Mode
-_efl_ui_gridview_select_mode_get(Eo *obj EINA_UNUSED, Efl_Ui_Gridview_Data *pd)
+_efl_ui_gridview_select_mode_get(Eo *obj EINA_UNUSED,
+                                 Efl_Ui_Gridview_Data *pd)
 {
    return pd->select_mode;
 }
 
 EOLIAN static void
-_efl_ui_gridview_default_style_set(Eo *obj EINA_UNUSED, Efl_Ui_Gridview_Data *pd, Eina_Stringshare *style)
+_efl_ui_gridview_default_style_set(Eo *obj EINA_UNUSED,
+                                   Efl_Ui_Gridview_Data *pd,
+                                   Eina_Stringshare *style)
 {
    eina_stringshare_replace(&pd->style, style);
 }
 
 EOLIAN static Eina_Stringshare *
-_efl_ui_gridview_default_style_get(Eo *obj EINA_UNUSED, Efl_Ui_Gridview_Data *pd)
+_efl_ui_gridview_default_style_get(Eo *obj EINA_UNUSED,
+                                   Efl_Ui_Gridview_Data *pd)
 {
    return pd->style;
 }
 
 //FIXME update layout
 EOLIAN static void
-_efl_ui_gridview_homogeneous_set(Eo *obj EINA_UNUSED, Efl_Ui_Gridview_Data *pd, Eina_Bool homogeneous)
+_efl_ui_gridview_homogeneous_set(Eo *obj EINA_UNUSED,
+                                 Efl_Ui_Gridview_Data *pd,
+                                 Eina_Bool homogeneous)
 {
    pd->homogeneous = homogeneous;
 }
 
 EOLIAN static Eina_Bool
-_efl_ui_gridview_homogeneous_get(Eo *obj EINA_UNUSED, Efl_Ui_Gridview_Data *pd)
+_efl_ui_gridview_homogeneous_get(Eo *obj EINA_UNUSED,
+                                 Efl_Ui_Gridview_Data *pd)
 {
    return pd->homogeneous;
 }
 
 EOLIAN static Elm_Theme_Apply
-_efl_ui_gridview_elm_widget_theme_apply(Eo *obj, Efl_Ui_Gridview_Data *pd EINA_UNUSED)
+_efl_ui_gridview_elm_widget_theme_apply(Eo *obj,
+                                        Efl_Ui_Gridview_Data *pd EINA_UNUSED)
 {
    return elm_obj_widget_theme_apply(efl_super(obj, MY_CLASS));
 }
 
 EOLIAN static void
-_efl_ui_gridview_efl_canvas_group_group_calculate(Eo *obj, Efl_Ui_Gridview_Data *pd)
+_efl_ui_gridview_efl_canvas_group_group_calculate(Eo *obj,
+                                                  Efl_Ui_Gridview_Data *pd)
 {
-   if (pd->recalc) return;
+   if (pd->need_recalc) return;
 
-   _efl_ui_gridview_custom_layout(obj);
+   //efl_ui_gridview_view_update(obj, EINA_FALSE);
+   efl_canvas_group_calculate(efl_super(obj, MY_CLASS));
 }
 
 EOLIAN static void
-_efl_ui_gridview_efl_gfx_position_set(Eo *obj, Efl_Ui_Gridview_Data *pd, Evas_Coord x, Evas_Coord y)
+_efl_ui_gridview_efl_gfx_position_set(Eo *obj,
+                                      Efl_Ui_Gridview_Data *pd,
+                                      Evas_Coord x,
+                                      Evas_Coord y)
 {
    if (_evas_object_intercept_call(obj, EVAS_OBJECT_INTERCEPT_CB_MOVE, 0, x, y))
      return;
@@ -792,11 +931,14 @@ _efl_ui_gridview_efl_gfx_position_set(Eo *obj, Efl_Ui_Gridview_Data *pd, Evas_Co
 
    efl_gfx_position_set(pd->hit_rect, x, y);
    efl_gfx_position_set(pd->pan.obj, x - pd->pan.x, y - pd->pan.y);
-   _efl_ui_gridview_custom_layout(obj);
+   efl_ui_gridview_view_update(obj, EINA_FALSE);
 }
 
 EOLIAN static void
-_efl_ui_gridview_efl_gfx_size_set(Eo *obj, Efl_Ui_Gridview_Data *pd, Evas_Coord w, Evas_Coord h)
+_efl_ui_gridview_efl_gfx_size_set(Eo *obj,
+                                  Efl_Ui_Gridview_Data *pd,
+                                  Evas_Coord w,
+                                  Evas_Coord h)
 {
    Evas_Coord oldw, oldh;
    Eina_Bool load = EINA_FALSE;
@@ -817,16 +959,24 @@ _efl_ui_gridview_efl_gfx_size_set(Eo *obj, Efl_Ui_Gridview_Data *pd, Evas_Coord 
         if (h != oldh) load = EINA_TRUE;
      }
 
-   ERR("GFX SIZE SET [%d, %d]", w, h);
+   SHCRI("GFX SIZE SET [%d, %d]", w, h);
 
-   if (load && _load_items(obj, pd, EINA_TRUE))
-     return;
+   //if (load && _load_items(obj, pd, EINA_TRUE))
+   //  return;
+   if (load)
+     {
+        pd->need_reload = EINA_TRUE;
+        pd->need_recalc = EINA_TRUE;
+     }
+   efl_ui_gridview_view_update(obj, EINA_FALSE);
 
-   _efl_ui_gridview_custom_layout(obj);
+   efl_canvas_group_change(pd->pan.obj);
 }
 
 EOLIAN static void
-_efl_ui_gridview_efl_canvas_group_group_member_add(Eo *obj, Efl_Ui_Gridview_Data *pd, Evas_Object *member)
+_efl_ui_gridview_efl_canvas_group_group_member_add(Eo *obj,
+                                                   Efl_Ui_Gridview_Data *pd,
+                                                   Evas_Object *member)
 {
    efl_canvas_group_member_add(efl_super(obj, MY_CLASS), member);
 
@@ -835,7 +985,8 @@ _efl_ui_gridview_efl_canvas_group_group_member_add(Eo *obj, Efl_Ui_Gridview_Data
 }
 
 EOLIAN static void
-_efl_ui_gridview_elm_layout_sizing_eval(Eo *obj, Efl_Ui_Gridview_Data *pd EINA_UNUSED)
+_efl_ui_gridview_elm_layout_sizing_eval(Eo *obj,
+                                        Efl_Ui_Gridview_Data *pd EINA_UNUSED)
 {
    Evas_Coord minw = -1, minh = -1, maxw = -1, maxh = -1;
    Evas_Coord vmw = 0, vmh = 0;
@@ -859,40 +1010,37 @@ _efl_ui_gridview_elm_layout_sizing_eval(Eo *obj, Efl_Ui_Gridview_Data *pd EINA_U
 }
 
 EOLIAN static void
-_efl_ui_gridview_efl_canvas_group_group_add(Eo *obj, Efl_Ui_Gridview_Data *pd EINA_UNUSED)
+_efl_ui_gridview_efl_canvas_group_group_add(Eo *obj,
+                                            Efl_Ui_Gridview_Data *pd EINA_UNUSED)
 {
+   ELM_WIDGET_DATA_GET_OR_RETURN(obj, wd);
    Efl_Ui_Gridview_Pan_Data *pan_data;
    Evas_Coord minw, minh;
 
-   ELM_WIDGET_DATA_GET_OR_RETURN(obj, wd);
+   //DEBUG CODE!!!!
+   START = ecore_time_get();
 
    efl_canvas_group_add(efl_super(obj, MY_CLASS));
    elm_widget_sub_object_parent_add(obj);
 
+   /* common scroller hit rectangle setup */
    pd->hit_rect = efl_add(EFL_CANVAS_RECTANGLE_CLASS, efl_provider_find(obj, EVAS_CANVAS_CLASS),
                           efl_key_data_set(efl_added, "_elm_leaveme", obj),
-                          efl_canvas_group_member_add(obj, efl_added));
-   elm_widget_sub_object_add(obj, pd->hit_rect);
-
-   /* common scroller hit rectangle setup */
-   efl_gfx_color_set(pd->hit_rect, 0, 0, 0, 0);
-   efl_gfx_visible_set(pd->hit_rect, EINA_TRUE);
-   efl_canvas_object_repeat_events_set(pd->hit_rect, EINA_TRUE);
+                          efl_canvas_group_member_add(obj, efl_added),
+                          elm_widget_sub_object_add(obj, efl_added),
+                          efl_canvas_object_repeat_events_set(efl_added, EINA_TRUE),
+                          efl_gfx_color_set(efl_added, 0, 0, 0, 0),
+                          efl_gfx_visible_set(efl_added, EINA_TRUE));
 
    elm_widget_on_show_region_hook_set(obj, _show_region_hook, NULL);
 
    if (!elm_layout_theme_set(obj, "gridview", "base", elm_widget_style_get(obj)))
      CRI("Failed to set layout!");
 
-   elm_interface_scrollable_objects_set(obj, wd->resize_obj, pd->hit_rect);
-   elm_interface_scrollable_bounce_allow_set
-      (obj, EINA_FALSE, _elm_config->thumbscroll_bounce_enable);
-
    pd->mode = ELM_LIST_COMPRESS;
    pd->avgitw = AVERAGE_SIZE_INIT;
    pd->avgith = AVERAGE_SIZE_INIT;
 
-   elm_interface_atspi_accessible_type_set(obj, ELM_ATSPI_TYPE_DISABLED);
    pd->pan.obj = efl_add(MY_PAN_CLASS, efl_provider_find(obj, EVAS_CANVAS_CLASS));
    pan_data = efl_data_scope_get(pd->pan.obj, MY_PAN_CLASS);
    efl_data_ref(obj, MY_CLASS);
@@ -900,19 +1048,24 @@ _efl_ui_gridview_efl_canvas_group_group_add(Eo *obj, Efl_Ui_Gridview_Data *pd EI
    pan_data->wpd = pd;
    pd->pan.x = 0;
    pd->pan.y = 0;
-
-   elm_interface_scrollable_extern_pan_set(obj, pd->pan.obj);
    efl_gfx_visible_set(pd->pan.obj, EINA_TRUE);
+
+   elm_interface_scrollable_objects_set(obj, wd->resize_obj, pd->hit_rect);
+   elm_interface_scrollable_extern_pan_set(obj, pd->pan.obj);
+   elm_interface_scrollable_mirrored_set(obj, efl_ui_mirrored_get(obj));
+   elm_interface_scrollable_bounce_allow_set(obj, EINA_FALSE,
+                                             _elm_config->thumbscroll_bounce_enable);
+
+   elm_interface_atspi_accessible_type_set(obj, ELM_ATSPI_TYPE_DISABLED);
 
    edje_object_size_min_calc(wd->resize_obj, &minw, &minh);
    efl_gfx_size_hint_min_set(obj, minw, minh);
-
-   elm_interface_scrollable_mirrored_set(obj, efl_ui_mirrored_get(obj));
    elm_layout_sizing_eval(obj);
 }
 
 EOLIAN static void
-_efl_ui_gridview_efl_canvas_group_group_del(Eo *obj, Efl_Ui_Gridview_Data *pd)
+_efl_ui_gridview_efl_canvas_group_group_del(Eo *obj,
+                                            Efl_Ui_Gridview_Data *pd)
 {
    _efl_ui_gridview_children_free(obj, pd);
 
@@ -923,7 +1076,8 @@ _efl_ui_gridview_efl_canvas_group_group_del(Eo *obj, Efl_Ui_Gridview_Data *pd)
 }
 
 EOLIAN static Eo *
-_efl_ui_gridview_efl_object_constructor(Eo *obj, Efl_Ui_Gridview_Data *pd)
+_efl_ui_gridview_efl_object_constructor(Eo *obj,
+                                        Efl_Ui_Gridview_Data *pd)
 {
    {
       Efl_Ui_Focus_Manager *manager;
@@ -952,7 +1106,8 @@ _efl_ui_gridview_efl_object_constructor(Eo *obj, Efl_Ui_Gridview_Data *pd)
 }
 
 EOLIAN static void
-_efl_ui_gridview_efl_object_destructor(Eo *obj, Efl_Ui_Gridview_Data *pd)
+_efl_ui_gridview_efl_object_destructor(Eo *obj,
+                                       Efl_Ui_Gridview_Data *pd)
 {
    efl_unref(pd->model);
    eina_stringshare_del(pd->style);
@@ -960,7 +1115,9 @@ _efl_ui_gridview_efl_object_destructor(Eo *obj, Efl_Ui_Gridview_Data *pd)
 }
 
 EOLIAN static void
-_efl_ui_gridview_efl_ui_view_model_set(Eo *obj, Efl_Ui_Gridview_Data *pd, Efl_Model *model)
+_efl_ui_gridview_efl_ui_view_model_set(Eo *obj,
+                                       Efl_Ui_Gridview_Data *pd,
+                                       Efl_Model *model)
 {
    if (pd->model == model)
      return;
@@ -986,17 +1143,19 @@ _efl_ui_gridview_efl_ui_view_model_set(Eo *obj, Efl_Ui_Gridview_Data *pd, Efl_Mo
         efl_future_then(efl_model_children_count_get(pd->model), &_count_then, &_count_error, NULL, pd);
      }
 
-   _efl_ui_gridview_custom_layout(obj);
+   efl_ui_gridview_view_update(obj, EINA_TRUE);
 }
 
 EOLIAN static Efl_Model *
-_efl_ui_gridview_efl_ui_view_model_get(Eo *obj EINA_UNUSED, Efl_Ui_Gridview_Data *pd)
+_efl_ui_gridview_efl_ui_view_model_get(Eo *obj EINA_UNUSED,
+                                       Efl_Ui_Gridview_Data *pd)
 {
    return pd->model;
 }
 
 EOLIAN const Elm_Atspi_Action *
-_efl_ui_gridview_elm_interface_atspi_widget_action_elm_actions_get(Eo *obj EINA_UNUSED, Efl_Ui_Gridview_Data *pd EINA_UNUSED)
+_efl_ui_gridview_elm_interface_atspi_widget_action_elm_actions_get(Eo *obj EINA_UNUSED,
+                                                                   Efl_Ui_Gridview_Data *pd EINA_UNUSED)
 {
    static Elm_Atspi_Action atspi_actions[] = {
           { "move,prior", "move", "prior", _key_action_move},
@@ -1015,8 +1174,9 @@ _efl_ui_gridview_elm_interface_atspi_widget_action_elm_actions_get(Eo *obj EINA_
    return &atspi_actions[0];
 }
 
-EOLIAN Eina_List*
-_efl_ui_gridview_elm_interface_atspi_accessible_children_get(Eo *obj, Efl_Ui_Gridview_Data *pd)
+EOLIAN Eina_List *
+_efl_ui_gridview_elm_interface_atspi_accessible_children_get(Eo *obj,
+                                                             Efl_Ui_Gridview_Data *pd)
 {
    Efl_Ui_Gridview_Item *litem;
    Eina_Array_Iterator iterator;
@@ -1032,13 +1192,16 @@ _efl_ui_gridview_elm_interface_atspi_accessible_children_get(Eo *obj, Efl_Ui_Gri
 }
 
 EOLIAN int
-_efl_ui_gridview_elm_interface_atspi_selection_selected_children_count_get(Eo *obj EINA_UNUSED, Efl_Ui_Gridview_Data *pd)
+_efl_ui_gridview_elm_interface_atspi_selection_selected_children_count_get(Eo *obj EINA_UNUSED,
+                                                                           Efl_Ui_Gridview_Data *pd)
 {
    return eina_list_count(pd->selected);
 }
 
-EOLIAN Eo*
-_efl_ui_gridview_elm_interface_atspi_selection_selected_child_get(Eo *obj EINA_UNUSED, Efl_Ui_Gridview_Data *pd, int child_idx)
+EOLIAN Eo *
+_efl_ui_gridview_elm_interface_atspi_selection_selected_child_get(Eo *obj EINA_UNUSED,
+                                                                  Efl_Ui_Gridview_Data *pd,
+                                                                  int child_idx)
 {
    Efl_Ui_Gridview_Item *item = eina_list_nth(pd->selected, child_idx);
    if (!item)
@@ -1048,7 +1211,9 @@ _efl_ui_gridview_elm_interface_atspi_selection_selected_child_get(Eo *obj EINA_U
 }
 
 EOLIAN Eina_Bool
-_efl_ui_gridview_elm_interface_atspi_selection_child_select(Eo *obj EINA_UNUSED, Efl_Ui_Gridview_Data *pd, int child_index)
+_efl_ui_gridview_elm_interface_atspi_selection_child_select(Eo *obj EINA_UNUSED,
+                                                            Efl_Ui_Gridview_Data *pd,
+                                                            int child_index)
 {
    if (pd->select_mode != ELM_OBJECT_SELECT_MODE_NONE)
      {
@@ -1061,7 +1226,9 @@ _efl_ui_gridview_elm_interface_atspi_selection_child_select(Eo *obj EINA_UNUSED,
 }
 
 EOLIAN Eina_Bool
-_efl_ui_gridview_elm_interface_atspi_selection_selected_child_deselect(Eo *obj EINA_UNUSED, Efl_Ui_Gridview_Data *pd, int child_index)
+_efl_ui_gridview_elm_interface_atspi_selection_selected_child_deselect(Eo *obj EINA_UNUSED,
+                                                                       Efl_Ui_Gridview_Data *pd,
+                                                                       int child_index)
 {
    Efl_Ui_Gridview_Item *item = eina_list_nth(pd->selected, child_index);
    if (item)
@@ -1073,7 +1240,9 @@ _efl_ui_gridview_elm_interface_atspi_selection_selected_child_deselect(Eo *obj E
 }
 
 EOLIAN Eina_Bool
-_efl_ui_gridview_elm_interface_atspi_selection_is_child_selected(Eo *obj EINA_UNUSED, Efl_Ui_Gridview_Data *pd, int child_index)
+_efl_ui_gridview_elm_interface_atspi_selection_is_child_selected(Eo *obj EINA_UNUSED,
+                                                                 Efl_Ui_Gridview_Data *pd,
+                                                                 int child_index)
 {
    Efl_Ui_Gridview_Item *item = eina_array_data_get(pd->items, child_index);
    EINA_SAFETY_ON_NULL_RETURN_VAL(item, EINA_FALSE);
@@ -1081,7 +1250,8 @@ _efl_ui_gridview_elm_interface_atspi_selection_is_child_selected(Eo *obj EINA_UN
 }
 
 EOLIAN Eina_Bool
-_efl_ui_gridview_elm_interface_atspi_selection_all_children_select(Eo *obj EINA_UNUSED, Efl_Ui_Gridview_Data *pd)
+_efl_ui_gridview_elm_interface_atspi_selection_all_children_select(Eo *obj EINA_UNUSED,
+                                                                   Efl_Ui_Gridview_Data *pd)
 {
    Efl_Ui_Gridview_Item *item;
    Eina_Array_Iterator iterator;
@@ -1097,7 +1267,8 @@ _efl_ui_gridview_elm_interface_atspi_selection_all_children_select(Eo *obj EINA_
 }
 
 EOLIAN Eina_Bool
-_efl_ui_gridview_elm_interface_atspi_selection_clear(Eo *obj EINA_UNUSED, Efl_Ui_Gridview_Data *pd)
+_efl_ui_gridview_elm_interface_atspi_selection_clear(Eo *obj EINA_UNUSED,
+                                                     Efl_Ui_Gridview_Data *pd)
 {
    Efl_Ui_Gridview_Item *item;
    Eina_List *l;
@@ -1112,7 +1283,9 @@ _efl_ui_gridview_elm_interface_atspi_selection_clear(Eo *obj EINA_UNUSED, Efl_Ui
 }
 
 EOLIAN Eina_Bool
-_efl_ui_gridview_elm_interface_atspi_selection_child_deselect(Eo *obj EINA_UNUSED, Efl_Ui_Gridview_Data *pd, int child_index)
+_efl_ui_gridview_elm_interface_atspi_selection_child_deselect(Eo *obj EINA_UNUSED,
+                                                              Efl_Ui_Gridview_Data *pd,
+                                                              int child_index)
 {
    Efl_Ui_Gridview_Item *item = eina_array_data_get(pd->items, child_index);
    if (item)
@@ -1123,7 +1296,9 @@ _efl_ui_gridview_elm_interface_atspi_selection_child_deselect(Eo *obj EINA_UNUSE
    return EINA_FALSE;
 }
 
-static Eina_Bool _key_action_move(Evas_Object *obj, const char *params)
+static Eina_Bool
+_key_action_move(Evas_Object *obj,
+                 const char *params)
 {
    EFL_UI_GRIDVIEW_DATA_GET_OR_RETURN_VAL(obj, pd, EINA_FALSE);
    const char *dir = params;
@@ -1212,7 +1387,9 @@ static Eina_Bool _key_action_move(Evas_Object *obj, const char *params)
    return EINA_TRUE;
 }
 
-static Eina_Bool _key_action_select(Evas_Object *obj, const char *params EINA_UNUSED)
+static Eina_Bool
+_key_action_select(Evas_Object *obj,
+                   const char *params EINA_UNUSED)
 {
    EFL_UI_GRIDVIEW_DATA_GET_OR_RETURN_VAL(obj, pd, EINA_FALSE);
 
@@ -1221,13 +1398,18 @@ static Eina_Bool _key_action_select(Evas_Object *obj, const char *params EINA_UN
    return EINA_TRUE;
 }
 
-static Eina_Bool _key_action_escape(Evas_Object *obj, const char *params EINA_UNUSED)
+static Eina_Bool
+_key_action_escape(Evas_Object *obj,
+                   const char *params EINA_UNUSED)
 {
    return _efl_ui_gridview_item_select_clear(obj);
 }
 
 EOLIAN static Eina_Bool
-_efl_ui_gridview_elm_widget_widget_event(Eo *obj, Efl_Ui_Gridview_Data *pd, Evas_Object *src, Evas_Callback_Type type, void *event_info)
+_efl_ui_gridview_elm_widget_widget_event(Eo *obj, Efl_Ui_Gridview_Data *pd,
+                                         Evas_Object *src,
+                                         Evas_Callback_Type type,
+                                         void *event_info)
 {
    (void) src;
    Evas_Event_Key_Down *ev = event_info;
@@ -1257,7 +1439,8 @@ _efl_ui_gridview_item_select_clear(Eo *obj)
 }
 
 static void
-_efl_ui_gridview_item_select_set(Efl_Ui_Gridview_Item *item, Eina_Bool selected)
+_efl_ui_gridview_item_select_set(Efl_Ui_Gridview_Item *item,
+                                 Eina_Bool selected)
 {
    Eina_Stringshare *sprop, *svalue;
 
@@ -1294,7 +1477,8 @@ _efl_ui_gridview_item_select_set(Efl_Ui_Gridview_Item *item, Eina_Bool selected)
 }
 
 static void
-_item_calc(Efl_Ui_Gridview_Data *pd, Efl_Ui_Gridview_Item *item)
+_item_calc(Efl_Ui_Gridview_Data *pd,
+           Efl_Ui_Gridview_Item *item)
 {
    Evas_Coord old_w, old_h;
    int pad[4];
@@ -1319,7 +1503,9 @@ _item_calc(Efl_Ui_Gridview_Data *pd, Efl_Ui_Gridview_Item *item)
 }
 
 static Eina_Bool
-_load_items(Eo *obj, Efl_Ui_Gridview_Data *pd, Eina_Bool recalc)
+_load_items(Eo *obj,
+            Efl_Ui_Gridview_Data *pd,
+            Eina_Bool recalc)
 {
    Efl_Ui_Gridview_Slice *sd;
    int slice, slicestart, newstart, count = 0, w = 0, h = 0, cvw = 0, cvh = 0;
@@ -1330,6 +1516,8 @@ _load_items(Eo *obj, Efl_Ui_Gridview_Data *pd, Eina_Bool recalc)
 
    if (pd->items)
      count = eina_array_count(pd->items);
+
+   SHINF("#1 -- CNT[%d] CALC[%d]", count, recalc);
 
    if ((!recalc && count == pd->item_count) || pd->avgitw < 1 || pd->avgith < 1)
      return EINA_FALSE;
@@ -1347,10 +1535,10 @@ _load_items(Eo *obj, Efl_Ui_Gridview_Data *pd, Eina_Bool recalc)
         newstart = (pd->pan.y / pd->avgith) - (slice / 4);
      }
 
-   GVDBG("[%s] --- geo[%d,%d] cvgeo[%d,%d] count [%d], itcount[%d] avgw[%d] avgh[%d] slice[%d] newstart[%d]", GVNAME(obj), w, h, cvw, cvh, count, pd->item_count, pd->avgitw, pd->avgith, slice, newstart);
+   SHINF("[%s] --- geo[%d,%d] cvgeo[%d,%d] count [%d], itcount[%d] avgw[%d] avgh[%d] slice[%d] newstart[%d]", SHNAME(obj), w, h, cvw, cvh, count, pd->item_count, pd->avgitw, pd->avgith, slice, newstart);
    slice = slice > 20 ? slice : 20;
    slicestart = newstart = newstart > 1 ? newstart : 1;
-   GVDBG(" --- rearrage slice[%d] slicestart[%d] newstart[%d]", slice, slicestart, newstart);
+   SHINF(" --- rearrage slice[%d] slicestart[%d] newstart[%d]", slice, slicestart, newstart);
 
    if (!recalc && newstart == pd->realized.start && slice == pd->realized.slice)
      return EINA_FALSE;
@@ -1359,7 +1547,7 @@ _load_items(Eo *obj, Efl_Ui_Gridview_Data *pd, Eina_Bool recalc)
    if (!pd->items)
      {
         pd->items = eina_array_new(20);
-        GVDBG("array items are Generated [%p][%d]", pd->items, eina_array_count(pd->items));
+        SHINF("array items are Generated [%p][%d]", pd->items, eina_array_count(pd->items));
      }
 
    if (count)
@@ -1385,7 +1573,7 @@ _load_items(Eo *obj, Efl_Ui_Gridview_Data *pd, Eina_Bool recalc)
 
    if (slice > 0)
      {
-       GVDBG("Slice call chidren then slice[%d]sstart[%d]newstart[%d]", slice, slicestart, newstart);
+       SHINF("Slice call chidren then slice[%d]sstart[%d]newstart[%d]", slice, slicestart, newstart);
         sd = malloc(sizeof(Efl_Ui_Gridview_Slice));
         sd->pd = pd;
         sd->slicestart = slicestart;
@@ -1411,7 +1599,7 @@ _load_items(Eo *obj, Efl_Ui_Gridview_Data *pd, Eina_Bool recalc)
                        line = item->minh;
                        linemax = item->minw;
                        count++;
-                       GVDBG("realw[%d] --- line[%d] linemax[%d], count[%d] pos[%d,%d]", pd->realized.w, line, linemax, count, item->pos[0], item->pos[1]);
+                       SHINF("realw[%d] --- line[%d] linemax[%d], count[%d] pos[%d,%d]", pd->realized.w, line, linemax, count, item->pos[0], item->pos[1]);
                     }
                   else
                     {
@@ -1428,7 +1616,7 @@ _load_items(Eo *obj, Efl_Ui_Gridview_Data *pd, Eina_Bool recalc)
                        line = item->minw;
                        linemax = item->minh;
                        count++;
-                       GVDBG("realh[%d] --- line[%d] linemax[%d], count[%d] pos[%d,%d]", pd->realized.h, line, linemax, count, item->pos[0], item->pos[1]);
+                       SHINF("realh[%d] --- line[%d] linemax[%d], count[%d] pos[%d,%d]", pd->realized.h, line, linemax, count, item->pos[0], item->pos[1]);
                     }
                   else
                     {
@@ -1450,7 +1638,7 @@ _load_items(Eo *obj, Efl_Ui_Gridview_Data *pd, Eina_Bool recalc)
              pd->avgitw = horz ? avgit : avgline;
              pd->avgith = horz ? avgline : avgit;
           }
-       GVDBG("[%s] --- avgw[%d] avgh[%d] realw[%d] realh[%d] count[%d] itcount[%d]", GVNAME(obj), pd->avgitw, pd->avgith, pd->realized.w, pd->realized.h, pd->line_count, eina_array_count(pd->items));
+       SHINF("[%s] --- avgw[%d] avgh[%d] realw[%d] realh[%d] count[%d] itcount[%d]", SHNAME(obj), pd->avgitw, pd->avgith, pd->realized.w, pd->realized.h, pd->line_count, eina_array_count(pd->items));
 
         return EINA_FALSE;
      }
@@ -1458,10 +1646,10 @@ _load_items(Eo *obj, Efl_Ui_Gridview_Data *pd, Eina_Bool recalc)
    return EINA_TRUE;
 }
 
-static void
-_efl_ui_gridview_custom_layout(Efl_Ui_Gridview *ui_grid)
+static Eina_Bool
+_view_update_internal(Eo *ui_grid)
 {
-   EFL_UI_GRIDVIEW_DATA_GET_OR_RETURN(ui_grid, pd);
+   EFL_UI_GRIDVIEW_DATA_GET_OR_RETURN_VAL(ui_grid, pd, EINA_FALSE);
    Efl_Ui_Gridview_Item *litem;
    Evas_Object *o;
    Eina_Bool horiz = _horiz(pd->orient), zeroweight = EINA_FALSE;
@@ -1473,16 +1661,20 @@ _efl_ui_gridview_custom_layout(Efl_Ui_Gridview *ui_grid)
    Eina_Array_Iterator iterator;
    unsigned int i;
    int id, count = 0, avgit, row = 0, col = 0;
+   int oldminw, oldminh;
 
-   ELM_WIDGET_DATA_GET_OR_RETURN(ui_grid, wd);
+   ELM_WIDGET_DATA_GET_OR_RETURN(ui_grid, wd, EINA_FALSE);
 
    efl_gfx_geometry_get(ui_grid, &boxx, &boxy, &boxw, &boxh);
    efl_gfx_size_hint_margin_get(ui_grid, &boxl, &boxr, &boxt, &boxb);
 
+   oldminw = pd->minw;
+   oldminh = pd->minh;
+
    scale = efl_ui_scale_get(ui_grid);
    // Box align: used if "item has max size and fill" or "no item has a weight"
    // Note: cells always expand on the orthogonal direction
-   GVDBG("[%s] --- geo[%d, %d, %d, %d] margin[%d, %d, %d, %d] scale[%.2f]", GVNAME(ui_grid), boxx, boxy, boxw, boxh, boxl, boxr, boxt, boxb, scale);
+   SHINF("[%s] --- geo[%d, %d, %d, %d] margin[%d, %d, %d, %d] scale[%.2f]", SHNAME(ui_grid), boxx, boxy, boxw, boxh, boxl, boxr, boxt, boxb, scale);
    box_align[0] = pd->align.h;
    box_align[1] = pd->align.v;
    if (box_align[0] < 0)
@@ -1502,7 +1694,7 @@ _efl_ui_gridview_custom_layout(Efl_Ui_Gridview *ui_grid)
    if (!count)
      {
         efl_gfx_size_hint_min_set(wd->resize_obj, 0, 0);
-        return;
+        return EINA_FALSE;
      }
 
    elm_interface_scrollable_content_viewport_geometry_get
@@ -1548,7 +1740,7 @@ _efl_ui_gridview_custom_layout(Efl_Ui_Gridview *ui_grid)
           pd->minh = pd->avgith * (ow / pd->avgitw);
         avgit = pd->avgith;
      }
-   GVDBG("MIN[%d,%d], AVG[%d,%d]", pd->minw, pd->minh, pd->avgitw, pd->avgith);
+   SHDBG("MIN[%d,%d], AVG[%d,%d]", pd->minw, pd->minh, pd->avgitw, pd->avgith);
 
    efl_gfx_size_hint_min_set(wd->resize_obj, pd->minw, pd->minh);
 
@@ -1573,7 +1765,7 @@ _efl_ui_gridview_custom_layout(Efl_Ui_Gridview *ui_grid)
 
    cur_pos += avgit * (pd->realized.start -1);
 
-   GVDBG("--- length[%d] want[%d] pad[%d] extra[%d] :: curpos[%.0f]", length, want, pad, extra, cur_pos);
+   SHINF("--- length[%d] want[%d] pad[%d] extra[%d] :: curpos[%.0f]", length, want, pad, extra, cur_pos);
    id = 0;
 
    // scan all items, get their properties, calculate total weight & min size
@@ -1674,6 +1866,7 @@ _efl_ui_gridview_custom_layout(Efl_Ui_Gridview *ui_grid)
              if (oh < linesum + h)
                {
                   cur_pos += w + pad;
+                  x += w + pad;
                   linesum = h;
                   row = 0;
                   col++;
@@ -1690,6 +1883,7 @@ _efl_ui_gridview_custom_layout(Efl_Ui_Gridview *ui_grid)
              if (ow < linesum + w)
                {
                   cur_pos += h + pad;
+                  y += h + pad;
                   linesum = w;
                   col = 0;
                   row++;
@@ -1706,14 +1900,38 @@ _efl_ui_gridview_custom_layout(Efl_Ui_Gridview *ui_grid)
         litem->pos[0] = row;
         litem->pos[1] = col;
 
-        GVDBG("[%d]--- [%.0f,%.0f,%.0f,%.0f::%.0f] --> GFX[%.0f,%.0f,%.0f,%.0f][%d,%d] lsum[%.0f]",
+        //FIMXME TEMP CODE!!!
+        if (horiz) pd->minw = x + w;
+        else pd->minh = y + h;
+
+        SHINF("[%d]--- [%.0f,%.0f,%.0f,%.0f::%.0f] --> GFX[%.0f,%.0f,%.0f,%.0f][%d,%d] lsum[%.0f]",
             i, cx, cy, cw, ch, cur_pos, x, y, w, h, row,col, linesum);
 
         efl_gfx_geometry_set(o, (int)(x + 0 - pd->pan.x), (int)(y + 0 - pd->pan.y), (int)w, (int)h);
-        //GVDBG("o[%d] cur=%.2f moved to X=%.2f, Y=%.2f", litem->index, cur_pos, x, y);
+        //SHINF("o[%d] cur=%.2f moved to X=%.2f, Y=%.2f", litem->index, cur_pos, x, y);
      }
+
+   SHDBG("view update done. [%d] children updated, and [%d,%d] size is expanded", id, pd->minw, pd->minh);
+
+   pd->need_update = EINA_FALSE;
+
+   if (pd->minw != oldminw || pd->minh != oldminh) return EINA_TRUE;
+   return EINA_FALSE;
 }
 
+EOLIAN static void
+_efl_ui_gridview_view_update(Eo *obj EINA_UNUSED,
+                             Efl_Ui_Gridview_Data *pd EINA_UNUSED,
+                             Eina_Bool sync)
+{
+  pd->need_update = EINA_TRUE;
+
+  SHDBG("View will be Updated");
+
+  if (sync)
+    _view_update_internal(obj);
+  efl_canvas_group_change(pd->pan.obj);
+}
 
 
 /* Internal EO APIs and hidden overrides */

@@ -49,8 +49,11 @@ struct _Efl_Ui_Gridview_Data
 
    Efl_Orient                   orient;
    Eina_Bool                    homogeneous : 1;
-   Eina_Bool                    recalc : 1;
    Eina_Bool                    on_hold : 1;
+   Eina_Bool                    need_recalc : 1;
+   Eina_Bool                    need_update : 1;
+   Eina_Bool                    need_reload : 1;
+   Eina_Bool                    on_load : 1;
 
    struct {
       double                    h, v;

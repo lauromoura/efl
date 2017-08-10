@@ -26,7 +26,7 @@ struct _Private_Data
 {
    Eo *model;
    Evas_Object *gview;
-   Eo *imf;
+   Eo *imgfac;
 };
 typedef struct _Private_Data Private_Data;
 
@@ -48,11 +48,13 @@ _realized_cb(void *data, const Efl_Event *event)
 
    //efl_ui_view_model_set(ie->layout, ie->child);
    //FIXME: Temporary using list theme.
-   //elm_layout_theme_set(ie->layout, "genlist", "item", "default/default");
    elm_layout_theme_set(ie->layout, "gridview", "child", "default/default");
 
    efl_gfx_size_hint_weight_set(ie->layout, EFL_GFX_SIZE_HINT_EXPAND, EFL_GFX_SIZE_HINT_EXPAND);
    efl_gfx_size_hint_align_set(ie->layout, EFL_GFX_SIZE_HINT_FILL, EFL_GFX_SIZE_HINT_FILL);
+   efl_gfx_size_hint_min_set(ie->layout, 50, 50);
+
+/* Case of heterogeneous size
    switch (ie->index % 4)
      {
       case 0:
@@ -68,14 +70,14 @@ _realized_cb(void *data, const Efl_Event *event)
          efl_gfx_size_hint_min_set(ie->layout, 60, 50);
          break;
      }
-
-   //efl_gfx_size_set(ie->layout, 50, 50);
+*/
    elm_object_focus_allow_set(ie->layout, EINA_TRUE);
 
    //efl_ui_model_connect(ie->layout, "elm.text", "name");
    //efl_ui_model_connect(ie->layout, "signal/elm,state,%v", "odd_style");
-   efl_ui_model_connect(ie->layout, "elm.text", "filename");
-   efl_ui_model_factory_connect(ie->layout, "elm.swallow.icon", pd->imf);
+   efl_ui_model_connect(ie->layout, "elm.text", "filename"); //efl_connect_model_property
+   efl_ui_model_factory_connect(ie->layout, "elm.swallow.icon", pd->imgfac);  //efl_connect_factory
+
 }
 
 static void
@@ -138,6 +140,11 @@ elm_main(int argc, char **argv)
 
 //   priv->model = _make_model();
    priv->model = efl_add(EIO_MODEL_CLASS, NULL, eio_model_path_set(efl_added, dirname));
+   /* Proposal Code. Proxy Model Concept Need to be Implemented
+	*
+	* priv->pmodel = efl_add(EFL_UI_VIEW_MODEL_CLASS, NULL,
+	*                        efl_ui_view_model_origin_set(priv->model));
+	*/
    priv->gview = efl_add(EFL_UI_GRIDVIEW_CLASS, win,
                          efl_ui_view_model_set(efl_added, priv->model),
                          efl_content_set(win, efl_added),
@@ -152,8 +159,16 @@ elm_main(int argc, char **argv)
                                                 _unrealized_cb, priv),
                          efl_gfx_visible_set(efl_added, EINA_TRUE));
 
-   priv->imf = efl_add(EFL_UI_IMAGE_FACTORY_CLASS, win);
-   efl_ui_model_connect(priv->imf, "", "path"); //connect to "path" property
+   priv->imgfac = efl_add(EFL_UI_IMAGE_FACTORY_CLASS, win);
+   efl_ui_model_connect(priv->imgfac, "", "path"); // looks better to be efl_connect_model_property
+
+   /* Proposal Code. Factory Concept Need to be Implemented
+	*
+	* priv->gridfac = efl_add(EFL_UI_LAYOUT_FACTORY_CLASS, priv->gview,
+	*                         efl_event_callback_add(efl_added,
+	*                                                EFL_UI_LAYOUT_FACTORY_EVENT_CONCRETED,
+	*                                                _ly_concrete_cb, priv));
+	*/
 
    evas_object_event_callback_add(win, EVAS_CALLBACK_DEL, _cleanup_cb, priv);
    //showall

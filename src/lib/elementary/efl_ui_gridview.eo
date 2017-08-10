@@ -7,10 +7,16 @@ struct Efl.Ui.Gridview.Item_Event
    column: int;
 }
 
-class Efl.Ui.Gridview (Elm.Layout, Efl.Ui.View, Elm.Interface_Scrollable,
-                Elm.Interface.Atspi_Widget_Action, Elm.Interface.Atspi.Selection,
-                Efl.Ui.Clickable, Efl.Ui.Selectable, Efl.Ui.Focus.Manager)
+class Efl.Ui.Gridview (Elm.Layout,
+                       Efl.Ui.View,
+                       Elm.Interface_Scrollable,
+                       Elm.Interface.Atspi_Widget_Action,
+                       Elm.Interface.Atspi.Selection,
+                       Efl.Ui.Clickable,
+                       Efl.Ui.Selectable,
+                       Efl.Ui.Focus.Manager)
 {
+   legacy_prefix: null;
    methods {
       @property homogeneous {
          get {
@@ -37,6 +43,13 @@ class Efl.Ui.Gridview (Elm.Layout, Efl.Ui.View, Elm.Interface_Scrollable,
             style: stringshare;
          }
       }
+      view_update @protected {
+         [[Update the view on the current viewport and layout the children.
+          size hint of the view could be updated.]]
+          params {
+            @in syncrnous: bool; [[]]
+          }
+      }
    }
    events {
       item,realized : Efl.Ui.Gridview.Item_Event;
@@ -58,7 +71,7 @@ class Efl.Ui.Gridview (Elm.Layout, Efl.Ui.View, Elm.Interface_Scrollable,
 
       // Smart obj
       Efl.Canvas.Group.group_member_add;
-      Efl.Canvas.Group.group_calculate;
+//      Efl.Canvas.Group.group_calculate;
 
       // Widget
       Elm.Widget.theme_apply;
