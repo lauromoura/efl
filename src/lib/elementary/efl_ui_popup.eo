@@ -5,13 +5,34 @@ class Efl.Ui.Popup(Elm.Layout, Elm.Interface.Atspi_Widget_Action)
    legacy_prefix: elm_popup;
    methods {
        @property parent_window @protected {
-           get {
-              [[Get the parent window of Popup.]]
-           }
-           values {
-               window: Efl.Canvas.Object;
-           }
-       }
+         get {
+            [[Get the parent window of Popup.]]
+         }
+         values {
+            window: Efl.Canvas.Object;
+         }
+      }
+      bg_set {
+         params {
+            @in file: string; [[The image file path.]]
+            @in group: string; [[The image key in $file (if its an Eet one), or
+                                 $null, otherwise.]]
+         }
+      }
+      @property bg_repeat_events {
+         set {
+            [[Sets whether events should be passed to by a click outside.
+
+              Note: The default value is $false.
+            ]]
+         }
+         get {
+            [[Returns value indicating whether bg repeat events is enabled or not.]]
+         }
+         values {
+            repeat: bool; [[If $true, events are passed to lower objects.]]
+         }
+      }
    }
    implements {
       class.constructor;
@@ -21,5 +42,8 @@ class Efl.Ui.Popup(Elm.Layout, Elm.Interface.Atspi_Widget_Action)
       Elm.Widget.theme_apply;
       Elm.Widget.widget_parent { set; }
       Elm.Layout.sizing_eval;
+   }
+   events {
+      bg,clicked; [[This is called whenever the user click background of popup.]]
    }
 }
