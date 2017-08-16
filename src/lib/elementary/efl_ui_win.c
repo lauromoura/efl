@@ -1733,7 +1733,7 @@ _key_action_move(Evas_Object *obj, const char *params)
    Efl_Ui_Focus_Object *o;
 
    if (!strcmp(dir, "previous"))
-     focus_dir = EFL_UI_FOCUS_DIRECTION_PREV;
+     focus_dir = EFL_UI_FOCUS_DIRECTION_PREVIOUS;
    else if (!strcmp(dir, "next"))
      focus_dir = EFL_UI_FOCUS_DIRECTION_NEXT;
    else if (!strcmp(dir, "left"))
@@ -1756,7 +1756,7 @@ _key_action_move(Evas_Object *obj, const char *params)
         efl_ui_focus_manager_focus_set(obj, root);
      }
 
-   if (!o && focus_dir == EFL_UI_FOCUS_DIRECTION_PREV)
+   if (!o && focus_dir == EFL_UI_FOCUS_DIRECTION_PREVIOUS)
      {
         Efl_Ui_Focus_Object *last;
 

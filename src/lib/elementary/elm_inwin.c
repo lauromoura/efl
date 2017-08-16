@@ -182,7 +182,7 @@ _elm_inwin_efl_ui_focus_manager_move(Eo *obj, Elm_Inwin_Data *pd, Efl_Ui_Focus_D
    if (ret)
      return ret;
 
-   if ((direction == EFL_UI_FOCUS_DIRECTION_PREV) || (direction == EFL_UI_FOCUS_DIRECTION_NEXT))
+   if ((direction == EFL_UI_FOCUS_DIRECTION_PREVIOUS) || (direction == EFL_UI_FOCUS_DIRECTION_NEXT))
      efl_ui_focus_manager_focus_set(pd->manager, obj);
 
    return efl_ui_focus_manager_focus_get(obj);

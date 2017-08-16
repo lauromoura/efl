@@ -482,7 +482,7 @@ abstract Elm.Widget (Efl.Canvas.Group, Elm.Interface.Atspi_Accessible,
            @since 1.8]]
          params {
             @in next: Efl.Canvas.Object @nullable; [[Focus next object]]
-            @in dir: Elm.Focus_Direction; [[Focus direction]]
+            @in dir: Efl.Ui.Focus.Direction; [[Focus direction]]
          }
       }
       focus_next_object_get @const {
@@ -491,7 +491,7 @@ abstract Elm.Widget (Efl.Canvas.Group, Elm.Interface.Atspi_Accessible,
            @since 1.8]]
          return: Efl.Canvas.Object; [[Focus next object]]
          params {
-            @in dir: Elm.Focus_Direction; [[Focus direction]]
+            @in dir: Efl.Ui.Focus.Direction; [[Focus direction]]
          }
       }
       focus_next_item_set {
@@ -500,7 +500,7 @@ abstract Elm.Widget (Efl.Canvas.Group, Elm.Interface.Atspi_Accessible,
            @since 1.16]]
          params {
             @in next_item: Elm.Widget.Item @nullable; [[Focus next object item]]
-            @in dir: Elm.Focus_Direction; [[Focus direction]]
+            @in dir: Efl.Ui.Focus.Direction; [[Focus direction]]
          }
       }
       focus_next_item_get @const {
@@ -509,7 +509,7 @@ abstract Elm.Widget (Efl.Canvas.Group, Elm.Interface.Atspi_Accessible,
            @since 1.16]]
          return: Elm.Widget.Item; [[Focus next object item]]
          params {
-            @in dir: Elm.Focus_Direction; [[Focus direction]]
+            @in dir: Efl.Ui.Focus.Direction; [[Focus direction]]
          }
       }
       focus_custom_chain_prepend {
@@ -537,7 +537,7 @@ abstract Elm.Widget (Efl.Canvas.Group, Elm.Interface.Atspi_Accessible,
          [[Give focus to next object with specific focus direction in
            object tree.]]
          params {
-            @in dir: Elm.Focus_Direction; [[Direction to move the focus.]]
+            @in dir: Efl.Ui.Focus.Direction; [[Direction to move the focus.]]
          }
       }
       focus_direction @pure_virtual {
@@ -569,7 +569,7 @@ abstract Elm.Widget (Efl.Canvas.Group, Elm.Interface.Atspi_Accessible,
          [[Get next focus item]]
          return: bool; [[$true on success, $false otherwise]]
          params {
-            @in dir: Elm.Focus_Direction; [[Focus direction]]
+            @in dir: Efl.Ui.Focus.Direction; [[Focus direction]]
             @out next: Efl.Canvas.Object; [[Next object]]
             @out next_item: Elm.Widget.Item; [[Next item]]
          }
@@ -598,7 +598,7 @@ abstract Elm.Widget (Efl.Canvas.Group, Elm.Interface.Atspi_Accessible,
       focus_next @pure_virtual {
          [['Virtual' function handling passing focus to sub-objects.]]
          params {
-            @in dir: Elm.Focus_Direction; [[Focus direction]]
+            @in dir: Efl.Ui.Focus.Direction; [[Focus direction]]
             @out next: Efl.Canvas.Object; [[Next object]]
             @out next_item: Elm.Widget.Item; [[Next item]]
          }
