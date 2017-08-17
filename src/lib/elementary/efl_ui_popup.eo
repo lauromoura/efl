@@ -1,8 +1,16 @@
 import elm_general;
 
+enum Efl.Ui.Popup.Align {
+    none = 0,
+    center,
+    left,
+    right,
+    top,
+    bottom
+}
+
 class Efl.Ui.Popup(Elm.Layout, Elm.Interface.Atspi_Widget_Action)
 {
-   legacy_prefix: elm_popup;
    methods {
        @property parent_window @protected {
          get {
@@ -31,6 +39,26 @@ class Efl.Ui.Popup(Elm.Layout, Elm.Interface.Atspi_Widget_Action)
          }
          values {
             repeat: bool; [[If $true, events are passed to lower objects.]]
+         }
+      }
+      @property position {
+        set {
+           [[Set the current popup position.]]
+        }
+        values {
+          x: int;
+          y: int;
+        }
+      }
+      @property align {
+         set {
+            [[ Set the popup alignment.]]
+         }
+         get {
+            [[ Get the current popup alignment.]]
+         }
+         values {
+             type: Efl.Ui.Popup.Align;
          }
       }
    }
