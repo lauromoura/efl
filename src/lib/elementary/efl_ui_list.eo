@@ -6,18 +6,9 @@ struct Efl.Ui.List.Item_Event
    index: int; [[]]
 }
 
-struct Efl.Ui.View.Item
+struct Efl.Ui.View.Child_Data
 {
    [[]]
-}
-
-enum Efl.Ui.View.Load.Mode
-{
-   [[]]
-   legacy: efl_ui_view_load;
-   default = 0, [[]]
-   lazy = 1, [[]]
-   end_scroll = 2 [[]]
 }
 
 class Efl.Ui.List (Elm.Layout, Efl.Ui.View, Elm.Interface_Scrollable,
@@ -50,52 +41,52 @@ class Efl.Ui.List (Elm.Layout, Efl.Ui.View, Elm.Interface_Scrollable,
             style: stringshare;
          }
       }
-      // FIMXE protected feature in arrayview
-      item_new @protected {
-         [[create internal item data]]
-         return: ptr(Efl.Ui.View.Item); [[Item Data]]
-         params {
-            @in model: Efl.Model; [[model of list view]]
-         }
-      }
-      item_remove @protected {
-         [[remove internal item data]]
-         params {
-            @in item: ptr(Efl.Ui.View.Item); [[Item of list view]]
-         }
-      }
-      item_realize @protected {
-         [[realize item when item need to be loadded]]
-         return: Elm.Layout; [[ View Layout of Item Data]]
-         params {
-            @in item: ptr(Efl.Ui.View.Item); [[Item of list view]]
-         }
-      }
-      item_unrealize @protected {
-         [[unrealize item when item need to be unloadded]]
-         return: Elm.Layout; [[ View Layout of Item Data]]
-         params {
-            @in item: ptr(Efl.Ui.View.Item); [[Item of list view]]
-         }
-      }
-      item_calculate @protected {
-         [[calculate item size]]
-         params {
-            @in item: ptr(Efl.Ui.View.Item); [[Item of list view]]
-         }
-      }
-      items_load @protected {
-         [[load items weather they need to be loaded or not]]
-         params {
-            @in calc: bool; [[boolen value for item calculation]]
-            @in type: Efl.Ui.View.Load.Mode; [[Item of list view]]
-         }
-      }
       @property layout_factory {
          [[Listview layout factory set.]]
          set {}
          values {
             factory: Efl.Ui.Factory; [[The factory.]]
+         }
+      }
+      // FIMXE protected feature in baseview
+      custom_layout @protected {
+         [[Update the view on the current viewport and layout the children.
+          size hint of the view could be updated.]]
+          params {
+            @in syncrnous: bool; [[]]
+          }
+      }
+      child_new @protected {
+         [[create internal item data]]
+         return: ptr(Efl.Ui.View.Child_Data); [[Item Data]]
+         params {
+            @in model: Efl.Model; [[model of list view]]
+         }
+      }
+      child_remove @protected {
+         [[remove internal item data]]
+         params {
+            @in item: ptr(Efl.Ui.View.Child_Data); [[Item of list view]]
+         }
+      }
+      child_realize @protected {
+         [[realize item when item need to be loadded]]
+         return: Elm.Layout; [[ View Layout of Item Data]]
+         params {
+            @in item: ptr(Efl.Ui.View.Child_Data); [[Item of list view]]
+         }
+      }
+      child_unrealize @protected {
+         [[unrealize item when item need to be unloadded]]
+         return: Elm.Layout; [[ View Layout of Item Data]]
+         params {
+            @in item: ptr(Efl.Ui.View.Child_Data); [[Item of list view]]
+         }
+      }
+      child_calculate @protected {
+         [[calculate item size]]
+         params {
+            @in item: ptr(Efl.Ui.View.Child_Data); [[Item of list view]]
          }
       }
    }
@@ -135,6 +126,7 @@ class Efl.Ui.List (Elm.Layout, Efl.Ui.View, Elm.Interface_Scrollable,
       Elm.Layout.sizing_eval;
       Efl.Ui.View.model { get; set; }
 
+      //WRONG!!!!!!FIX!!!SPANK SPANK SPANK!!
       Elm.Interface_Scrollable.region_bring_in;
       Elm.Interface.Atspi_Accessible.children { get; }
       Elm.Interface.Atspi_Widget_Action.elm_actions { get; }

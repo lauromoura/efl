@@ -1,3 +1,4 @@
+#define EFL_UI_LIST_PROTECTED
 #include "efl_ui_list_private.h"
 
 #include <assert.h>
@@ -18,7 +19,7 @@ static const Evas_Smart_Cb_Description _smart_callbacks[] = {
    {NULL, NULL}
 };
 
-void _efl_ui_list_custom_layout(Efl_Ui_List *);
+void _custom_layout_internal(Efl_Ui_List *);
 void _efl_ui_list_item_select_set(Efl_Ui_List_Item *, Eina_Bool);
 Eina_Bool _efl_ui_list_item_select_clear(Eo *);
 static Efl_Ui_List_Item *_child_new(Efl_Ui_List_Data *, Efl_Model *);
@@ -174,7 +175,7 @@ _child_added_cb(void *data, const Efl_Event *event)
      _insert_at(pd, index, evt->child);
 
    evas_object_smart_changed(pd->obj);
-   _efl_ui_list_custom_layout(pd->obj);
+   efl_ui_list_custom_layout(pd->obj, EINA_TRUE);
 }
 
 static void
@@ -192,7 +193,7 @@ _child_removed_cb(void *data, const Efl_Event *event)
    
    evas_object_smart_changed(pd->obj);
    fprintf(stderr, "%s %s:%d\n", __func__, __FILE__, __LINE__); fflush(stderr);
-   _efl_ui_list_custom_layout(pd->obj);
+   efl_ui_list_custom_layout(pd->obj, EINA_TRUE);
    fprintf(stderr, "%s %s:%d\n", __func__, __FILE__, __LINE__); fflush(stderr);
 }
 
@@ -896,7 +897,7 @@ _children_then(void * data, Efl_Event const* event)
      }
 
    _resize_children(pd, removing_before, removing_after, acc);
-   _efl_ui_list_custom_layout(pd->obj);
+   efl_ui_list_custom_layout(pd->obj, EINA_TRUE);
 }
 
 static void
@@ -1032,7 +1033,7 @@ _efl_ui_list_efl_canvas_group_group_calculate(Eo *obj, Efl_Ui_List_Data *pd)
 {
    if (pd->recalc) return;
 
-   _efl_ui_list_custom_layout(obj);
+   efl_ui_list_custom_layout(obj, EINA_TRUE);
 }
 
 EOLIAN static void
@@ -1045,9 +1046,10 @@ _efl_ui_list_efl_gfx_position_set(Eo *obj, Efl_Ui_List_Data *pd, Evas_Coord x, E
 
    evas_object_move(pd->hit_rect, x, y);
    evas_object_move(pd->pan.obj, x - pd->pan.x, y - pd->pan.y);
-   _efl_ui_list_custom_layout(obj);
+   efl_ui_list_custom_layout(obj, EINA_TRUE);
 }
 
+//WRONG!!!!!!FIX!!!SPANK SPANK SPANK!!
 EOLIAN static void
 _efl_ui_list_elm_interface_scrollable_region_bring_in(Eo *obj, Efl_Ui_List_Data *pd, Evas_Coord x, Evas_Coord y, Evas_Coord w, Evas_Coord h)
 {
@@ -1081,7 +1083,7 @@ _efl_ui_list_efl_gfx_size_set(Eo *obj, Efl_Ui_List_Data *pd, Evas_Coord w, Evas_
    if (load && _update_items(obj, pd/*, EINA_TRUE*/))
      return;
 
-   _efl_ui_list_custom_layout(obj);
+   efl_ui_list_custom_layout(obj, EINA_TRUE);
 }
 
 EOLIAN static void
@@ -1664,8 +1666,16 @@ _update_items(Eo *obj, Efl_Ui_List_Data *pd/*, Eina_Bool recalc*/)
      return EINA_TRUE;
 }
 
+EOLIAN static void
+_efl_ui_list_custom_layout(Eo *obj,
+                           Efl_Ui_List_Data *pd EINA_UNUSED,
+                           Eina_Bool sync)
+{
+   if (sync) _custom_layout_internal(obj);
+}
+
 void
-_efl_ui_list_custom_layout(Efl_Ui_List *ui_list)
+_custom_layout_internal(Efl_Ui_List *ui_list)
 {
    EFL_UI_LIST_DATA_GET_OR_RETURN(ui_list, pd);
    Efl_Ui_List_Item *litem = NULL;
@@ -1895,38 +1905,34 @@ _efl_ui_list_custom_layout(Efl_Ui_List *ui_list)
   efl_ui_focus_manager_update_order(pd->manager, pd->obj, order);
 }
 
-EOLIAN Efl_Ui_View_Item *
-_efl_ui_list_item_new(Eo *obj, Efl_Ui_List_Data *pd, Efl_Model *model)
+EOLIAN static Efl_Ui_View_Child_Data *
+_efl_ui_list_child_new(Eo *obj EINA_UNUSED, Efl_Ui_List_Data *pd EINA_UNUSED, Efl_Model *model EINA_UNUSED)
 {
    return NULL;
 }
 
-EOLIAN void
-_efl_ui_list_item_remove(Eo *obj, Efl_Ui_List_Data *pd, Efl_Ui_View_Item *item)
+EOLIAN static void
+_efl_ui_list_child_remove(Eo *obj EINA_UNUSED, Efl_Ui_List_Data *pd EINA_UNUSED, Efl_Ui_View_Child_Data *item EINA_UNUSED)
 {
 }
 
-EOLIAN Elm_Layout *
-_efl_ui_list_item_realize(Eo *obj, Efl_Ui_List_Data *pd, Efl_Ui_View_Item *item)
+EOLIAN static Elm_Layout *
+_efl_ui_list_child_realize(Eo *obj EINA_UNUSED, Efl_Ui_List_Data *pd EINA_UNUSED, Efl_Ui_View_Child_Data *item EINA_UNUSED)
 {
    return NULL;
 }
 
-EOLIAN Elm_Layout *
-_efl_ui_list_item_unrealize(Eo *obj, Efl_Ui_List_Data *pd, Efl_Ui_View_Item *item)
+EOLIAN static Elm_Layout *
+_efl_ui_list_child_unrealize(Eo *obj EINA_UNUSED, Efl_Ui_List_Data *pd EINA_UNUSED, Efl_Ui_View_Child_Data *item EINA_UNUSED)
 {
    return NULL;
 }
 
-EOLIAN void
-_efl_ui_list_item_calculate(Eo *obj, Efl_Ui_List_Data *pd, Efl_Ui_View_Item *item)
+EOLIAN static void
+_efl_ui_list_child_calculate(Eo *obj EINA_UNUSED, Efl_Ui_List_Data *pd EINA_UNUSED, Efl_Ui_View_Child_Data *item EINA_UNUSED)
 {
 }
 
-EOLIAN void
-_efl_ui_list_items_load(Eo *obj, Efl_Ui_List_Data *pd, Eina_Bool calc, Efl_Ui_View_Load_Mode type)
-{
-}
 
 /* Internal EO APIs and hidden overrides */
 

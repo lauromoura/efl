@@ -12,88 +12,60 @@
 #include <Eio.h>
 #include <stdio.h>
 
-#define NUM_ITEMS 100
-#define EFL_MODEL_TEST_FILENAME_PATH "/home/sh10233lee/Pictures/"
-
-const char *styles[] = {
-        "odd",
-        "default"
-   };
-
-char edj_path[PATH_MAX];
-
-struct _Private_Data
-{
-   Eo *model;
-   Evas_Object *gview;
-   Eo *imgfac;
-};
-typedef struct _Private_Data Private_Data;
-
-static void
-_cleanup_cb(void *data, Evas *e EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED)
-{
-   Private_Data *pd = data;
-   efl_unref(pd->model);
-   efl_unref(pd->gview);
-}
+#define NUM_ITEMS 1000
+//#define EFL_MODEL_TEST_FILENAME_PATH "/home/sh10233lee/Pictures/"
+#define IMAGE_FILE_PATH "/usr/local/share/elementary/images/"
 
 static void
 _realized_cb(void *data, const Efl_Event *event)
 {
-   Efl_Ui_List_Item_Event *ie = event->info;
-   Private_Data *pd = data;
+   Efl_Ui_Gridview_Child *child = event->info;
+   Efl_Ui_Image_Factory *imgfac = data;
 
-   //printf("[%d: %p: %p] Realize\n", ie->index, ie->layout, ie->child);
+   //printf("[%d: %p: %p] Realize\n", child->index, child->view, child->model);
 
-   //efl_ui_view_model_set(ie->layout, ie->child);
+   //efl_ui_view_model_set(child->view, child->model);
    //FIXME: Temporary using list theme.
-   elm_layout_theme_set(ie->layout, "gridview", "child", "default/default");
+   elm_layout_theme_set(child->view, "gridview", "child", "default/default");
 
-   efl_gfx_size_hint_weight_set(ie->layout, EFL_GFX_SIZE_HINT_EXPAND, EFL_GFX_SIZE_HINT_EXPAND);
-   efl_gfx_size_hint_align_set(ie->layout, EFL_GFX_SIZE_HINT_FILL, EFL_GFX_SIZE_HINT_FILL);
-   efl_gfx_size_hint_min_set(ie->layout, 50, 50);
+   efl_gfx_size_hint_weight_set(child->view, EFL_GFX_SIZE_HINT_EXPAND, EFL_GFX_SIZE_HINT_EXPAND);
+   efl_gfx_size_hint_align_set(child->view, EFL_GFX_SIZE_HINT_FILL, EFL_GFX_SIZE_HINT_FILL);
+   efl_gfx_size_hint_min_set(child->view, 55, 75);
 
 /* Case of heterogeneous size
-   switch (ie->index % 4)
+   switch (child->index % 4)
      {
       case 0:
-         efl_gfx_size_hint_min_set(ie->layout, 50, 50);
+         efl_gfx_size_hint_min_set(child->view, 50, 50);
          break;
       case 1:
-         efl_gfx_size_hint_min_set(ie->layout, 70, 50);
+         efl_gfx_size_hint_min_set(child->view, 70, 50);
          break;
       case 2:
-         efl_gfx_size_hint_min_set(ie->layout, 30, 50);
+         efl_gfx_size_hint_min_set(child->view, 30, 50);
          break;
       case 3: default :
-         efl_gfx_size_hint_min_set(ie->layout, 60, 50);
+         efl_gfx_size_hint_min_set(child->view, 60, 50);
          break;
      }
 */
-   elm_object_focus_allow_set(ie->layout, EINA_TRUE);
+   elm_object_focus_allow_set(child->view, EINA_TRUE);
 
-   //efl_ui_model_connect(ie->layout, "elm.text", "name");
-   //efl_ui_model_connect(ie->layout, "signal/elm,state,%v", "odd_style");
-   efl_ui_model_connect(ie->layout, "elm.text", "filename"); //efl_connect_model_property
-   efl_ui_model_factory_connect(ie->layout, "elm.swallow.icon", pd->imgfac);  //efl_connect_factory
+  //shouldn't it be connect before layout craeted?
+   efl_ui_model_factory_connect(child->view, "elm.swallow.icon", imgfac);  //efl_connect_factory
 
 }
 
 static void
 _unrealized_cb(void *data EINA_UNUSED, const Efl_Event *event)
 {
-   Efl_Ui_List_Item_Event *ie = event->info;
-
-   //printf("[%d: %p: %p] Un-Realize\n", ie->index, ie->layout, ie->child);
-   //efl_ui_view_model_set(ie->layout, NULL);
-   //efl_del(ie->layout);
+   //Efl_Ui_Gridview_Child *child = event->info;
 }
 
 static Efl_Model*
-_make_model()
+_make_model(char *dirname)
 {
-   Eina_Value vtext, vstyle;
+   Eina_Value vtext, vpath;
    Efl_Model_Item *model, *child;
    unsigned int i, s;
    char buf[256];
@@ -101,18 +73,24 @@ _make_model()
 
    model = efl_add(EFL_MODEL_ITEM_CLASS, NULL);
    eina_value_setup(&vtext, EINA_VALUE_TYPE_STRING);
-   eina_value_setup(&vstyle, EINA_VALUE_TYPE_STRING);
+   eina_value_setup(&vpath, EINA_VALUE_TYPE_STRING);
 
    for (i = 0; i < (NUM_ITEMS); i++)
      {
-        s = i%2;
+        int n = i % 24;
         child = efl_model_child_add(model);
-        eina_value_set(&vstyle, styles[s]);
-        efl_model_property_set(child, "odd_style", &vstyle);
 
-        snprintf(buf, sizeof(buf), "Item # %i", i);
+        snprintf(buf, sizeof(buf), "[%d]", i);
         eina_value_set(&vtext, buf);
         efl_model_property_set(child, "name", &vtext);
+
+        if (n < 10)
+          snprintf(buf, sizeof(buf), "%sicon_0%d.png", dirname, n);
+        else
+          snprintf(buf, sizeof(buf), "%sicon_%d.png", dirname, n);
+        //printf("image path: %s\n", buf);
+        eina_value_set(&vpath, buf);
+        efl_model_property_set(child, "path", &vpath);
      }
 
    return model;
@@ -121,15 +99,13 @@ _make_model()
 EAPI_MAIN int
 elm_main(int argc, char **argv)
 {
-   Private_Data *priv;
-   Evas_Object *win;
+   Efl_Ui_Layout_Factory *lyfac;
+   Efl_Ui_Image_Factory *imgfac;
+   Eo *win, *model, *gview;
    char *dirname;
 
-   priv = alloca(sizeof(Private_Data));
-   memset(priv, 0, sizeof(Private_Data));
-
    if (argv[1] != NULL) dirname = argv[1];
-   else dirname = EFL_MODEL_TEST_FILENAME_PATH;
+   else dirname = IMAGE_FILE_PATH;
 
    win = efl_add(EFL_UI_WIN_CLASS, NULL,
                  efl_ui_win_type_set(efl_added, EFL_UI_WIN_BASIC),
@@ -138,39 +114,29 @@ elm_main(int argc, char **argv)
                  efl_ui_win_autodel_set(efl_added, EINA_TRUE));
    elm_policy_set(ELM_POLICY_QUIT, ELM_POLICY_QUIT_LAST_WINDOW_CLOSED);
 
-//   priv->model = _make_model();
-   priv->model = efl_add(EIO_MODEL_CLASS, NULL, eio_model_path_set(efl_added, dirname));
-   /* Proposal Code. Proxy Model Concept Need to be Implemented
-	*
-	* priv->pmodel = efl_add(EFL_UI_VIEW_MODEL_CLASS, NULL,
-	*                        efl_ui_view_model_origin_set(priv->model));
-	*/
-   priv->gview = efl_add(EFL_UI_GRIDVIEW_CLASS, win,
-                         efl_ui_view_model_set(efl_added, priv->model),
-                         efl_content_set(win, efl_added),
-                         efl_gfx_size_hint_weight_set(efl_added,
-                                                      EFL_GFX_SIZE_HINT_EXPAND,
-                                                      EFL_GFX_SIZE_HINT_EXPAND),
-                         efl_event_callback_add(efl_added,
-                                                EFL_UI_GRIDVIEW_EVENT_ITEM_REALIZED,
-                                                _realized_cb, priv),
-                         efl_event_callback_add(efl_added,
-                                                EFL_UI_GRIDVIEW_EVENT_ITEM_UNREALIZED,
-                                                _unrealized_cb, priv),
-                         efl_gfx_visible_set(efl_added, EINA_TRUE));
+   model = _make_model(dirname);
+   //model = efl_add(EIO_MODEL_CLASS, NULL, eio_model_path_set(efl_added, dirname));
 
-   priv->imgfac = efl_add(EFL_UI_IMAGE_FACTORY_CLASS, win);
-   efl_ui_model_connect(priv->imgfac, "", "path"); // looks better to be efl_connect_model_property
+   lyfac = efl_add(EFL_UI_LAYOUT_FACTORY_CLASS, win);
+   efl_ui_model_connect(lyfac, "elm.text", "name");
+   efl_ui_layout_factory_theme_config(lyfac, "gridview", "item", "default");
 
-   /* Proposal Code. Factory Concept Need to be Implemented
-	*
-	* priv->gridfac = efl_add(EFL_UI_LAYOUT_FACTORY_CLASS, priv->gview,
-	*                         efl_event_callback_add(efl_added,
-	*                                                EFL_UI_LAYOUT_FACTORY_EVENT_CONCRETED,
-	*                                                _ly_concrete_cb, priv));
-	*/
+   imgfac = efl_add(EFL_UI_IMAGE_FACTORY_CLASS, win);
+   efl_ui_model_connect(imgfac, "", "path"); // looks better to be efl_connect_model_property
 
-   evas_object_event_callback_add(win, EVAS_CALLBACK_DEL, _cleanup_cb, priv);
+   gview = efl_add(EFL_UI_GRIDVIEW_CLASS, win,
+                   efl_ui_view_model_set(efl_added, model),
+                   efl_ui_gridview_layout_factory_set(efl_added, lyfac),
+                   efl_gfx_size_hint_weight_set(efl_added,
+                                                EFL_GFX_SIZE_HINT_EXPAND,
+                                                EFL_GFX_SIZE_HINT_EXPAND),
+                   efl_gfx_visible_set(efl_added, EINA_TRUE));
+
+   efl_content_set(win, gview);
+
+   efl_event_callback_add(gview, EFL_UI_GRIDVIEW_EVENT_CHILD_REALIZED, _realized_cb, imgfac);
+   efl_event_callback_add(gview, EFL_UI_GRIDVIEW_EVENT_CHILD_UNREALIZED, _unrealized_cb, imgfac);
+
    //showall
    efl_gfx_size_set(win, 320, 320);
    efl_gfx_visible_set(win, EINA_TRUE);

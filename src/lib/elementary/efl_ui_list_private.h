@@ -59,17 +59,23 @@ struct _Efl_Ui_List_Data
       int                       start;
       int                       slice;
    } realized;
+   struct {
+     int slice_start;
+     int slice;
+   } outstanding_slice;
 
    struct {
       Evas_Coord                x, y, move_diff;
       Evas_Object               *obj;
    } pan;
 
-   Efl_Ui_Layout_Factory        *factory;
-   Eina_List                    *selected_items;
    struct {
      Eina_Inarray               array;
    } items;
+
+   Efl_Ui_Layout_Factory        *factory;
+   Eina_List                    *selected_items;
+
    Eina_Stringshare             *style;
    Elm_Object_Select_Mode       select_mode;
    Elm_List_Mode                mode;
@@ -78,10 +84,7 @@ struct _Efl_Ui_List_Data
    Evas_Coord                   minw, minh;
    int                          /*average_item_size, avsom, */item_count;
    Efl_Future                   *future;
-   struct {
-     int slice_start;
-     int slice;
-   } outstanding_slice;
+
 
    Eina_Bool                    homogeneous : 1;
    Eina_Bool                    recalc : 1;

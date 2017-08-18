@@ -1,7 +1,7 @@
-struct Efl.Ui.Gridview.Item_Event
+struct Efl.Ui.Gridview.Child
 {
-   layout: Elm.Layout;
-   child: Efl.Model;
+   view: Elm.Layout;
+   model: Efl.Model;
    index: int;
    row: int;
    column: int;
@@ -26,12 +26,12 @@ class Efl.Ui.Gridview (Elm.Layout,
            [[Enable/disable homogeneous mode.]]
          }
          values {
-            homogeneous: bool; [[Assume the items within the Gridview are of
+            homogeneous: bool; [[Assume the items within the genlist are of
                                  the same height and width. Default is $false.]]
          }
       }
       @property select_mode {
-         [[Gridview select mode.]]
+         [[Listview select mode.]]
          get {}
          set {}
          values {
@@ -43,7 +43,15 @@ class Efl.Ui.Gridview (Elm.Layout,
             style: stringshare;
          }
       }
-      view_update @protected {
+      @property layout_factory {
+         [[Listview layout factory set.]]
+         set {}
+         values {
+            factory: Efl.Ui.Factory; [[The factory.]]
+         }
+      }
+      // FIMXE protected feature in baseview
+      custom_layout @protected {
          [[Update the view on the current viewport and layout the children.
           size hint of the view could be updated.]]
           params {
@@ -52,14 +60,14 @@ class Efl.Ui.Gridview (Elm.Layout,
       }
    }
    events {
-      item,realized : Efl.Ui.Gridview.Item_Event;
-      item,unrealized : Efl.Ui.Gridview.Item_Event;
-      item,focused : Efl.Ui.Gridview.Item_Event;
-      item,unfocused : Efl.Ui.Gridview.Item_Event;
-      item,highlighted : Efl.Ui.Gridview.Item_Event;
-      item,unhighlighted : Efl.Ui.Gridview.Item_Event;
-      item,selected : Efl.Ui.Gridview.Item_Event;
-      item,unselected : Efl.Ui.Gridview.Item_Event;
+      child,realized : Efl.Ui.Gridview.Child;
+      child,unrealized : Efl.Ui.Gridview.Child;
+      child,focused : Efl.Ui.Gridview.Child;
+      child,unfocused : Efl.Ui.Gridview.Child;
+      child,highlighted : Efl.Ui.Gridview.Child;
+      child,unhighlighted : Efl.Ui.Gridview.Child;
+      child,selected : Efl.Ui.Gridview.Child;
+      child,unselected : Efl.Ui.Gridview.Child;
    }
 
    implements {
@@ -82,11 +90,26 @@ class Efl.Ui.Gridview (Elm.Layout,
 //      Elm.Widget.activate;
 //      Elm.Widget.focused_item { get; }
 //      Elm.Widget.focused_object { get; }
+      Elm.Widget.on_focus;
+      Elm.Widget.focus_manager_factory;
       Elm.Widget.widget_event;
 
       Elm.Layout.sizing_eval;
       Efl.Ui.View.model { get; set; }
 
+      // List : FIXME! Gridview Need to Inherit Common parent of listview
+//      Efl.Ui.List.homogeneous { get; set; }
+//      Efl.Ui.List.default_style { get; set; }
+//      Efl.Ui.List.select_mode { get; set; }
+//      Efl.Ui.List.layout_factory { set; }
+//      Efl.Ui.List.custom_layout;
+//      Efl.Ui.List.child_new;
+//      Efl.Ui.List.child_remove;
+//      Efl.Ui.List.child_realize;
+//      Efl.Ui.List.child_unrealize;
+//      Efl.Ui.List.child_calculate;
+
+//      Elm.Interface_Scrollable.region_bring_in;
       Elm.Interface.Atspi_Accessible.children { get; }
       Elm.Interface.Atspi_Widget_Action.elm_actions { get; }
       Elm.Interface.Atspi.Selection.selected_children_count { get; }
