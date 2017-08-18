@@ -469,6 +469,15 @@ _efl_animation_instance_reverse_member_start(Eo *eo_obj,
 }
 
 EOLIAN static void
+_efl_animation_instance_reverse_initial_state_set(Eo *eo_obj,
+                                                  Evas_Object_Animation_Instance_Data *pd)
+{
+   EFL_ANIMATION_INSTANCE_CHECK_OR_RETURN(eo_obj);
+
+   if (!pd->ended) return;
+}
+
+EOLIAN static void
 _efl_animation_instance_start_delay_set(Eo *eo_obj,
                                         Evas_Object_Animation_Instance_Data *pd,
                                         double delay_time)
@@ -656,6 +665,8 @@ EOAPI EFL_VOID_FUNC_BODY(efl_animation_instance_member_start);
 
 EOAPI EFL_VOID_FUNC_BODY(efl_animation_instance_reverse_member_start);
 
+EOAPI EFL_VOID_FUNC_BODY(efl_animation_instance_reverse_initial_state_set);
+
 EOAPI EFL_VOID_FUNC_BODY(efl_animation_instance_map_reset);
 
 EOAPI EFL_VOID_FUNC_BODY(efl_animation_instance_final_state_show);
@@ -683,6 +694,7 @@ EWAPI const Efl_Event_Description _EFL_ANIMATION_INSTANCE_EVENT_POST_END =
    EFL_OBJECT_OP_FUNC(efl_animation_instance_is_deleted, _efl_animation_instance_is_deleted), \
    EFL_OBJECT_OP_FUNC(efl_animation_instance_member_start, _efl_animation_instance_member_start), \
    EFL_OBJECT_OP_FUNC(efl_animation_instance_reverse_member_start, _efl_animation_instance_reverse_member_start), \
+   EFL_OBJECT_OP_FUNC(efl_animation_instance_reverse_initial_state_set, _efl_animation_instance_reverse_initial_state_set), \
    EFL_OBJECT_OP_FUNC(efl_animation_instance_map_reset, _efl_animation_instance_map_reset), \
    EFL_OBJECT_OP_FUNC(efl_animation_instance_final_state_show, NULL)
 

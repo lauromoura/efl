@@ -113,6 +113,7 @@ EOAPI Eina_Bool efl_animation_instance_is_deleted(Eo *obj);
 EOAPI void efl_animation_instance_member_start(Eo *obj);
 
 EOAPI void efl_animation_instance_reverse_member_start(Eo *obj);
+EOAPI void efl_animation_instance_reverse_initial_state_set(Eo *obj);
 
 EOAPI void efl_animation_instance_map_reset(Eo *obj);
 

@@ -33,6 +33,7 @@ struct _Evas_Object_Animation_Instance_Group_Sequential_Data
 
    Eina_Bool       started : 1;
    Eina_Bool       reverse_started : 1;
+   Eina_Bool       ended : 1;
    Eina_Bool       paused : 1;
    Eina_Bool       is_group_member : 1;
    Eina_Bool       direction_forward : 1;
@@ -245,6 +246,8 @@ _post_end_cb(void *data, const Efl_Event *event)
              goto next_start;
           }
 
+        pd->ended = EINA_TRUE;
+
         efl_event_callback_call(eo_obj, EFL_ANIMATION_INSTANCE_EVENT_END, NULL);
         //post end event is supported within class only (protected event)
         efl_event_callback_call(eo_obj, EFL_ANIMATION_INSTANCE_EVENT_POST_END,
@@ -292,58 +295,34 @@ _index_animation_start(Eo *eo_obj, int index, Eina_Bool direction_forward)
    if (direction_forward)
      efl_animation_instance_member_start(inst);
    else
-     efl_animation_instance_reverse_member_start(inst);
+     {
+        efl_animation_instance_reverse_initial_state_set(inst);
+        efl_animation_instance_reverse_member_start(inst);
+     }
 }
 
 static void
 _init_start(Eo *eo_obj, Evas_Object_Animation_Instance_Group_Sequential_Data *pd)
 {
    pd->started = EINA_TRUE;
+   pd->ended = EINA_FALSE;
 
    pd->remaining_repeat_count = efl_animation_instance_repeat_count_get(eo_obj);
-
-   eina_list_free(pd->finished_inst_list);
-   pd->finished_inst_list = NULL;
 
    if (pd->reverse_started)
      {
         Eina_List *instances =
            efl_animation_instance_group_instances_get(eo_obj);
-        pd->finished_inst_list = eina_list_clone(instances);
 
-        /* The last finished instance should be removed from the
-         * finished instance list because the last finished
-         * instance will be animated from the next animation
-         * frame by calling reverse_member_start().
-         * However, group animation instances may have more than
-         * one member animation instances. So the member
-         * animation instances except the last member animation
-         * instance should be remained as finished instances.
-         */
-        Efl_Animation_Instance *last_inst = NULL;
-
-        Eina_List *last_inst_list =
-           eina_list_last(pd->finished_inst_list);
-        if (last_inst_list)
-          last_inst = eina_list_data_get(last_inst_list);
-
-        if (last_inst)
-          {
-             const char *inst_class = efl_class_name_get(last_inst);
-             const char *group_class = "Efl.Animation.Instance.Group";
-             int class_len = strlen(group_class);
-             if (!inst_class || strncmp(inst_class, group_class, class_len))
-               {
-                  pd->finished_inst_list =
-                     eina_list_remove(pd->finished_inst_list, last_inst);
-               }
-          }
         pd->current_index = eina_list_count(instances) - 1;
 
         pd->direction_forward = EINA_FALSE;
      }
    else
      {
+        eina_list_free(pd->finished_inst_list);
+        pd->finished_inst_list = NULL;
+
         pd->current_index = 0;
 
         pd->direction_forward = EINA_TRUE;
@@ -444,6 +423,53 @@ _efl_animation_instance_group_sequential_efl_animation_instance_reverse_member_s
 
    _start(eo_obj, pd);
 }
+
+EOLIAN static void
+_efl_animation_instance_group_sequential_efl_animation_instance_reverse_initial_state_set(Eo *eo_obj,
+                                                                                          Evas_Object_Animation_Instance_Group_Sequential_Data *pd)
+{
+   EFL_ANIMATION_INSTANCE_GROUP_SEQUENTIAL_CHECK_OR_RETURN(eo_obj);
+
+   if (!pd->ended) return;
+
+   /* The last finished instance should be removed from the
+    * finished instance list because the last finished
+    * instance will be animated from the next animation
+    * frame by calling reverse_member_start().
+    * However, group animation instances may have more than
+    * one member animation instances. So the member
+    * animation instances except the last member animation
+    * instance should be remained as finished instances.
+    */
+   Efl_Animation_Instance *last_inst = NULL;
+
+   Eina_List *instances =
+      efl_animation_instance_group_instances_get(eo_obj);
+
+   eina_list_free(pd->finished_inst_list);
+   pd->finished_inst_list = eina_list_clone(instances);
+
+   Eina_List *last_inst_list =
+      eina_list_last(pd->finished_inst_list);
+   if (last_inst_list)
+     last_inst = eina_list_data_get(last_inst_list);
+
+   if (last_inst)
+     {
+        const char *inst_class = efl_class_name_get(last_inst);
+        const char *group_class = "Efl.Animation.Instance.Group";
+        int class_len = strlen(group_class);
+        if (!inst_class || strncmp(inst_class, group_class, class_len))
+          {
+             pd->finished_inst_list =
+                eina_list_remove(pd->finished_inst_list, last_inst);
+          }
+
+        //Set initial state of repeat reverse to the last instance
+        efl_animation_instance_reverse_initial_state_set(last_inst);
+     }
+}
+
 
 EOLIAN static void
 _efl_animation_instance_group_sequential_efl_animation_instance_start_delay_set(Eo *eo_obj,
@@ -578,6 +604,7 @@ _efl_animation_instance_group_sequential_efl_animation_instance_final_state_show
 #define EFL_ANIMATION_INSTANCE_GROUP_SEQUENTIAL_EXTRA_OPS \
    EFL_OBJECT_OP_FUNC(efl_animation_instance_member_start, _efl_animation_instance_group_sequential_efl_animation_instance_member_start), \
    EFL_OBJECT_OP_FUNC(efl_animation_instance_reverse_member_start, _efl_animation_instance_group_sequential_efl_animation_instance_reverse_member_start), \
+   EFL_OBJECT_OP_FUNC(efl_animation_instance_reverse_initial_state_set, _efl_animation_instance_group_sequential_efl_animation_instance_reverse_initial_state_set), \
    EFL_OBJECT_OP_FUNC(efl_animation_instance_final_state_show, _efl_animation_instance_group_sequential_efl_animation_instance_final_state_show), \
    EFL_OBJECT_OP_FUNC(efl_animation_instance_group_instance_add, _efl_animation_instance_group_sequential_efl_animation_instance_group_instance_add), \
    EFL_OBJECT_OP_FUNC(efl_animation_instance_group_instance_del, _efl_animation_instance_group_sequential_efl_animation_instance_group_instance_del), \

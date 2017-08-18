@@ -33,6 +33,7 @@ struct _Evas_Object_Animation_Instance_Group_Parallel_Data
 
    Eina_Bool       started : 1;
    Eina_Bool       reverse_started : 1;
+   Eina_Bool       ended : 1;
    Eina_Bool       paused : 1;
    Eina_Bool       is_group_member : 1;
    Eina_Bool       direction_forward : 1;
@@ -210,6 +211,8 @@ _post_end_cb(void *data, const Efl_Event *event)
              return;
           }
 
+        pd->ended = EINA_TRUE;
+
         efl_event_callback_call(eo_obj, EFL_ANIMATION_INSTANCE_EVENT_END, NULL);
         //post end event is supported within class only (protected event)
         efl_event_callback_call(eo_obj, EFL_ANIMATION_INSTANCE_EVENT_POST_END,
@@ -266,6 +269,14 @@ _parallel_animation_start(Eo *eo_obj,
      }
    else
      {
+        /* reverse_initial_state_set() should be called for all instances before
+         * calling reverse_member_start()
+         */
+        EINA_LIST_REVERSE_FOREACH(instances, l, inst)
+          {
+             efl_animation_instance_reverse_initial_state_set(inst);
+          }
+
         EINA_LIST_REVERSE_FOREACH(instances, l, inst)
           {
              //Data should be registered before animation instance starts
@@ -281,6 +292,7 @@ _init_start(Eo *eo_obj, Evas_Object_Animation_Instance_Group_Parallel_Data *pd)
    pd->animate_inst_index = 0;
 
    pd->started = EINA_TRUE;
+   pd->ended = EINA_FALSE;
 
    pd->remaining_repeat_count = efl_animation_instance_repeat_count_get(eo_obj);
 
@@ -288,36 +300,7 @@ _init_start(Eo *eo_obj, Evas_Object_Animation_Instance_Group_Parallel_Data *pd)
    pd->finished_inst_list = NULL;
 
    if (pd->reverse_started)
-     {
-        Eina_List *instances =
-           efl_animation_instance_group_instances_get(eo_obj);
-        pd->finished_inst_list = eina_list_clone(instances);
-
-        Eina_List *l;
-        Eina_List *l_next;
-        Efl_Animation_Instance *inst;
-        /* The finished instances should be removed from the
-         * finished instance list because the finished instances
-         * will be animated from the next animation frmae by
-         * calling reverse_member_start().
-         * However, group animation instances may have more than
-         * one member animation instances. So the member
-         * animation instances except the last member animation
-         * instance should be remained as finished instances.
-         */
-        EINA_LIST_FOREACH_SAFE(pd->finished_inst_list, l, l_next, inst)
-          {
-             const char *inst_class = efl_class_name_get(inst);
-             const char *group_class = "Efl.Animation.Instance.Group";
-             int class_len = strlen(group_class);
-             if (!inst_class || strncmp(inst_class, group_class, class_len))
-               {
-                  pd->finished_inst_list =
-                     eina_list_remove_list(pd->finished_inst_list, l);
-               }
-          }
-        pd->direction_forward = EINA_FALSE;
-     }
+     pd->direction_forward = EINA_FALSE;
    else
      pd->direction_forward = EINA_TRUE;
 
@@ -415,6 +398,46 @@ _efl_animation_instance_group_parallel_efl_animation_instance_reverse_member_sta
      }
 
    _start(eo_obj, pd);
+}
+
+EOLIAN static void
+_efl_animation_instance_group_parallel_efl_animation_instance_reverse_initial_state_set(Eo *eo_obj,
+                                                                                        Evas_Object_Animation_Instance_Group_Parallel_Data *pd)
+{
+   EFL_ANIMATION_INSTANCE_GROUP_PARALLEL_CHECK_OR_RETURN(eo_obj);
+
+   if (!pd->ended) return;
+
+   Eina_List *instances =
+      efl_animation_instance_group_instances_get(eo_obj);
+   pd->finished_inst_list = eina_list_clone(instances);
+
+   Eina_List *l;
+   Eina_List *l_next;
+   Efl_Animation_Instance *inst;
+   /* The finished instances should be removed from the
+    * finished instance list because the finished instances
+    * will be animated from the next animation frmae by
+    * calling reverse_member_start().
+    * However, group animation instances may have more than
+    * one member animation instances. So the member
+    * animation instances except the last member animation
+    * instance should be remained as finished instances.
+    */
+   EINA_LIST_FOREACH_SAFE(pd->finished_inst_list, l, l_next, inst)
+     {
+        const char *inst_class = efl_class_name_get(inst);
+        const char *group_class = "Efl.Animation.Instance.Group";
+        int class_len = strlen(group_class);
+        if (!inst_class || strncmp(inst_class, group_class, class_len))
+          {
+             pd->finished_inst_list =
+                eina_list_remove_list(pd->finished_inst_list, l);
+          }
+
+        //Set initial state of repeat reverse to the instance
+        efl_animation_instance_reverse_initial_state_set(inst);
+     }
 }
 
 EOLIAN static void
@@ -550,6 +573,7 @@ _efl_animation_instance_group_parallel_efl_animation_instance_group_instance_del
 #define EFL_ANIMATION_INSTANCE_GROUP_PARALLEL_EXTRA_OPS \
    EFL_OBJECT_OP_FUNC(efl_animation_instance_member_start, _efl_animation_instance_group_parallel_efl_animation_instance_member_start), \
    EFL_OBJECT_OP_FUNC(efl_animation_instance_reverse_member_start, _efl_animation_instance_group_parallel_efl_animation_instance_reverse_member_start), \
+   EFL_OBJECT_OP_FUNC(efl_animation_instance_reverse_initial_state_set, _efl_animation_instance_group_parallel_efl_animation_instance_reverse_initial_state_set), \
    EFL_OBJECT_OP_FUNC(efl_animation_instance_final_state_show, _efl_animation_instance_group_parallel_efl_animation_instance_final_state_show), \
    EFL_OBJECT_OP_FUNC(efl_animation_instance_group_instance_add, _efl_animation_instance_group_parallel_efl_animation_instance_group_instance_add), \
    EFL_OBJECT_OP_FUNC(efl_animation_instance_group_instance_del, _efl_animation_instance_group_parallel_efl_animation_instance_group_instance_del), \
