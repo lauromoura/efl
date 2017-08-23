@@ -3,9 +3,9 @@ class Efl.Ui.Gridview.Pan (Elm.Pan)
    [[Elementary Efl_Ui_Gridview pan class]]
    implements {
       Efl.Object.destructor;
-      Efl.Gfx.position { set; }
-      Efl.Gfx.size { set; }
-      Efl.Canvas.Group.group_calculate;
+     // Efl.Gfx.position { set; }
+     // Efl.Gfx.size { set; }
+     // Efl.Canvas.Group.group_calculate;
       Elm.Pan.content_size { get; }
       Elm.Pan.pos { get; set; }
       Elm.Pan.pos_min { get; }

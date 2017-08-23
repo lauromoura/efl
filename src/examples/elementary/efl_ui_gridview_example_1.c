@@ -130,6 +130,7 @@ elm_main(int argc, char **argv)
                    efl_gfx_size_hint_weight_set(efl_added,
                                                 EFL_GFX_SIZE_HINT_EXPAND,
                                                 EFL_GFX_SIZE_HINT_EXPAND),
+				   efl_orientation_set(efl_added, EFL_ORIENT_HORIZONTAL),
                    efl_gfx_visible_set(efl_added, EINA_TRUE));
 
    efl_content_set(win, gview);

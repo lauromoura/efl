@@ -5,6 +5,10 @@
 #include <Elementary.h>
 #include "elm_priv.h"
 
+//DEBUG-ONLY
+#include "sh_log.h"
+//END
+
 #define MY_CLASS EFL_UI_LAYOUT_FACTORY_CLASS
 #define MY_CLASS_NAME "Efl.Ui.Layout_Factory"
 
@@ -60,8 +64,14 @@ _efl_ui_layout_factory_efl_object_destructor(Eo *obj, Efl_Ui_Layout_Factory_Data
    eina_array_free(pd->layouts);
    eina_hash_free(pd->connects);
 
+   //SHPRT_ENDL
+   //SHCRI("Layout Factory Destroyed");
+   //SHPRT_ENDL
+
    efl_destructor(efl_super(obj, MY_CLASS));
 }
+
+int count;
 
 EOLIAN static Efl_Gfx *
 _efl_ui_layout_factory_efl_ui_factory_create(Eo *obj EINA_UNUSED, Efl_Ui_Layout_Factory_Data *pd
@@ -70,11 +80,18 @@ _efl_ui_layout_factory_efl_ui_factory_create(Eo *obj EINA_UNUSED, Efl_Ui_Layout_
    Efl_Gfx *layout;
    EINA_SAFETY_ON_NULL_RETURN_VAL(parent, NULL);
 
+   count++;
+
    if (eina_array_count(pd->layouts))
      {
         layout = eina_array_pop(pd->layouts);
         efl_parent_set(layout, parent);
         efl_ui_view_model_set(layout, model);
+
+         //SHPRT_ENDL
+         //SHCRI("Layout Create["_CR_"%p : %d"_CR_"] in Cache",
+         //CRBLD(CRRED, BGBLK), layout, count, CRCRI);
+         //SHPRT_ENDL
      }
    else
      {
@@ -82,6 +99,11 @@ _efl_ui_layout_factory_efl_ui_factory_create(Eo *obj EINA_UNUSED, Efl_Ui_Layout_
         efl_ui_view_model_set(layout, model);
         elm_layout_theme_set(layout, pd->klass, pd->group, pd->style);
         eina_hash_foreach(pd->connects, _model_connect, layout);
+
+         //SHPRT_ENDL
+         //SHCRI("Layout Create["_CR_"%p : %d"_CR_"] new",
+         //CRBLD(CRRED, BGBLK), layout, count, CRCRI);
+         //SHPRT_ENDL
      }
 
    return layout;
@@ -92,6 +114,13 @@ _efl_ui_layout_factory_efl_ui_factory_release(Eo *obj EINA_UNUSED, Efl_Ui_Layout
 {
    efl_ui_view_model_set(layout, NULL);
    eina_array_push(pd->layouts, layout);
+
+   count--;
+
+   //SHPRT_ENDL
+   //SHCRI("Layout Released ["_CR_"%p : %d"_CR_"]",
+   //CRBLD(CRRED, BGBLK), layout, count, CRCRI);
+   //SHPRT_ENDL
 }
 
 EOLIAN static void
