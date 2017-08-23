@@ -1,0 +1,42 @@
+import elm_general;
+
+enum Efl.Ui.Popup.Alert.Button {
+    positive = 0,
+    negative,
+    user
+}
+
+class Efl.Ui.Popup.Alert(Efl.Ui.Popup)
+{
+   methods {
+       @property title {
+           set {
+             [[Set the title of popup.]]
+           }
+           get {
+             [[Get the title of popup.]]
+           }
+           values {
+               text: string;
+           }
+       }
+       @property button {
+           set {
+             [[Set popup buttons.]]
+           }
+           values {
+               type: Efl.Ui.Popup.Alert.Button;
+               text: string;
+           }
+       }
+   }
+   implements {
+      class.constructor;
+      Efl.Object.constructor;
+      Elm.Widget.theme_apply;
+      Elm.Layout.sizing_eval;
+   }
+   events {
+      clicked;
+   }
+}
