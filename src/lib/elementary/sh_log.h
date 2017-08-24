@@ -1,7 +1,7 @@
 double START;
 static Eina_Bool sh_log = EINA_TRUE;
 static Eina_Bool sh_log_debug = EINA_TRUE;
-static Eina_Bool sh_log_info = EINA_TRUE;
+static Eina_Bool sh_log_info = EINA_FALSE;//EINA_TRUE;
 #define _CR_ "%c[%d;%d;%dm"
 #define _DEF_ "%c[%dm"
 // TEXT MODE
@@ -39,19 +39,23 @@ static Eina_Bool sh_log_info = EINA_TRUE;
 #define SHPRT(_MSG_, _MSGCR_, ...) _PRINT(_CR_ _MSG_, _MSGCR_, ## __VA_ARGS__);
 #define SHPRT_ENDL _PRINT(_DEF_"\n", DEF); fflush(stderr);
 
-#define SHCRI(MSG, ...)  if (sh_log) { \
+#define SH_IFLOG if (sh_log)
+#define SH_IFDBG if (sh_log && sh_log_debug)
+#define SH_IFINF if (sh_log && sh_log_info)
+
+#define SHCRI(MSG, ...)  SH_IFLOG { \
                            SHPRT_TIME \
                            SHPRT_LOGO("[SH-CRITICAL]", CRBLD(CRRED, BGBLK)) \
                            SHPRT_FUNC \
                            SHPRT(MSG, CRCRI, ## __VA_ARGS__) \
                            SHPRT_ENDL}
-#define SHDBG(MSG, ...)  if (sh_log && sh_log_debug) { \
+#define SHDBG(MSG, ...)  SH_IFDBG { \
                            SHPRT_TIME \
                            SHPRT_LOGO("[  SH-DEBUG ]", CRBLD(CRYLW, BGMGT)) \
                            SHPRT_FUNC \
                            SHPRT(MSG, CRDBG, ## __VA_ARGS__) \
                            SHPRT_ENDL}
-#define SHINF(MSG, ...) if (sh_log && sh_log_info) { \
+#define SHINF(MSG, ...)  SH_IFINF { \
                            SHPRT_TIME \
                            SHPRT_LOGO("[  SH-INFO  ]", CRBLD(CRGRN, BGCYN)) \
                            SHPRT_FUNC \
