@@ -4015,6 +4015,23 @@ _item_select(Elm_Gen_Item *it)
 
    sd->last_selected_item = eo_it;
 
+   //focus a widget in the item
+   {
+      Eina_List *n;
+      Elm_Widget *wid;
+
+      EINA_LIST_FOREACH(it->contents, n, wid)
+        {
+           Efl_Ui_Focus_Object *obj = efl_ui_focus_manager_find_focusable(it->base->widget, wid);
+           if (obj)
+             {
+                efl_ui_focus_manager_focus_set(it->base->widget, obj);
+                break;
+             }
+        }
+   }
+
+
    if (it->func.func) it->func.func((void *)it->func.data, WIDGET(it), eo_it);
    if (it->generation == sd->generation)
      {
