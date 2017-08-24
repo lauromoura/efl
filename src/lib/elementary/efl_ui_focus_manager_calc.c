@@ -196,6 +196,9 @@ node_item_free(Node *item)
         parent = item->tree.parent;
         T(parent).children = eina_list_remove(T(parent).children, item);
      }
+   //remove from dirty
+   Efl_Ui_Focus_Manager_Calc_Data *pd = efl_data_scope_get(item->manager, EFL_UI_FOCUS_MANAGER_CALC_CLASS);
+   pd->dirty = eina_list_remove(pd->dirty, item);
 
    //free the safed order
    ELM_SAFE_FREE(T(item).safed_order, eina_list_free);
