@@ -1,0 +1,33 @@
+import efl_animation_types;
+
+abstract Efl.Animation.Instance (Efl.Object)
+{
+   [[Efl animation instance abstract class]]
+   data: Efl_Animation_Instance_Data;
+   methods {
+      start {
+         [[Start animation.]]
+      }
+      cancel {
+         [[Cancel animation.]]
+      }
+      is_deleted @protected {
+         return: bool; [[$true if animation instance is deleted, $false otherwise.]]
+      }
+      target_state_save @protected {
+         [[Save the state of the target.]]
+      }
+      target_state_reset @protected {
+         [[Reset the state of the target to the previously saved state.]]
+      }
+   }
+   implements {
+      Efl.Object.constructor;
+      Efl.Object.destructor;
+   }
+   events {
+      start; [[Animation is going to start.]]
+      animate; [[Animation is animated.]]
+      end; [[Animation ended]]
+   }
+}
