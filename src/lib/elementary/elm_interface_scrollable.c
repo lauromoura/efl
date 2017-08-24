@@ -4696,6 +4696,8 @@ _elm_interface_scrollable_efl_object_constructor(Eo *obj, Elm_Scrollable_Smart_I
 
    efl_composite_attach(obj, pd->manager);
 
+   _efl_ui_focus_manager_redirect_events_add(pd->manager, obj);
+
    efl_event_callback_add(pd->manager, EFL_UI_FOCUS_MANAGER_EVENT_FOCUSED, _focused_element, obj);
 
    return efl_constructor(efl_super(obj, MY_SCROLLABLE_INTERFACE));
