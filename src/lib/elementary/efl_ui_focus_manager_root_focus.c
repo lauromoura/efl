@@ -20,7 +20,8 @@ typedef struct {
 static Efl_Ui_Focus_Object*
 _trap(Efl_Ui_Focus_Manager_Root_Focus_Data *pd, Efl_Ui_Focus_Object *obj)
 {
-   if (pd->rect == obj) return pd->root;
+   //FIXME pd->rect should NEVER NEVER NEVER be NULL! but something bad happens and evas_object_evas_get returns NULL.
+   if (pd->rect && pd->rect == obj) return pd->root;
    return obj;
 }
 
