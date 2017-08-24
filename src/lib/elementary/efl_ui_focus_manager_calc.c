@@ -1461,4 +1461,31 @@ _efl_ui_focus_manager_calc_efl_ui_focus_manager_logical_end(Eo *obj EINA_UNUSED,
 
   return child ? child->focusable : NULL;
 }
+
+static Efl_Ui_Focus_Object*
+_find_none_logical_node(Node *n)
+{
+   Eina_List *ln;
+   Node *child;
+
+   if (n->type == NODE_TYPE_NORMAL) return n->focusable;
+
+   EINA_LIST_FOREACH(n->tree.children, ln, child)
+     {
+        _find_none_logical_node(child);
+     }
+   return NULL;
+}
+
+EOLIAN static Efl_Ui_Focus_Object*
+_efl_ui_focus_manager_calc_efl_ui_focus_manager_find_focusable(Eo *obj EINA_UNUSED, Efl_Ui_Focus_Manager_Calc_Data *pd, Efl_Ui_Focus_Object *element)
+{
+   Node *n = eina_hash_find(pd->node_hash, &element);
+
+   if (!n) return NULL;
+
+   return _find_none_logical_node(n);
+}
+
+
 #include "efl_ui_focus_manager_calc.eo.c"

@@ -112,6 +112,13 @@ interface Efl.Ui.Focus.Manager {
             ]]
             return : Efl.Ui.Focus.Object; [[Last object]]
         }
+        find_focusable {
+            [[Return a focusable that is part of the given element]]
+            params {
+                element : Efl.Ui.Focus.Object;
+            }
+            return : Efl.Ui.Focus.Object;
+        }
     }
     events {
         redirect,changed : Efl.Ui.Focus.Manager; [[Emitted when the redirect
