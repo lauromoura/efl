@@ -559,6 +559,8 @@ class Elm.Gengrid (Efl.Ui.Layout, Elm.Interface_Scrollable,
       Elm.Widget.focus_highlight_geometry_get;
       Elm.Widget.focused_item { get; }
       Elm.Widget.item_loop_enabled { get; set; }
+      Elm.Widget.focus_manager_factory;
+      Elm.Widget.focus_register;
       Elm.Interface_Scrollable.bounce_allow { set; }
       Elm.Interface_Scrollable.policy { get; set; }
       Elm.Interface.Atspi_Accessible.children { get; }

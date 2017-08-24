@@ -3270,13 +3270,9 @@ _key_action_move(Evas_Object *obj, const char *params)
         else
           {
              Evas_Object *next = NULL;
-             next = elm_object_item_focus_next_object_get(sd->focused_item,
-                                                          ELM_FOCUS_LEFT);
+             next = efl_ui_focus_manager_move(obj, direction);
              if (next)
-               {
-                  elm_object_focus_set(next, EINA_TRUE);
-                  return EINA_TRUE;
-               }
+               return EINA_TRUE;
           }
         return _focus_move(obj, sd, direction);
 
@@ -5717,10 +5713,22 @@ _elm_gengrid_elm_interface_atspi_selection_child_deselect(Eo *obj EINA_UNUSED, E
    return EINA_FALSE;
 }
 
+static EOLIAN Efl_Ui_Focus_Manager*
+_elm_gengrid_elm_widget_focus_manager_factory(Eo *obj EINA_UNUSED, Elm_Gengrid_Data *pd EINA_UNUSED, Efl_Ui_Focus_Object *root)
+{
+   return efl_add(EFL_UI_FOCUS_MANAGER_ROOT_FOCUS_CLASS, NULL, efl_ui_focus_manager_root_set(efl_added, root));
+}
+
+static EOLIAN Eina_Bool
+_elm_gengrid_elm_widget_focus_register(Eo *obj EINA_UNUSED, Elm_Gengrid_Data *pd EINA_UNUSED, Efl_Ui_Focus_Manager *manager, Efl_Ui_Focus_Object *logical, Eina_Bool *logical_flag)
+{
+   *logical_flag = EINA_TRUE;
+   return efl_ui_focus_manager_calc_register_logical(manager, obj, logical, NULL);
+}
+
 /* Standard widget overrides */
 
 ELM_WIDGET_KEY_DOWN_DEFAULT_IMPLEMENT(elm_gengrid, Elm_Gengrid_Data)
-
 /* Internal EO APIs and hidden overrides */
 
 #define ELM_GENGRID_EXTRA_OPS \
