@@ -989,6 +989,7 @@ _coords_movement(Efl_Ui_Focus_Manager_Calc_Data *pd, Node *upper, Efl_Ui_Focus_D
       Eina_Vector2 elem, other;
       float min_distance = 0.0;
 
+      candidate = NULL;
 
       _get_middle(upper->focusable, &elem);
 
