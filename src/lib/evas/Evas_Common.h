@@ -3344,6 +3344,13 @@ typedef Eo Efl_Animation_Rotate;
 
 #endif
 
+#ifndef _EFL_ANIMATION_SCALE_EO_CLASS_TYPE
+#define _EFL_ANIMATION_SCALE_EO_CLASS_TYPE
+
+typedef Eo Efl_Animation_Scale;
+
+#endif
+
 #ifndef _EFL_ANIMATION_INSTANCE_EO_CLASS_TYPE
 #define _EFL_ANIMATION_INSTANCE_EO_CLASS_TYPE
 
