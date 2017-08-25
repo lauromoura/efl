@@ -34,5 +34,6 @@ class Efl.Animation.Rotate (Efl.Animation)
    implements {
       Efl.Object.constructor;
       Efl.Animation.duration { set; }
+      Efl.Animation.instance_create;
    }
 }

@@ -99,6 +99,14 @@ EOAPI void efl_animation_instance_alpha_set(Eo *obj, double from_alpha, double t
 EOAPI void efl_animation_instance_alpha_get(const Eo *obj, double *from_alpha, double *to_alpha);
 /* Efl.Animation.Instance.Alpha END */
 
+/* Efl.Animation.Instance.Rotate */
+EOAPI void efl_animation_instance_rotate_set(Eo *obj, double from_degree, double to_degree, Efl_Canvas_Object *pivot, double cx, double cy);
+EOAPI void efl_animation_instance_rotate_get(const Eo *obj, double *from_degree, double *to_degree, Efl_Canvas_Object **pivot, double *cx, double *cy);
+
+EOAPI void efl_animation_instance_rotate_absolute_set(Eo *obj, double from_degree, double to_degree, int cx, int cy);
+EOAPI void efl_animation_instance_rotate_absolute_get(const Eo *obj, double *from_degree, double *to_degree, int *cx, int *cy);
+/* Efl.Animation.Instance.Rotate END */
+
 #ifdef __cplusplus
 }
 #endif
