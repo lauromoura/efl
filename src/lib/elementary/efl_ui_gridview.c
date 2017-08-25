@@ -96,7 +96,7 @@ _efl_ui_gridview_pan_elm_pan_pos_set(Eo *obj,
    else
      {
         EINA_INARRAY_FOREACH(&pd->items.array, gitem)
-          efl_gfx_position_set(gitem->layout, (gitem->x + 0 - pd->pan.x), (gitem->y + 0 - pd->pan.y));
+          efl_gfx_position_set(gitem->layout, (gitem->geo.x + 0 - pd->pan.x), (gitem->geo.y + 0 - pd->pan.y));
      }
 }
 
@@ -216,18 +216,18 @@ _efl_ui_gridview_pan_efl_canvas_group_group_calculate(Eo *obj,
    if (abs(pd->pan.diff) > cw)
      {
         pd->pan.diff = 0;
-        pd->need_reload = EINA_TRUE;
+        pd->need.reload = EINA_TRUE;
         skipped = EINA_TRUE;
      }
 
    SHINF("Group Need to Re-Load Items");
-   if (pd->need_reload)
+   if (pd->need.reload)
      {
-        pd->on_load = _update_items(pd->obj, pd);
-        pd->need_reload = EINA_FALSE;
-        pd->need_recalc = EINA_FALSE;
+        pd->on.load = _update_items(pd->obj, pd);
+        pd->need.reload = EINA_FALSE;
+        pd->need.recalc = EINA_FALSE;
      }
-   if (!pd->on_load && pd->need_update)
+   if (!pd->on.load && pd->need.update)
      {
         SHDBG("Group Need to be Update");
         _view_update_internal(pd->obj);
@@ -236,7 +236,7 @@ _efl_ui_gridview_pan_efl_canvas_group_group_calculate(Eo *obj,
      if (skipped || (ow < 1 || oh < 1)) goto super;
 
      EINA_ARRAY_ITER_NEXT(pd->items, i, gitem, iterator)
-       efl_gfx_position_set(gitem->layout, (gitem->x + 0 - pd->pan.x), (gitem->y + 0 - pd->pan.y));
+       efl_gfx_position_set(gitem->layout, (gitem->geo.x + 0 - pd->pan.x), (gitem->geo.y + 0 - pd->pan.y));
 
 super :
 */
@@ -373,9 +373,9 @@ _on_item_mouse_down(void *data,
    EFL_UI_GRIDVIEW_DATA_GET_OR_RETURN(item->widget, pd);
 
    if (ev->button != 1) return;
-   if (ev->event_flags & EVAS_EVENT_FLAG_ON_HOLD) pd->on_hold = EINA_TRUE;
-   else pd->on_hold = EINA_FALSE;
-   if (pd->on_hold) return;
+   if (ev->event_flags & EVAS_EVENT_FLAG_ON_HOLD) pd->on.hold = EINA_TRUE;
+   else pd->on.hold = EINA_FALSE;
+   if (pd->on.hold) return;
 
    item->down = EINA_TRUE;
    assert(item->longpressed == EINA_FALSE);
@@ -401,9 +401,9 @@ _on_item_mouse_up(void *data,
    EFL_UI_GRIDVIEW_DATA_GET_OR_RETURN(item->widget, pd);
 
    if (ev->button != 1) return;
-   if (ev->event_flags & EVAS_EVENT_FLAG_ON_HOLD) pd->on_hold = EINA_TRUE;
-   else pd->on_hold = EINA_FALSE;
-   if (pd->on_hold || !item->down) return;
+   if (ev->event_flags & EVAS_EVENT_FLAG_ON_HOLD) pd->on.hold = EINA_TRUE;
+   else pd->on.hold = EINA_FALSE;
+   if (pd->on.hold || !item->down) return;
 
    item->down = EINA_FALSE;
    ELM_SAFE_FREE(item->long_timer, ecore_timer_del);
@@ -537,8 +537,8 @@ _gv_item_line_item_add(Efl_Ui_Gridview_Data *pd,
    efl_gfx_size_get(pd->pan.obj, &vw, &vh);
 
   if (!line ||
-      (horiz && (vh < (h + line->h))) ||
-      (!horiz && (vw < (w + line->w))))
+      (horiz && (vh < (h + line->geo.h))) ||
+      (!horiz && (vw < (w + line->geo.w))))
     {
        line = calloc(1, sizeof(GV_Item_Line));
        if (!pd->lines.first) pd->lines.first = EINA_INLIST_GET(line);
@@ -765,9 +765,9 @@ _child_release(Efl_Ui_Gridview_Data *pd,
      efl_ui_factory_release(pd->factory, item->layout);
    item->layout = NULL;
    if (_horiz(pd->orient))
-     pd->realized.w -= item->w;
+     pd->realized.w -= item->geo.w;
    else
-     pd->realized.h -= item->h;
+     pd->realized.h -= item->geo.h;
 }
 
 static void
@@ -1178,14 +1178,14 @@ _efl_ui_gridview_homogeneous_set(Eo *obj EINA_UNUSED,
                                  Efl_Ui_Gridview_Data *pd,
                                  Eina_Bool homogeneous)
 {
-   pd->on_homogeneous = homogeneous;
+   pd->on.homogeneous = homogeneous;
 }
 
 EOLIAN static Eina_Bool
 _efl_ui_gridview_homogeneous_get(Eo *obj EINA_UNUSED,
                                  Efl_Ui_Gridview_Data *pd)
 {
-   return pd->on_homogeneous;
+   return pd->on.homogeneous;
 }
 
 EOLIAN static void
@@ -1228,16 +1228,7 @@ _efl_ui_gridview_efl_canvas_group_group_calculate(Eo *obj,
                                                   Efl_Ui_Gridview_Data *pd)
 {
    ELM_WIDGET_DATA_GET_OR_RETURN(pd->obj, wd);
-   if (pd->need_recalc) return;
-
-   int w, h, rw, rh, cw, ch;
-   efl_gfx_size_get(wd->resize_obj, &rw, &rh);
-   elm_interface_scrollable_content_viewport_geometry_get(pd->obj, NULL, NULL, &w, &h);
-
-   elm_interface_scrollable_content_size_get(pd->obj, &cw, &ch);
-
-   SHDBG(" pan calculate! ["_CR_"%d, %d : %d, %d -- %d, %d"_CR_"]", CRBLD(CRRED,BGBLK), w, h, rw, rh, cw, ch, CRDBG);
-
+   if (pd->need.recalc) return;
 
    //FIMXE: Mostly This Group Calculate not necessary
    efl_ui_gridview_custom_layout(obj, EINA_TRUE);
@@ -1258,18 +1249,7 @@ _efl_ui_gridview_efl_gfx_position_set(Eo *obj,
    efl_gfx_position_set(pd->pan.obj, x - pd->pan.x, y - pd->pan.y);
    efl_canvas_group_change(pd->obj);
 }
-/*
-EOLIAN static void
-_efl_ui_gridview_elm_interface_scrollable_region_bring_in(Eo *obj,
-                                                          Efl_Ui_Gridview_Data *pd,
-                                                          Evas_Coord x,
-                                                          Evas_Coord y,
-                                                          Evas_Coord w,
-                                                          Evas_Coord h)
-{
-   elm_interface_scrollable_region_bring_in(efl_super(obj, MY_CLASS), x + pd->pan.x, y + pd->pan.y, w, h);
-}
-*/
+
 EOLIAN static void
 _efl_ui_gridview_efl_gfx_size_set(Eo *obj,
                                   Efl_Ui_Gridview_Data *pd,
@@ -1969,9 +1949,14 @@ _items_position_update(Eina_List **items, Eina_List **cache, Efl_Ui_Gridview_Dat
      {
         if (!calc || !calc->item) continue;
         item = calc->item;
- SHDBG("["_CR_"%d"_CR_"]["_CR_"%d,%d"_CR_"] [%d, %d, %d, %d]", CRBLD(CRBLK, BGRED), item->index, CRDBG, CRBLD(CRBLK, BGGRN), item->matrix[0], item->matrix[1], CRCRI, item->x, item->y, calc->w, calc->h);
 
-        efl_gfx_geometry_set(item->layout, (item->x - pd->pan.x), (item->y - pd->pan.y), calc->w, calc->h);
+        //DEBUG
+        SHDBG("["_CR_"%d"_CR_"]["_CR_"%d,%d"_CR_"] [%d, %d, %d, %d]",
+               CRBLD(CRBLK, BGRED), item->index, CRDBG,
+               CRBLD(CRBLK, BGGRN), item->matrix[0], item->matrix[1], CRCRI,
+               item->geo.x, item->geo.y, calc->w, calc->h);
+
+        efl_gfx_geometry_set(item->layout, (item->geo.x - pd->pan.x), (item->geo.y - pd->pan.y), calc->w, calc->h);
         if (cache)
           {
              calc->item = NULL;
@@ -1988,7 +1973,7 @@ _efl_ui_gridview_custom_layout(Eo *obj,
                                Efl_Ui_Gridview_Data *pd,
                                Eina_Bool sync EINA_UNUSED)
 {
-   //pd->need_update = EINA_TRUE;
+   //pd->need.update = EINA_TRUE;
 
    SHDBG("View will be Updated");
 
@@ -2302,8 +2287,8 @@ _custom_layout_internal(Eo *obj)
           }
 
 
-        gitem->x = x;
-        gitem->y = y;
+        gitem->geo.x = x;
+        gitem->geo.y = y;
         gitem->matrix[0] = row;
         gitem->matrix[1] = col;
 

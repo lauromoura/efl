@@ -17,21 +17,22 @@ typedef struct _GV_Item_Line GV_Item_Line;
 
 struct _Efl_Ui_Gridview_Item
 {
+   unsigned int                 index;
    Eo                           *widget;
    Efl_Model                    *model;
    Elm_Layout                   *layout;
    Efl_Future                   *future;
    GV_Item_Line                 *line;
 
-   unsigned int                 index;
-   int                          matrix[2]; // 0 :row,1 :col
-   int                          x, y, w, h;
+   Eina_Rectangle               geo;
    int                          minw, minh;
    double                       wx, wy;
    Eina_Bool                    down: 1;
    Eina_Bool                    selected: 1;
    Eina_Bool                    longpressed : 1;
    Efl_Loop_Timer               *long_timer;
+
+   int                          matrix[2]; // 0 :row,1 :col
 };
 
 struct _GV_Item_Line
@@ -40,7 +41,7 @@ struct _GV_Item_Line
    Eina_List                    *items; //neccesary??
    int                          matrix[2]; // 0 :row,1 :col
    int                          maxw, maxh;
-   int                          x, y, w, h;
+   Eina_Rectangle               geo;
 };
 
 typedef struct _Efl_Ui_Gridview_Data Efl_Ui_Gridview_Data;
@@ -101,15 +102,18 @@ struct _Efl_Ui_Gridview_Data
    Elm_Object_Select_Mode       select_mode;
    Elm_List_Mode                mode;
    int                          minw, minh;
-   //int                          avgitw, avgith, avgsum,
 
+   struct {
+   Eina_Bool                    homogeneous : 1;
+   Eina_Bool                    hold : 1;
+   Eina_Bool                    load : 1;
+   } on;
 
-   Eina_Bool                    on_homogeneous : 1;
-   Eina_Bool                    on_hold : 1;
-   Eina_Bool                    on_load : 1;
-   Eina_Bool                    need_recalc : 1;
-   Eina_Bool                    need_update : 1;
-   Eina_Bool                    need_reload : 1;
+   struct {
+   Eina_Bool                    recalc : 1;
+   Eina_Bool                    update : 1;
+   Eina_Bool                    reload : 1;
+   } need;
 };
 
 typedef struct _Efl_Ui_Gridview_Pan_Data Efl_Ui_Gridview_Pan_Data;
