@@ -1,0 +1,12 @@
+import efl_animation_types;
+
+class Efl.Animation.Instance.Group.Parallel (Efl.Animation.Instance.Group)
+{
+   [[Efl group parallel animation instance class]]
+   data: Efl_Animation_Instance_Group_Parallel_Data;
+   methods {
+   }
+   implements {
+      Efl.Animation.Instance.progress_set;
+   }
+}
