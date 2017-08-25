@@ -30,6 +30,7 @@ typedef struct _Efl_Animation_Object_Data
    double             progress;
 
    double             duration;
+   double             total_duration;
 
    Eina_Bool          is_deleted : 1;
    Eina_Bool          is_cancelled : 1;
