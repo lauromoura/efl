@@ -6,5 +6,6 @@ class Efl.Animation.Instance.Scale (Efl.Animation.Instance)
    data: Efl_Animation_Instance_Scale_Data;
    implements {
       Efl.Object.constructor;
+      Efl.Animation.Instance.progress_set;
    }
 }

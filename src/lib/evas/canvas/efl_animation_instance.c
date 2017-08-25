@@ -201,6 +201,8 @@ _animator_cb(void *data)
    //Reset previous animation effect before applying animation effect
    efl_animation_instance_target_state_reset(eo_obj);
 
+   efl_animation_instance_progress_set(eo_obj, pd->progress);
+
    //pre animate event is supported within class only (protected event)
    efl_event_callback_call(eo_obj, EFL_ANIMATION_INSTANCE_EVENT_PRE_ANIMATE,
                            &event_info);

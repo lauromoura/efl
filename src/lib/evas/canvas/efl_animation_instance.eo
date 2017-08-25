@@ -20,10 +20,17 @@ abstract Efl.Animation.Instance (Efl.Object)
       target_state_reset @protected {
          [[Reset the state of the target to the previously saved state.]]
       }
+      progress_set @protected {
+         [[Display the moment of animation according to the given progress.]]
+         params {
+            @in progress: double; [[The value between 0.0 and 1.0 which indicates the progress of the animation]]
+         }
+      }
    }
    implements {
       Efl.Object.constructor;
       Efl.Object.destructor;
+      @empty .progress_set;
    }
    events {
       start; [[Animation is going to start.]]

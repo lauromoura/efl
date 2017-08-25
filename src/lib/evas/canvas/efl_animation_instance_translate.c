@@ -209,12 +209,16 @@ _progress_set(Eo *eo_obj, double progress)
    evas_object_move(target, new_x, new_y);
 }
 
-static void
-_pre_animate_cb(void *data EINA_UNUSED, const Efl_Event *event)
+EOLIAN static void
+_efl_animation_instance_translate_efl_animation_instance_progress_set(Eo *eo_obj,
+                                                                      Efl_Animation_Instance_Translate_Data *pd EINA_UNUSED,
+                                                                      double progress)
 {
-   Efl_Animation_Instance_Animate_Event_Info *event_info = event->info;
+   EFL_ANIMATION_INSTANCE_TRANSLATE_CHECK_OR_RETURN(eo_obj);
 
-   _progress_set(event->object, event_info->progress);
+   if ((progress < 0.0) || (progress > 1.0)) return;
+
+   _progress_set(eo_obj, progress);
 }
 
 EOLIAN static Efl_Object *
@@ -241,10 +245,6 @@ _efl_animation_instance_translate_efl_object_constructor(Eo *eo_obj,
    //pre start event is supported within class only (protected event)
    efl_event_callback_add(eo_obj, EFL_ANIMATION_INSTANCE_EVENT_PRE_START,
                           _pre_start_cb, NULL);
-
-   //pre animate event is supported within class only (protected event)
-   efl_event_callback_add(eo_obj, EFL_ANIMATION_INSTANCE_EVENT_PRE_ANIMATE,
-                          _pre_animate_cb, NULL);
 
    return eo_obj;
 }

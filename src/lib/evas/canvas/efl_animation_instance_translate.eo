@@ -6,5 +6,6 @@ class Efl.Animation.Instance.Translate (Efl.Animation.Instance)
    data: Efl_Animation_Instance_Translate_Data;
    implements {
       Efl.Object.constructor;
+      Efl.Animation.Instance.progress_set;
    }
 }

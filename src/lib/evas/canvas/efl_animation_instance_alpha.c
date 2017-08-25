@@ -69,12 +69,16 @@ _progress_set(Eo *eo_obj, double progress)
      }
 }
 
-static void
-_pre_animate_cb(void *data EINA_UNUSED, const Efl_Event *event)
+EOLIAN static void
+_efl_animation_instance_alpha_efl_animation_instance_progress_set(Eo *eo_obj,
+                                                                  Efl_Animation_Instance_Alpha_Data *pd EINA_UNUSED,
+                                                                  double progress)
 {
-   Efl_Animation_Instance_Animate_Event_Info *event_info = event->info;
+   EFL_ANIMATION_INSTANCE_ALPHA_CHECK_OR_RETURN(eo_obj);
 
-   _progress_set(event->object, event_info->progress);
+   if ((progress < 0.0) || (progress > 1.0)) return;
+
+   _progress_set(eo_obj, progress);
 }
 
 EOLIAN static Efl_Object *
@@ -85,10 +89,6 @@ _efl_animation_instance_alpha_efl_object_constructor(Eo *eo_obj,
 
    pd->from.alpha = 1.0;
    pd->to.alpha = 1.0;
-
-   //pre animate event is supported within class only (protected event)
-   efl_event_callback_add(eo_obj, EFL_ANIMATION_INSTANCE_EVENT_PRE_ANIMATE,
-                          _pre_animate_cb, NULL);
 
    return eo_obj;
 }

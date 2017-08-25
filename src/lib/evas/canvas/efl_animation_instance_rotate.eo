@@ -6,5 +6,6 @@ class Efl.Animation.Instance.Rotate (Efl.Animation.Instance)
    data: Efl_Animation_Instance_Rotate_Data;
    implements {
       Efl.Object.constructor;
+      Efl.Animation.Instance.progress_set;
    }
 }
