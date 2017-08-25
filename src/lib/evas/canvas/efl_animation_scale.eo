@@ -38,5 +38,6 @@ class Efl.Animation.Scale (Efl.Animation)
    implements {
       Efl.Object.constructor;
       Efl.Animation.duration { set; }
+      Efl.Animation.instance_create;
    }
 }
