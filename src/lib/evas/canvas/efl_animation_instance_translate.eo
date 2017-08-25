@@ -1,0 +1,10 @@
+import efl_animation_types;
+
+class Efl.Animation.Instance.Translate (Efl.Animation.Instance)
+{
+   [[Efl translate animation instance class]]
+   data: Efl_Animation_Instance_Translate_Data;
+   implements {
+      Efl.Object.constructor;
+   }
+}
