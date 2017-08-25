@@ -94,6 +94,11 @@ EWAPI extern const Efl_Event_Description _EFL_ANIMATION_INSTANCE_EVENT_PRE_ANIMA
 #define EFL_ANIMATION_INSTANCE_EVENT_PRE_ANIMATE (&(_EFL_ANIMATION_INSTANCE_EVENT_PRE_ANIMATE))
 /* Efl.Animation.Instance END */
 
+/* Efl.Animation.Instance.Alpha */
+EOAPI void efl_animation_instance_alpha_set(Eo *obj, double from_alpha, double to_alpha);
+EOAPI void efl_animation_instance_alpha_get(const Eo *obj, double *from_alpha, double *to_alpha);
+/* Efl.Animation.Instance.Alpha END */
+
 #ifdef __cplusplus
 }
 #endif

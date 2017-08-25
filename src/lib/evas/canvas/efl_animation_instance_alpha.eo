@@ -1,0 +1,10 @@
+import efl_animation_types;
+
+class Efl.Animation.Instance.Alpha (Efl.Animation.Instance)
+{
+   [[Efl alpha animation instance class]]
+   data: Efl_Animation_Instance_Alpha_Data;
+   implements {
+      Efl.Object.constructor;
+   }
+}
