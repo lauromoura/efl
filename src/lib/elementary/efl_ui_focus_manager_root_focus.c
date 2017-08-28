@@ -20,8 +20,7 @@ typedef struct {
 static Efl_Ui_Focus_Object*
 _trap(Efl_Ui_Focus_Manager_Root_Focus_Data *pd, Efl_Ui_Focus_Object *obj)
 {
-   //FIXME pd->rect should NEVER NEVER NEVER be NULL! but something bad happens and evas_object_evas_get returns NULL.
-   if (pd->rect && pd->rect == obj) return pd->root;
+   if (pd->rect == obj) return pd->root;
    return obj;
 }
 
@@ -129,6 +128,9 @@ _efl_ui_focus_manager_root_focus_efl_object_finalize(Eo *obj, Efl_Ui_Focus_Manag
 
    pd->root = efl_ui_focus_manager_root_get(obj);
    pd->rect = evas_object_rectangle_add(evas_object_evas_get(pd->root));
+
+   EINA_SAFETY_ON_NULL_RETURN_VAL(pd->rect, NULL);
+
    pd->iterator_list = eina_list_append(pd->iterator_list, pd->root);
 
    _state_eval(obj, pd);
