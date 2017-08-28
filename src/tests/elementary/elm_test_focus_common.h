@@ -10,6 +10,30 @@
 #include <Elementary.h>
 #include "elm_suite.h"
 #include "elm_widget.h"
+
+
+#ifdef EAPI
+# undef EAPI
+#endif
+
+#ifdef _WIN32
+# ifdef DLL_EXPORT
+#  define EAPI __declspec(dllexport)
+# else
+#  define EAPI
+# endif
+#else
+# ifdef __GNUC__
+#  if __GNUC__ >= 4
+#   define EAPI __attribute__ ((visibility("default")))
+#  else
+#   define EAPI
+#  endif
+# else
+#  define EAPI
+# endif
+#endif
+
 #include "focus_test.eo.h"
 
 #define TEST_OBJ_NEW(name, x, y, w, h) \

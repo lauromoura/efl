@@ -165,7 +165,7 @@ _elm_code_widget_status_type_get(Elm_Code_Widget *widget, Elm_Code_Line *line, u
    return ELM_CODE_STATUS_TYPE_DEFAULT;
 }
 
-static void
+EAPI void
 _elm_code_widget_fill_line_tokens(Elm_Code_Widget *widget, Evas_Textgrid_Cell *cells,
                                   unsigned int count, Elm_Code_Line *line)
 {
@@ -1404,7 +1404,7 @@ _elm_code_widget_tab_at_cursor_insert(Elm_Code_Widget *widget)
      }
 }
 
-void
+EAPI void
 _elm_code_widget_newline(Elm_Code_Widget *widget)
 {
    Elm_Code *code;
@@ -1490,7 +1490,7 @@ _elm_code_widget_backspaceline(Elm_Code_Widget *widget, Eina_Bool nextline)
    efl_event_callback_legacy_call(widget, ELM_OBJ_CODE_WIDGET_EVENT_CHANGED_USER, NULL);
 }
 
-void
+EAPI void
 _elm_code_widget_backspace(Elm_Code_Widget *widget)
 {
    Elm_Code *code;
@@ -1536,7 +1536,7 @@ _elm_code_widget_backspace(Elm_Code_Widget *widget)
    _elm_code_widget_change_free(change);
 }
 
-void
+EAPI void
 _elm_code_widget_delete(Elm_Code_Widget *widget)
 {
    Elm_Code *code;
