@@ -203,6 +203,8 @@ bin_ecore_con_efl_net_proxy_helper_DEPENDENCIES = @USE_EINA_INTERNAL_LIBS@
 ### Unit tests
 
 if EFL_ENABLE_TESTS
+if HAVE_WINDOWS
+else
 
 check_PROGRAMS += tests/ecore_con/ecore_con_suite
 TESTS += tests/ecore_con/ecore_con_suite
@@ -231,6 +233,7 @@ tests_ecore_con_ecore_con_suite_DEPENDENCIES = \
 @USE_ECORE_INTERNAL_LIBS@ \
 @USE_ECORE_CON_INTERNAL_LIBS@
 
+endif
 endif
 
 if HAVE_ELUA
