@@ -107,5 +107,23 @@ interface Efl.Ui.Range
             to: double; [[Interval maximum value]]
          }
       }
+      @property range_step {
+         [[Control the step used to increment or decrement the spinner value.
+
+           This value will be incremented or decremented to the displayed value.
+           It will be incremented while the user keep right or top arrow pressed,
+           and will be decremented while the user keep left or bottom arrow pressed.
+
+           The interval to increment / decrement can be set with @.range_interval.set.
+
+           By default step value is equal to 1.]]
+         set {
+         }
+         get {
+         }
+         values {
+            step: double; [[The step value.]]
+         }
+      }
    }
 }
