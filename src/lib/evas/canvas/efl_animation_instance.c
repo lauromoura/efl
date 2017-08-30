@@ -152,6 +152,18 @@ _efl_animation_instance_target_state_reset(Eo *eo_obj,
 }
 
 EOLIAN static void
+_efl_animation_instance_target_map_reset(Eo *eo_obj,
+                                         Efl_Animation_Instance_Data *pd)
+{
+   EFL_ANIMATION_INSTANCE_CHECK_OR_RETURN(eo_obj);
+
+   if (!pd->target) return;
+
+   if (efl_gfx_map_has(pd->target))
+     efl_gfx_map_reset(pd->target);
+}
+
+EOLIAN static void
 _efl_animation_instance_final_state_keep_set(Eo *eo_obj,
                                              Efl_Animation_Instance_Data *pd,
                                              Eina_Bool keep_final_state)
@@ -178,28 +190,42 @@ _animator_cb(void *data)
    Eo *eo_obj = data;
    EFL_ANIMATION_INSTANCE_DATA_GET(eo_obj, pd);
 
+   if (pd->is_paused)
+     {
+        pd->animator = NULL;
+        return ECORE_CALLBACK_CANCEL;
+     }
+
    if (pd->is_cancelled) goto end;
 
-   double elapsed_time, total_duration;
+   double paused_time = pd->paused_time;
+
+   double total_duration = pd->total_duration;
 
    pd->time.current = ecore_loop_time_get();
-   elapsed_time = pd->time.current - pd->time.begin;
-   total_duration = pd->total_duration;
-   if (elapsed_time > total_duration)
-     elapsed_time = total_duration;
+   double elapsed_time = pd->time.current - pd->time.begin;
+
+   if ((elapsed_time - paused_time) > total_duration)
+     elapsed_time = total_duration + paused_time;
 
    if (total_duration < 0.0) goto end;
 
    if (total_duration == 0.0)
      pd->progress = 1.0;
    else
-     pd->progress = elapsed_time / total_duration;
+     pd->progress = (elapsed_time - paused_time) / total_duration;
 
    Efl_Animation_Instance_Animate_Event_Info event_info;
    event_info.progress = pd->progress;
 
    //Reset previous animation effect before applying animation effect
-   efl_animation_instance_target_state_reset(eo_obj);
+   /* FIXME: When the target state is saved, it may not be finished to calculate
+    * target geometry.
+    * In this case, incorrect geometry is saved and the target moves to the
+    * incorrect position when animation is paused and resumed.
+    * As a result, flicking issue happens.
+    * To avoid the flicking issue, reset map only during animation. */
+   efl_animation_instance_target_map_reset(eo_obj);
 
    efl_animation_instance_progress_set(eo_obj, pd->progress);
 
@@ -208,10 +234,12 @@ _animator_cb(void *data)
                            &event_info);
    efl_event_callback_call(eo_obj, EFL_ANIMATION_INSTANCE_EVENT_ANIMATE, &event_info);
 
-  //Not end. Keep going.
-   if (elapsed_time < total_duration) return ECORE_CALLBACK_RENEW;
+   //Not end. Keep going.
+   if ((elapsed_time - paused_time) < total_duration)
+     return ECORE_CALLBACK_RENEW;
 
 end:
+   pd->is_ended = EINA_TRUE;
    pd->animator = NULL;
 
    //Reset the state of the target to the initial state
@@ -232,7 +260,12 @@ _start(Eo *eo_obj, Efl_Animation_Instance_Data *pd)
    //Save the current state of the target
    efl_animation_instance_target_state_save(eo_obj);
 
+   pd->is_started = EINA_TRUE;
    pd->is_cancelled = EINA_FALSE;
+   pd->is_ended = EINA_FALSE;
+   pd->is_paused = EINA_FALSE;
+
+   pd->paused_time = 0.0;
 
    ecore_animator_del(pd->animator);
    pd->animator = NULL;
@@ -254,6 +287,8 @@ _efl_animation_instance_start(Eo *eo_obj,
 {
    EFL_ANIMATION_INSTANCE_CHECK_OR_RETURN(eo_obj);
 
+   if (pd->is_paused) return;
+
    _start(eo_obj, pd);
 }
 
@@ -264,6 +299,7 @@ _efl_animation_instance_cancel(Eo *eo_obj,
    EFL_ANIMATION_INSTANCE_CHECK_OR_RETURN(eo_obj);
 
    pd->is_cancelled = EINA_TRUE;
+   pd->is_ended = EINA_TRUE;
 
    if (pd->animator)
      {
@@ -276,6 +312,43 @@ _efl_animation_instance_cancel(Eo *eo_obj,
 
         efl_event_callback_call(eo_obj, EFL_ANIMATION_INSTANCE_EVENT_END, NULL);
      }
+}
+
+EOLIAN static void
+_efl_animation_instance_pause(Eo *eo_obj,
+                              Efl_Animation_Instance_Data *pd)
+{
+   EFL_ANIMATION_INSTANCE_CHECK_OR_RETURN(eo_obj);
+
+   if (!pd->is_started) return;
+   if (pd->is_ended) return;
+   if (pd->is_paused) return;
+
+   pd->is_paused = EINA_TRUE;
+
+   ecore_animator_del(pd->animator);
+   pd->animator = NULL;
+
+   pd->time.pause_begin = ecore_loop_time_get();
+}
+
+EOLIAN static void
+_efl_animation_instance_resume(Eo *eo_obj,
+                               Efl_Animation_Instance_Data *pd)
+{
+   EFL_ANIMATION_INSTANCE_CHECK_OR_RETURN(eo_obj);
+
+   if (!pd->is_started) return;
+   if (pd->is_ended) return;
+   if (!pd->is_paused) return;
+
+   pd->is_paused = EINA_FALSE;
+
+   pd->paused_time += (ecore_loop_time_get() - pd->time.pause_begin);
+
+   pd->animator = ecore_animator_add(_animator_cb, eo_obj);
+
+   _animator_cb(eo_obj);
 }
 
 EOLIAN static Efl_Object *
