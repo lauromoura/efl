@@ -1,0 +1,12 @@
+import efl_animation_types;
+
+class Efl.Animation.Instance.Group.Sequential (Efl.Animation.Instance.Group)
+{
+   [[Efl group sequential animation instance class]]
+   data: Efl_Animation_Instance_Group_Sequential_Data;
+   methods {
+   }
+   implements {
+      Efl.Animation.Instance.progress_set;
+   }
+}
