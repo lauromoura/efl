@@ -3449,6 +3449,9 @@ struct _Efl_Animation_Object_Running_Event_Info
 
 #define EFL_ANIMATION_GROUP_DURATION_NONE -1
 
+#define EFL_ANIMATION_REPEAT_INFINITE -1
+#define EFL_ANIMATION_OBJECT_REPEAT_INFINITE -1
+
 /**
  * @}
  */
