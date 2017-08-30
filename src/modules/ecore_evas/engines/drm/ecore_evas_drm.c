@@ -172,8 +172,10 @@ _ecore_evas_drm_init(Ecore_Evas *ee, Ecore_Evas_Engine_Drm_Data *edata, const ch
    ecore_event_evas_init();
    if (!handlers)
      {
-        handlers = eina_list_append(handlers,
-          ecore_event_handler_add(ELPUT_EVENT_DEVICE_CHANGE, _drm_device_change, NULL));
+        handlers =
+          eina_list_append(handlers,
+                           ecore_event_handler_add(ELPUT_EVENT_DEVICE_CHANGE,
+                                                   _drm_device_change, NULL));
      }
 
    return _drm_init_count;
@@ -225,8 +227,8 @@ _drm_rotation_do(Ecore_Evas *ee, int rotation, int resize EINA_UNUSED)
    einfo = (Evas_Engine_Info_Drm *)evas_engine_info_get(ee->evas);
    if (!einfo) return;
    einfo->info.rotation = rotation;
-   if (!evas_engine_info_set(ee->evas, (Evas_Engine_Info *)einfo))
-     ERR("evas_engine_info_set() for engine '%s' failed", ee->driver);
+   /* if (!evas_engine_info_set(ee->evas, (Evas_Engine_Info *)einfo)) */
+   /*   ERR("evas_engine_info_set() for engine '%s' failed", ee->driver); */
 }
 
 static void
@@ -925,6 +927,7 @@ _ecore_evas_new_internal(const char *device, int x, int y, int w, int h, Eina_Bo
         einfo->info.format = edata->format;
         einfo->info.rotation = ee->rotation;
         einfo->info.output = edata->output;
+
         if (!evas_engine_info_set(ee->evas, (Evas_Engine_Info *)einfo))
           {
              ERR("evas_engine_info_set() for engine '%s' failed", ee->driver);
@@ -933,22 +936,42 @@ _ecore_evas_new_internal(const char *device, int x, int y, int w, int h, Eina_Bo
      }
    else
 #endif
-   if (tinfo)
-     {
-        Evas_Engine_Info_Drm *einfo = tinfo;
+     if (tinfo)
+       {
+          Evas_Engine_Info_Drm *einfo = tinfo;
+          /* Eina_List *outputs, *l; */
+          /* Ecore_Drm2_Output *output; */
 
-        einfo->info.dev = edata->dev;
-        einfo->info.bpp = edata->bpp;
-        einfo->info.depth = edata->depth;
-        einfo->info.format = edata->format;
-        einfo->info.rotation = ee->rotation;
-        einfo->info.output = edata->output;
-        if (!evas_engine_info_set(ee->evas, (Evas_Engine_Info *)einfo))
-          {
-             ERR("evas_engine_info_set() for engine '%s' failed", ee->driver);
-             goto eng_err;
-          }
-     }
+          einfo->info.dev = edata->dev;
+          einfo->info.bpp = edata->bpp;
+          einfo->info.depth = edata->depth;
+          einfo->info.format = edata->format;
+          einfo->info.rotation = ee->rotation;
+          einfo->info.output = edata->output;
+
+          /* outputs = (Eina_List *)ecore_drm2_outputs_get(edata->dev); */
+          /* EINA_LIST_FOREACH(outputs, l, output) */
+            {
+               Efl_Canvas_Output *eout;
+
+               eout = efl_canvas_output_add(ee->evas);
+               if (eout)
+                 {
+                    int x, y, w, h;
+
+                    ecore_drm2_output_info_get(edata->output, &x, &y, &w, &h, NULL);
+
+                    efl_canvas_output_view_set(eout, x, y, w, h);
+                    efl_canvas_output_engine_info_set(eout, (Evas_Engine_Info *)einfo);
+                 }
+            }
+
+        /* if (!evas_engine_info_set(ee->evas, (Evas_Engine_Info *)einfo)) */
+        /*   { */
+        /*      ERR("evas_engine_info_set() for engine '%s' failed", ee->driver); */
+        /*      goto eng_err; */
+        /*   } */
+       }
 
    ee->prop.window = ecore_drm2_output_crtc_get(edata->output);
    ecore_drm2_device_window_set(edata->dev, ee->prop.window);
