@@ -20,11 +20,20 @@
 #define EFL_ANIMATION_INSTANCE_GROUP_SEQUENTIAL_DATA_GET(o, pd) \
    Efl_Animation_Instance_Group_Sequential_Data *pd = efl_data_scope_get(o, EFL_ANIMATION_INSTANCE_GROUP_SEQUENTIAL_CLASS)
 
+typedef struct _Member_Instance_Data
+{
+   Efl_Animation_Instance *inst;
+
+   int                     repeated_count; /* How many times instance has been
+                                            * repeated. */
+} Member_Instance_Data;
+
 typedef struct _Efl_Animation_Instance_Group_Sequential_Data
 {
    unsigned int current_index;
 
    Eina_List   *finished_inst_list;
+   Eina_List   *member_inst_data_list; //List of Member_Instance_Data
 
    Eina_Bool    is_group_member : 1;
 } Efl_Animation_Instance_Group_Sequential_Data;

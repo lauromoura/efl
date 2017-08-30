@@ -35,6 +35,9 @@ typedef struct _Efl_Animation_Instance_Data
    double             total_duration;
    double             paused_time;
 
+   int                repeat_count;
+   int                remaining_repeat_count;
+
    Eina_Bool          is_deleted : 1;
    Eina_Bool          is_started : 1;
    Eina_Bool          is_cancelled : 1;

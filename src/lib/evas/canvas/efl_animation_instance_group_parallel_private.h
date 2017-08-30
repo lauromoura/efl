@@ -20,6 +20,15 @@
 #define EFL_ANIMATION_INSTANCE_GROUP_PARALLEL_DATA_GET(o, pd) \
    Efl_Animation_Instance_Group_Parallel_Data *pd = efl_data_scope_get(o, EFL_ANIMATION_INSTANCE_GROUP_PARALLEL_CLASS)
 
+typedef struct _Member_Instance_Data
+{
+   Efl_Animation_Instance *inst;
+
+   int                     repeated_count; /* How many times instance has been
+                                            * repeated. */
+} Member_Instance_Data;
+
 typedef struct _Efl_Animation_Instance_Group_Parallel_Data
 {
+   Eina_List *member_inst_data_list; //List of Member_Instance_Data
 } Efl_Animation_Instance_Group_Parallel_Data;
