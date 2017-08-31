@@ -21,6 +21,10 @@ public class Log
             [MarshalAs(UnmanagedType.LPStr)] String name,
             [MarshalAs(UnmanagedType.LPStr)] String color);
 
+    [DllImport("eina")] private static extern void eina_log_level_set(Level level);
+
+    [DllImport("eina")] private static extern Level eina_log_level_get();
+
     public enum Level
     {
         Critical,
@@ -102,6 +106,16 @@ public class Log
     {
         EnsureDomainRegistered();
         eina_log_print(domain, Level.Debug, file, member, line, message);
+    }
+
+    public static void GlobalLevelSet(Level level)
+    {
+        eina_log_level_set(level);
+    }
+
+    public static Level GlobalLevelGet()
+    {
+        return eina_log_level_get();
     }
 }
 }
