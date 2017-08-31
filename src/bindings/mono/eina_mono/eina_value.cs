@@ -364,6 +364,8 @@ static class ValueTypeBridge
 
     private static void LoadTypes()
     {
+        eina.Config.Init(); // Make sure eina is initialized.
+
         ManagedToNative.Add(ValueType.Int32, type_int32());
         NativeToManaged.Add(type_int32(), ValueType.Int32);
 
