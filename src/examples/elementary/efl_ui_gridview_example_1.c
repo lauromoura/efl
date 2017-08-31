@@ -62,6 +62,27 @@ _unrealized_cb(void *data EINA_UNUSED, const Efl_Event *event)
    //Efl_Ui_Gridview_Child *child = event->info;
 }
 
+static void
+_selected_cb(void *data EINA_UNUSED, const Efl_Event *event)
+{
+   Efl_Ui_Gridview_Child *child = event->info;
+   int show_index = child->index + 200;
+   printf("[%p]::[%d] [%p] [%p] selected \n",event->object, child->index, child->view, child->model);
+
+   if (show_index > NUM_ITEMS)
+	 show_index = 0;
+   
+   efl_ui_gridview_show_child(event->object, show_index, 0.5, EINA_TRUE);
+}
+
+static void
+_unselected_cb(void *data EINA_UNUSED, const Efl_Event *event)
+{
+   Efl_Ui_Gridview_Child *child = event->info;
+   printf("[%p]::[%d] [%p] [%p] un-selected \n",event->object, child->index, child->view, child->model);
+}
+
+
 static Efl_Model*
 _make_model(char *dirname)
 {
@@ -137,6 +158,8 @@ elm_main(int argc, char **argv)
 
    efl_event_callback_add(gview, EFL_UI_GRIDVIEW_EVENT_CHILD_REALIZED, _realized_cb, imgfac);
    efl_event_callback_add(gview, EFL_UI_GRIDVIEW_EVENT_CHILD_UNREALIZED, _unrealized_cb, imgfac);
+   efl_event_callback_add(gview, EFL_UI_GRIDVIEW_EVENT_CHILD_SELECTED, _selected_cb, imgfac);
+   efl_event_callback_add(gview, EFL_UI_GRIDVIEW_EVENT_CHILD_UNSELECTED, _unselected_cb, imgfac);
 
    //showall
    efl_gfx_size_set(win, 320, 320);

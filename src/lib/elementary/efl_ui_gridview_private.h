@@ -30,7 +30,7 @@ struct _Efl_Ui_Gridview_Item
    Eina_Bool                    down: 1;
    Eina_Bool                    selected: 1;
    Eina_Bool                    longpressed : 1;
-   Efl_Loop_Timer               *long_timer;
+   Efl_Loop_Timer               *timer;
 
    int                          matrix[2]; // 0 :row,1 :col
 };
@@ -51,7 +51,7 @@ struct _Efl_Ui_Gridview_Data
    Eo                           *obj;
    Evas_Object                  *hit_rect;
    Efl_Model                    *model;
-   Efl_Orient                   orient; //FIXME: Efl_Direction
+   Efl_Orient                   direct; //FIXME: Efl_Direction
 
    struct {
       double                    h, v;
@@ -103,17 +103,12 @@ struct _Efl_Ui_Gridview_Data
    Elm_List_Mode                mode;
    int                          minw, minh;
 
-   struct {
-   Eina_Bool                    homogeneous : 1;
-   Eina_Bool                    hold : 1;
-   Eina_Bool                    load : 1;
-   } on;
-
-   struct {
-   Eina_Bool                    recalc : 1;
-   Eina_Bool                    update : 1;
-   Eina_Bool                    reload : 1;
-   } need;
+   Eina_Bool                    on_homogeneous : 1;
+   Eina_Bool                    on_hold : 1;
+   Eina_Bool                    on_load : 1;
+   Eina_Bool                    need_recalc : 1;
+   Eina_Bool                    need_update : 1;
+   Eina_Bool                    need_reload : 1;
 };
 
 typedef struct _Efl_Ui_Gridview_Pan_Data Efl_Ui_Gridview_Pan_Data;

@@ -1,3 +1,5 @@
+type @extern Ecore_Pos_Map: __undefined_type;
+
 struct Efl.Ui.Gridview.Child
 {
    view: Elm.Layout;
@@ -6,7 +8,15 @@ struct Efl.Ui.Gridview.Child
    row: int;
    column: int;
 }
-
+/*
+struct Efl.Ui.Gridview.Child_Show_Animation
+{
+   [[]]
+   animation: bool; [[]]
+   duration : double; [[Not Supported in Scroll Iface]]
+   tween : Ecore_Pos_Map; [[Not Supported in Scroll Iface]]
+}
+*/
 class Efl.Ui.Gridview (Elm.Layout,
                        Efl.Ui.View,
                        Elm.Interface_Scrollable,
@@ -52,6 +62,16 @@ class Efl.Ui.Gridview (Elm.Layout,
             factory: Efl.Ui.Factory; [[The factory.]]
          }
       }
+
+      show_child {
+          [[]]
+          params {
+            @in index: int; [[]]
+            @in align: double; [[between 0.0 to 1.0. -1.0 is default mode to scroll inside.]]
+            @in animation: bool; [[]]
+            //Efl.Ui.Gridview.Child_Show_Animation [[]]
+          }
+      }
       // FIMXE protected feature in baseview
       custom_layout @protected {
          [[Update the view on the current viewport and layout the children.
@@ -60,6 +80,30 @@ class Efl.Ui.Gridview (Elm.Layout,
             @in syncrnous: bool; [[]]
           }
       }
+      /*
+      @property chlid_position @protected {
+          [[]]
+          set {}
+          get {}
+          values {
+            index: int; [[]]
+            x: int; [[]]
+            y: int; [[]]
+            w: int; [[]]
+            h: int; [[]]
+          }
+      }
+      @property chlid_min @protected {
+          [[]]
+          set {}
+          get {}
+          values {
+            index: int; [[]]
+            w: int; [[]]
+            h: int; [[]]
+          }
+      }
+      */
    }
    events {
       child,realized : Efl.Ui.Gridview.Child;
@@ -111,7 +155,6 @@ class Efl.Ui.Gridview (Elm.Layout,
 //      Efl.Ui.List.child_unrealize;
 //      Efl.Ui.List.child_calculate;
 
-//      Elm.Interface_Scrollable.region_bring_in;
       Elm.Interface.Atspi_Accessible.children { get; }
       Elm.Interface.Atspi_Widget_Action.elm_actions { get; }
       Elm.Interface.Atspi.Selection.selected_children_count { get; }
