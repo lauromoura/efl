@@ -70,9 +70,12 @@ _selected_cb(void *data EINA_UNUSED, const Efl_Event *event)
    printf("[%p]::[%d] [%p] [%p] selected \n",event->object, child->index, child->view, child->model);
 
    if (show_index > NUM_ITEMS)
-	 show_index = 0;
-   
-   efl_ui_gridview_show_child(event->object, show_index, 0.5, EINA_TRUE);
+     show_index = 0;
+
+   if (show_index % 2)
+     efl_ui_gridview_show_child(event->object, show_index, EFL_UI_GRIDVIEW_SHOW_CHILD_ON_MIDDLE, EINA_TRUE);
+   else
+     efl_ui_gridview_show_child(event->object, show_index, EFL_UI_GRIDVIEW_SHOW_CHILD_ON_MIDDLE, EINA_FALSE);
 }
 
 static void

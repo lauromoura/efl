@@ -1954,8 +1954,9 @@ _efl_ui_gridview_show_child(Eo *obj,
                             double align,
                             Eina_Bool /*Efl_Ui_Gridview_Child_Show_Animation*/ animation)
 {
-   int show_x = 0, show_y = 0, aligned_w = 0, aligned_h = 0;
+   int show_x = 0, show_y = 0, aligned_w = 0, aligned_h = 0, ow = 0, oh = 0;
    int count = eina_inarray_count(&pd->items.array);
+   int horiz = _horiz(pd->direct);
    if (!count) return;
    Efl_Ui_Gridview_Item *start = pd->items.array.members;
    Efl_Ui_Gridview_Item *last = eina_inarray_nth(&(pd->items.array), (count - 1));
@@ -1963,7 +1964,13 @@ _efl_ui_gridview_show_child(Eo *obj,
    int start_idx = start->index;
    int last_idx = last->index;
 
+   if ((align < 0.0 || align > 1.0 )&& align != -1.0)
+     {
+        SHCRI("input value align["_CR_"%.2f"_CR_"] should be around 0.0 to 1.0 or INNER", CRBLD(CRRED, BGBLK), align, CRCRI);
+     }
    if (index > pd->items.count || 0 > index) return;
+
+   elm_interface_scrollable_content_viewport_geometry_get(obj, NULL, NULL, &ow, &oh);
 
    if (index > last_idx || index < start_idx)
     {
@@ -1973,7 +1980,7 @@ _efl_ui_gridview_show_child(Eo *obj,
        int line_index = index / pd->lines.mean;
        line_index = ((index % pd->lines.mean)? line_index + 1 : line_index);
 
-       if (_horiz(pd->direct))
+       if (horiz)
        {
            show_x = line_index * start->minw;
            show_y = (index % pd->lines.mean) * start->minh;
@@ -1996,6 +2003,14 @@ _efl_ui_gridview_show_child(Eo *obj,
        aligned_w = item->minw;
        aligned_h = item->minh;
     }
+
+   if (0.0 <= align <= 1.0)
+     {
+        aligned_w = ow;
+        aligned_h = oh;
+        show_x = horiz ? (show_x - (align * (ow - show_x))): show_x;
+        show_y = horiz ? show_y : (show_y - (align * (oh - show_y)));
+     }
 
    SHDBG("Index:[%d] Items:[%d] Slice:[%d, "_CR_"%d:%d"_CR_"] Dest:["_CR_"%d, %d, %d, %d"_CR_"]",
           index, pd->items.count, count,

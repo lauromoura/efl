@@ -8,14 +8,16 @@ struct Efl.Ui.Gridview.Child
    row: int;
    column: int;
 }
-/*
-struct Efl.Ui.Gridview.Child_Show_Animation
-{
-   [[]]
-   animation: bool; [[]]
-   duration : double; [[Not Supported in Scroll Iface]]
-   tween : Ecore_Pos_Map; [[Not Supported in Scroll Iface]]
-}
+
+const Efl.Ui.Gridview.Show_Child.On_Top: double = 0.0; [[]]
+const Efl.Ui.Gridview.Show_Child.On_Middle: double = 0.5; [[]]
+const Efl.Ui.Gridview.Show_Child.On_Bottom: double = 1.0; [[]]
+const Efl.Ui.Gridview.Show_Child.Inner: double = -1.0; [[]]
+/* I think it would be better...
+const Efl.Ui.Scroll.Move.On_Top: double = 0.0; [[]]
+const Efl.Ui.Scroll.Move.On_Middle: double = 0.5; [[]]
+const Efl.Ui.Scroll.Move.On_Bottom: double = 1.0; [[]]
+const Efl.Ui.Scroll.Move.Inner: double = -1.0; [[]]
 */
 class Efl.Ui.Gridview (Elm.Layout,
                        Efl.Ui.View,
