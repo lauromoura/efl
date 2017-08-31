@@ -905,7 +905,7 @@ collections {
       parts {
          rect { "base";
             desc { "default";
-               min: 100 200;
+               min: 200 200;
                color: 255 0 0 255;
             }
          }
