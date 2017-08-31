@@ -44,7 +44,7 @@ static internal class UnsafeNativeMethods {
     [DllImport("eflcustomexportsmono")]
     internal static extern int eina_value_sizeof();
 
-    [DllImport("eflcustomexportsmono", CharSet=CharSet.Auto)]
+    [DllImport("eflcustomexportsmono", CharSet=CharSet.Ansi)]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_set_wrapper(IntPtr handle, string value);
 
@@ -93,7 +93,7 @@ static internal class UnsafeNativeMethods {
     [DllImport("eflcustomexportsmono")]
     internal static extern int eina_value_compare_wrapper(IntPtr handle, IntPtr other);
 
-    [DllImport("eina", CharSet=CharSet.Auto)]
+    [DllImport("eina", CharSet=CharSet.Ansi)]
     internal static extern String eina_value_to_string(IntPtr handle); // We take ownership of the returned string.
 
     [DllImport("eflcustomexportsmono")]
@@ -152,7 +152,7 @@ static internal class UnsafeNativeMethods {
     [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_optional_pset(IntPtr handle, IntPtr subtype, ref uint value);
 
-    [DllImport("eina", CharSet=CharSet.Auto)]
+    [DllImport("eina", CharSet=CharSet.Ansi)]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_optional_pset(IntPtr handle, IntPtr subtype, ref string value);
 
@@ -775,7 +775,7 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
             value = String.Empty;
             return false;
         }
-        value = Marshal.PtrToStringAuto(output);
+        value = Marshal.PtrToStringAnsi(output);
         return true;
     }
 
