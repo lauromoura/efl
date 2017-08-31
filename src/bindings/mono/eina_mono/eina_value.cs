@@ -42,7 +42,6 @@ static internal class UnsafeNativeMethods {
 
     // Wrapped and helper methods
     [DllImport("eflcustomexportsmono")]
-    [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern int eina_value_sizeof();
 
     [DllImport("eflcustomexportsmono", CharSet=CharSet.Auto)]
