@@ -1,0 +1,29 @@
+import elm_general;
+
+class Efl.Ui.Popup.Alert.Scroll(Efl.Ui.Popup.Alert)
+{
+   methods {
+       @property expandable {
+           set {
+             [[Set the expandable of popup.
+
+               If the contents of the popup has min size, popup will be increased by min size.
+               If max hint is set, it will be increased to value of max hint,
+               and then scrolling will occur.
+             ]]
+           }
+           values {
+               is_expandable_w: bool;
+               is_expandable_h: bool;
+           }
+       }
+   }
+   implements {
+      class.constructor;
+      Efl.Object.constructor;
+      Elm.Widget.theme_apply;
+      Efl.Container.content { set; get; }
+      Elm.Layout.sizing_eval;
+      Efl.Gfx.Size.Hint.hint_max { set;}
+   }
+}
