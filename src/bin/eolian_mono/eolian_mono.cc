@@ -38,6 +38,8 @@ struct options_type
    std::string in_file;
    std::string out_file;
    std::string dllimport;
+   int v_major;
+   int v_minor;
 };
 
 efl::eina::log_domain domain("eolian_mono");
@@ -111,7 +113,7 @@ run(options_type const& opts)
            }
 
          eolian_mono::function_pointer
-           .generate(iterator, function_def, namespaces, efl::eolian::grammar::context_cons<eolian_mono::library_context>({opts.dllimport}));
+           .generate(iterator, function_def, namespaces, efl::eolian::grammar::context_cons<eolian_mono::library_context>({opts.dllimport, opts.v_major, opts.v_minor}));
      }
 
    if (klass)
@@ -120,7 +122,7 @@ run(options_type const& opts)
        std::vector<efl::eolian::grammar::attributes::klass_def> klasses{klass_def};
 
        eolian_mono::klass
-         .generate(iterator, klass_def, efl::eolian::grammar::context_cons<eolian_mono::library_context>({opts.dllimport}));
+         .generate(iterator, klass_def, efl::eolian::grammar::context_cons<eolian_mono::library_context>({opts.dllimport, opts.v_major, opts.v_minor}));
      }
    //else
      {
@@ -229,9 +231,11 @@ opts_get(int argc, char **argv)
        { "version",   no_argument,       0,  'v' },
        { "help",      no_argument,       0,  'h' },
        { "dllimport",      required_argument,       0,  'l' },
+       { "vmaj", required_argument, 0, 'M' },
+       { "vmin", required_argument, 0, 'm' },
        { 0,           0,                 0,   0  }
      };
-   const char* options = "I:D:o:c:arvh";
+   const char* options = "I:D:o:c:M:m:arvh";
 
    int c, idx;
    while ( (c = getopt_long(argc, argv, options, long_options, &idx)) != -1)
@@ -252,6 +256,14 @@ opts_get(int argc, char **argv)
         else if (c == 'l')
           {
             opts.dllimport = optarg;
+          }
+        else if (c == 'M')
+          {
+            opts.v_major = std::stoi(optarg);
+          }
+        else if (c == 'm')
+          {
+            opts.v_minor = std::stoi(optarg);
           }
         else if (c == 'v')
           {

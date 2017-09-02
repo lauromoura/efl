@@ -117,7 +117,7 @@ struct function_definition_generator
     else
       {
     if(!as_generator
-       ("\n\n" << scope_tab << "[System.Runtime.InteropServices.DllImport(\"" << context_find_tag<library_context>(context).library_name << "\")]\n"
+       ("\n\n" << scope_tab << "[System.Runtime.InteropServices.DllImport(\"" << context_find_tag<library_context>(context).actual_library_name() << "\")]\n"
         << scope_tab << eolian_mono::marshall_annotation(true)
         << " public static extern "
         << eolian_mono::marshall_type(true)
