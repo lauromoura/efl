@@ -16,23 +16,23 @@ public enum ElementType { NumericType, StringType, ObjectType };
 
 public static class NativeCustomExportFunctions
 {
-    [DllImport("eflcustomexportsmono")] public static extern void
+    [DllImport(efl.Libs.CustomExports)] public static extern void
         efl_mono_native_free(IntPtr ptr);
-    [DllImport("eflcustomexportsmono")] public static extern void
+    [DllImport(efl.Libs.CustomExports)] public static extern void
         efl_mono_native_free_ref(IntPtr ptr);
-    [DllImport("eflcustomexportsmono")] public static extern IntPtr
+    [DllImport(efl.Libs.CustomExports)] public static extern IntPtr
         efl_mono_native_alloc_copy(IntPtr val, uint size);
-    [DllImport("eflcustomexportsmono")] public static extern IntPtr
+    [DllImport(efl.Libs.CustomExports)] public static extern IntPtr
         efl_mono_native_strdup(string str);
 
-    [DllImport("eflcustomexportsmono")] public static extern IntPtr
+    [DllImport(efl.Libs.CustomExports)] public static extern IntPtr
         efl_mono_native_ptr_compare_addr_get();
-    [DllImport("eflcustomexportsmono")] public static extern IntPtr
+    [DllImport(efl.Libs.CustomExports)] public static extern IntPtr
         efl_mono_native_str_compare_addr_get();
 
-    [DllImport("eflcustomexportsmono")] public static extern IntPtr
+    [DllImport(efl.Libs.CustomExports)] public static extern IntPtr
         efl_mono_native_free_addr_get();
-    [DllImport("eflcustomexportsmono")] public static extern IntPtr
+    [DllImport(efl.Libs.CustomExports)] public static extern IntPtr
         efl_mono_native_efl_unref_addr_get();
 }
 

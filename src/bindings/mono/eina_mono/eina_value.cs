@@ -36,177 +36,177 @@ struct Value_List
 [SuppressUnmanagedCodeSecurityAttribute]
 static internal class UnsafeNativeMethods {
 
-    [DllImport("eina")]
+    [DllImport(efl.Libs.Eina)]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_convert(IntPtr handle, IntPtr convert);
 
     // Wrapped and helper methods
-    [DllImport("eflcustomexportsmono")]
+    [DllImport(efl.Libs.CustomExports)]
     internal static extern int eina_value_sizeof();
 
-    [DllImport("eflcustomexportsmono", CharSet=CharSet.Ansi)]
+    [DllImport(efl.Libs.CustomExports, CharSet=CharSet.Ansi)]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_set_wrapper(IntPtr handle, string value);
 
-    [DllImport("eflcustomexportsmono")]
+    [DllImport(efl.Libs.CustomExports)]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_set_wrapper(IntPtr handle, int value);
 
-    [DllImport("eflcustomexportsmono")]
+    [DllImport(efl.Libs.CustomExports)]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_set_wrapper(IntPtr handle, uint value);
 
-    [DllImport("eflcustomexportsmono")]
+    [DllImport(efl.Libs.CustomExports)]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_set_wrapper(IntPtr handle, IntPtr value);
 
-    [DllImport("eflcustomexportsmono")]
+    [DllImport(efl.Libs.CustomExports)]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_setup_wrapper(IntPtr handle, IntPtr type);
 
-    [DllImport("eflcustomexportsmono")]
+    [DllImport(efl.Libs.CustomExports)]
     internal static extern void eina_value_flush_wrapper(IntPtr handle);
 
-    [DllImport("eflcustomexportsmono")]
+    [DllImport(efl.Libs.CustomExports)]
     internal static extern IntPtr eina_value_type_get_wrapper(IntPtr handle);
 
-    [DllImport("eflcustomexportsmono")]
+    [DllImport(efl.Libs.CustomExports)]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_get_wrapper(IntPtr handle, out IntPtr output);
 
-    [DllImport("eflcustomexportsmono")]
+    [DllImport(efl.Libs.CustomExports)]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_get_wrapper(IntPtr handle, out Value_List output);
 
-    [DllImport("eflcustomexportsmono")]
+    [DllImport(efl.Libs.CustomExports)]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_get_wrapper(IntPtr handle, out Value_Array output);
 
-    [DllImport("eflcustomexportsmono")]
+    [DllImport(efl.Libs.CustomExports)]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_get_wrapper(IntPtr handle, out int output);
 
-    [DllImport("eflcustomexportsmono")]
+    [DllImport(efl.Libs.CustomExports)]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_get_wrapper(IntPtr handle, out uint output);
 
-    [DllImport("eflcustomexportsmono")]
+    [DllImport(efl.Libs.CustomExports)]
     internal static extern int eina_value_compare_wrapper(IntPtr handle, IntPtr other);
 
-    [DllImport("eina", CharSet=CharSet.Ansi)]
+    [DllImport(efl.Libs.Eina, CharSet=CharSet.Ansi)]
     internal static extern String eina_value_to_string(IntPtr handle); // We take ownership of the returned string.
 
-    [DllImport("eflcustomexportsmono")]
+    [DllImport(efl.Libs.CustomExports)]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_array_setup_wrapper(IntPtr handle, IntPtr subtype, uint step);
 
-    [DllImport("eflcustomexportsmono")]
+    [DllImport(efl.Libs.CustomExports)]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_list_setup_wrapper(IntPtr handle, IntPtr subtype);
 
-    [DllImport("eflcustomexportsmono")]
+    [DllImport(efl.Libs.CustomExports)]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_array_append_wrapper(IntPtr handle, IntPtr data);
 
-    [DllImport("eflcustomexportsmono")]
+    [DllImport(efl.Libs.CustomExports)]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_list_append_wrapper(IntPtr handle, IntPtr data);
 
-    [DllImport("eflcustomexportsmono")]
+    [DllImport(efl.Libs.CustomExports)]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_array_get_wrapper(IntPtr handle, int index, out IntPtr output);
 
-    [DllImport("eflcustomexportsmono")]
+    [DllImport(efl.Libs.CustomExports)]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_list_get_wrapper(IntPtr handle, int index, out IntPtr output);
 
-    [DllImport("eflcustomexportsmono")]
+    [DllImport(efl.Libs.CustomExports)]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_array_set_wrapper(IntPtr handle, int index, IntPtr value);
 
-    [DllImport("eflcustomexportsmono")]
+    [DllImport(efl.Libs.CustomExports)]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_list_set_wrapper(IntPtr handle, int index, IntPtr value);
 
-    [DllImport("eflcustomexportsmono")]
+    [DllImport(efl.Libs.CustomExports)]
     internal static extern IntPtr eina_value_array_subtype_get_wrapper(IntPtr handle);
 
-    [DllImport("eflcustomexportsmono")]
+    [DllImport(efl.Libs.CustomExports)]
     internal static extern IntPtr eina_value_list_subtype_get_wrapper(IntPtr handle);
 
-    [DllImport("eflcustomexportsmono")]
+    [DllImport(efl.Libs.CustomExports)]
     internal static extern uint eina_value_array_count_wrapper(IntPtr handle);
 
-    [DllImport("eflcustomexportsmono")]
+    [DllImport(efl.Libs.CustomExports)]
     internal static extern uint eina_value_list_count_wrapper(IntPtr handle);
 
-    [DllImport("eflcustomexportsmono")]
+    [DllImport(efl.Libs.CustomExports)]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_optional_empty_is_wrapper(IntPtr handle, [MarshalAsAttribute(UnmanagedType.U1)] out bool empty);
 
-    [DllImport("eina")]
+    [DllImport(efl.Libs.Eina)]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_optional_pset(IntPtr handle, IntPtr subtype, ref int value);
 
-    [DllImport("eina")]
+    [DllImport(efl.Libs.Eina)]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_optional_pset(IntPtr handle, IntPtr subtype, ref uint value);
 
-    [DllImport("eina", CharSet=CharSet.Ansi)]
+    [DllImport(efl.Libs.Eina, CharSet=CharSet.Ansi)]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_optional_pset(IntPtr handle, IntPtr subtype, ref string value);
 
-    [DllImport("eina")]
+    [DllImport(efl.Libs.Eina)]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_optional_pset(IntPtr handle, IntPtr subtype, IntPtr value);
 
-    [DllImport("eina")]
+    [DllImport(efl.Libs.Eina)]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_optional_reset(IntPtr handle);
 
-    [DllImport("eina")]
+    [DllImport(efl.Libs.Eina)]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_optional_pget(IntPtr handle, out eina.EinaNative.Value_Array output);
 
-    [DllImport("eina")]
+    [DllImport(efl.Libs.Eina)]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_optional_pget(IntPtr handle, out eina.EinaNative.Value_List output);
 
-    [DllImport("eina")]
+    [DllImport(efl.Libs.Eina)]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_optional_pget(IntPtr handle, out IntPtr output);
 
-    [DllImport("eina")]
+    [DllImport(efl.Libs.Eina)]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_optional_pget(IntPtr handle, out int output);
 
-    [DllImport("eina")]
+    [DllImport(efl.Libs.Eina)]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_optional_pget(IntPtr handle, out uint output);
 
-    [DllImport("eflcustomexportsmono")]
+    [DllImport(efl.Libs.CustomExports)]
     internal static extern IntPtr eina_value_optional_type_get_wrapper(IntPtr handle);
 
-    [DllImport("eflcustomexportsmono")]
+    [DllImport(efl.Libs.CustomExports)]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_pset_wrapper(IntPtr handle, ref eina.EinaNative.Value_Array ptr);
 
-    [DllImport("eflcustomexportsmono")]
+    [DllImport(efl.Libs.CustomExports)]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
     internal static extern bool eina_value_pset_wrapper(IntPtr handle, ref eina.EinaNative.Value_List ptr);
 
     // Supported types
-    [DllImport("eflcustomexportsmono")]
+    [DllImport(efl.Libs.CustomExports)]
     internal static extern IntPtr type_int32();
-    [DllImport("eflcustomexportsmono")]
+    [DllImport(efl.Libs.CustomExports)]
     internal static extern IntPtr type_uint32();
-    [DllImport("eflcustomexportsmono")]
+    [DllImport(efl.Libs.CustomExports)]
     internal static extern IntPtr type_string();
-    [DllImport("eflcustomexportsmono")]
+    [DllImport(efl.Libs.CustomExports)]
     internal static extern IntPtr type_array();
-    [DllImport("eflcustomexportsmono")]
+    [DllImport(efl.Libs.CustomExports)]
     internal static extern IntPtr type_list();
-    [DllImport("eflcustomexportsmono")]
+    [DllImport(efl.Libs.CustomExports)]
     internal static extern IntPtr type_optional();
 }
 }

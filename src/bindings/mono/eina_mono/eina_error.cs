@@ -44,11 +44,11 @@ public struct Error : IComparable<Error>
         EFL_ERROR = eina_error_msg_register("Managed Code Error");
     }
 
-    [DllImport("eina")] private static extern int eina_init();
-    [DllImport("eina")] static extern Error eina_error_msg_register(string msg);
-    [DllImport("eina")] static extern Error eina_error_get();
-    [DllImport("eina")] static extern void eina_error_set(Error error);
-    [DllImport("eina")] static extern IntPtr eina_error_msg_get(Error error);
+    [DllImport(efl.Libs.Eina)] private static extern int eina_init();
+    [DllImport(efl.Libs.Eina)] static extern Error eina_error_msg_register(string msg);
+    [DllImport(efl.Libs.Eina)] static extern Error eina_error_get();
+    [DllImport(efl.Libs.Eina)] static extern void eina_error_set(Error error);
+    [DllImport(efl.Libs.Eina)] static extern IntPtr eina_error_msg_get(Error error);
 
     public static void Set(Error error)
     {

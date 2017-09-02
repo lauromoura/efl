@@ -5,11 +5,33 @@ using static efl.UnsafeNativeMethods;
 
 namespace efl {
 
+/// <summary>
+/// Define the name of the libraries to be passed to DllImport statements.
+/// </summary>
+public class Libs {
+#if WIN32
+    // TODO: Hardcoded -VERSION version suffixes
+    public const string Ecore = "libecore-1";
+    public const string Eina = "libeina-1";
+    public const string Eo = "libeo-1";
+    public const string Evas = "libevas-1";
+
+    public const string CustomExports = "libeflcustomexportsmono-0";
+#else
+    public const string Ecore = "ecore";
+    public const string Eina = "eina";
+    public const string Eo = "eo";
+    public const string Evas = "evas";
+
+    public const string CustomExports = "eflcustomexportsmono";
+#endif
+}
+
 static class UnsafeNativeMethods {
-    [DllImport("ecore")] public static extern void ecore_init();
-    [DllImport("ecore")] public static extern void ecore_shutdown();
-    [DllImport("evas")] public static extern void evas_init();
-    [DllImport("evas")] public static extern void evas_shutdown();
+    [DllImport(efl.Libs.Ecore)] public static extern void ecore_init();
+    [DllImport(efl.Libs.Ecore)] public static extern void ecore_shutdown();
+    [DllImport(efl.Libs.Evas)] public static extern void evas_init();
+    [DllImport(efl.Libs.Evas)] public static extern void evas_shutdown();
 }
 
 public static class All {

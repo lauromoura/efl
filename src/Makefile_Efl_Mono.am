@@ -105,6 +105,13 @@ am__v_EOLMONO_0 = @echo "  EOLMONO  " $@;
 
 if HAVE_MCS
 
+if HAVE_WIN32
+
+MCS_FLAGS := $(MCS_FLAGS)
+MCS_FLAGS += -define:WIN32
+
+endif
+
 efl_custom_exports_mono_files = \
 	lib/efl_mono/efl_custom_exports_mono.c
 

@@ -4,8 +4,8 @@ using System.Runtime.InteropServices;
 namespace eina {
 
 public class Config {
-    [DllImport("eina")] private static extern int eina_init();
-    [DllImport("eina")] private static extern int eina_shutdown();
+    [DllImport(efl.Libs.Eina)] private static extern int eina_init();
+    [DllImport(efl.Libs.Eina)] private static extern int eina_shutdown();
 
     public static void Init() {
         if (eina_init() == 0)

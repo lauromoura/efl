@@ -10,70 +10,70 @@ namespace eina {
 
 public static class InlistNativeFunctions
 {
-    [DllImport("eina")] public static extern IntPtr
+    [DllImport(efl.Libs.Eina)] public static extern IntPtr
         eina_inlist_append(IntPtr in_list, IntPtr in_item);
 
-    [DllImport("eina")] public static extern IntPtr
+    [DllImport(efl.Libs.Eina)] public static extern IntPtr
         eina_inlist_prepend(IntPtr in_list, IntPtr in_item);
 
-    [DllImport("eina")] public static extern IntPtr
+    [DllImport(efl.Libs.Eina)] public static extern IntPtr
         eina_inlist_append_relative(IntPtr in_list, IntPtr in_item, IntPtr in_relative);
 
-    [DllImport("eina")] public static extern IntPtr
+    [DllImport(efl.Libs.Eina)] public static extern IntPtr
         eina_inlist_prepend_relative(IntPtr in_list, IntPtr in_item, IntPtr in_relative);
 
-    [DllImport("eina")] public static extern IntPtr
+    [DllImport(efl.Libs.Eina)] public static extern IntPtr
         eina_inlist_remove(IntPtr in_list, IntPtr in_item);
 
-    [DllImport("eina")] public static extern IntPtr
+    [DllImport(efl.Libs.Eina)] public static extern IntPtr
         eina_inlist_find(IntPtr in_list, IntPtr in_item);
 
-    [DllImport("eina")] public static extern IntPtr
+    [DllImport(efl.Libs.Eina)] public static extern IntPtr
         eina_inlist_promote(IntPtr list, IntPtr item);
 
-    [DllImport("eina")] public static extern IntPtr
+    [DllImport(efl.Libs.Eina)] public static extern IntPtr
         eina_inlist_demote(IntPtr list, IntPtr item);
 
-    [DllImport("eina")] public static extern uint
+    [DllImport(efl.Libs.Eina)] public static extern uint
         eina_inlist_count(IntPtr list);
 
-    [DllImport("eina")] public static extern IntPtr
+    [DllImport(efl.Libs.Eina)] public static extern IntPtr
         eina_inlist_iterator_new(IntPtr in_list);
 
-    [DllImport("eina")] public static extern IntPtr
+    [DllImport(efl.Libs.Eina)] public static extern IntPtr
         eina_inlist_accessor_new(IntPtr in_list);
 
-    [DllImport("eina")] public static extern IntPtr
+    [DllImport(efl.Libs.Eina)] public static extern IntPtr
         eina_inlist_sorted_insert(IntPtr list, IntPtr item, IntPtr func);
 
-    [DllImport("eina")] public static extern IntPtr
+    [DllImport(efl.Libs.Eina)] public static extern IntPtr
         eina_inlist_sorted_state_new();
 
-    [DllImport("eina")] public static extern int
+    [DllImport(efl.Libs.Eina)] public static extern int
         eina_inlist_sorted_state_init(IntPtr state, IntPtr list);
 
-    [DllImport("eina")] public static extern void
+    [DllImport(efl.Libs.Eina)] public static extern void
         eina_inlist_sorted_state_free(IntPtr state);
 
-    [DllImport("eina")] public static extern IntPtr
+    [DllImport(efl.Libs.Eina)] public static extern IntPtr
         eina_inlist_sorted_state_insert(IntPtr list, IntPtr item, IntPtr func, IntPtr state);
 
-    [DllImport("eina")] public static extern IntPtr
+    [DllImport(efl.Libs.Eina)] public static extern IntPtr
         eina_inlist_sort(IntPtr head, IntPtr func);
 
 
-    [DllImport("eflcustomexportsmono")] public static extern IntPtr
+    [DllImport(efl.Libs.CustomExports)] public static extern IntPtr
         eina_inlist_first_custom_export_mono(IntPtr list);
-    [DllImport("eflcustomexportsmono")] public static extern IntPtr
+    [DllImport(efl.Libs.CustomExports)] public static extern IntPtr
         eina_inlist_last_custom_export_mono(IntPtr list);
 
 
-    [DllImport("eflcustomexportsmono")] public static extern IntPtr
+    [DllImport(efl.Libs.CustomExports)] public static extern IntPtr
         eina_inlist_next_custom_export_mono(IntPtr list);
-    [DllImport("eflcustomexportsmono")] public static extern IntPtr
+    [DllImport(efl.Libs.CustomExports)] public static extern IntPtr
         eina_inlist_prev_custom_export_mono(IntPtr list);
 
-    [DllImport("eflcustomexportsmono")] public static extern IntPtr
+    [DllImport(efl.Libs.CustomExports)] public static extern IntPtr
         eina_inlist_iterator_wrapper_new_custom_export_mono(IntPtr in_list);
 }
 

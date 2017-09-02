@@ -6,42 +6,42 @@ using System.Collections.Generic;
 namespace efl { namespace eo {
 
 public class Globals {
-    [DllImport("eo")] public static extern void efl_object_init();
-    [DllImport("eo")] public static extern void efl_object_shutdown();
-    [DllImport("eo")] public static extern IntPtr
+    [DllImport(efl.Libs.Eo)] public static extern void efl_object_init();
+    [DllImport(efl.Libs.Eo)] public static extern void efl_object_shutdown();
+    [DllImport(efl.Libs.Eo)] public static extern IntPtr
         _efl_add_internal_start([MarshalAs(UnmanagedType.LPStr)] String file, int line,
                                 IntPtr klass, IntPtr parent, byte is_ref, byte is_fallback);
-    [DllImport("eo")] public static extern IntPtr
+    [DllImport(efl.Libs.Eo)] public static extern IntPtr
         _efl_add_end(IntPtr eo, byte is_ref, byte is_fallback);
-    [DllImport("eo")] public static extern IntPtr
+    [DllImport(efl.Libs.Eo)] public static extern IntPtr
         efl_ref(IntPtr eo);
-    [DllImport("eo")] public static extern void
+    [DllImport(efl.Libs.Eo)] public static extern void
         efl_unref(IntPtr eo);
-    [DllImport("eo")] public static extern IntPtr
+    [DllImport(efl.Libs.Eo)] public static extern IntPtr
         efl_class_new(IntPtr class_description, IntPtr base0);
-    [DllImport("eo")] public static extern IntPtr
+    [DllImport(efl.Libs.Eo)] public static extern IntPtr
         efl_class_new(IntPtr class_description, IntPtr base0, IntPtr base1);
-    [DllImport("eo")] public static extern IntPtr
+    [DllImport(efl.Libs.Eo)] public static extern IntPtr
         efl_class_new(IntPtr class_description, IntPtr base0, IntPtr base1, IntPtr base2);
-    [DllImport("eo")] public static extern IntPtr
+    [DllImport(efl.Libs.Eo)] public static extern IntPtr
         efl_class_new(IntPtr class_description, IntPtr base0, IntPtr base1, IntPtr base2, IntPtr base3);
-    [DllImport("eo")] public static extern IntPtr
+    [DllImport(efl.Libs.Eo)] public static extern IntPtr
         efl_class_new(IntPtr class_description, IntPtr base0, IntPtr base1, IntPtr base2, IntPtr base3, IntPtr base4);
-    [DllImport("eo")] public static extern IntPtr
+    [DllImport(efl.Libs.Eo)] public static extern IntPtr
         efl_class_new(IntPtr class_description, IntPtr base0, IntPtr base1, IntPtr base2, IntPtr base3, IntPtr base4, IntPtr base5);
-    [DllImport("eo")] public static extern IntPtr
+    [DllImport(efl.Libs.Eo)] public static extern IntPtr
         efl_class_new(IntPtr class_description, IntPtr base0, IntPtr base1, IntPtr base2, IntPtr base3, IntPtr base4, IntPtr base5, IntPtr base6);
-    [DllImport("eo")] public static extern IntPtr
+    [DllImport(efl.Libs.Eo)] public static extern IntPtr
         efl_class_new(IntPtr class_description, IntPtr base0, IntPtr base1, IntPtr base2, IntPtr base3, IntPtr base4, IntPtr base5, IntPtr base6, IntPtr base7);
-    [DllImport("eo")] public static extern byte efl_class_functions_set(IntPtr klass_id, IntPtr object_ops, IntPtr class_ops);
-    [DllImport("eo")] public static extern IntPtr efl_data_scope_get(IntPtr obj, IntPtr klass);
-    [DllImport("eo")] public static extern IntPtr efl_super(IntPtr obj, IntPtr klass);
-    [DllImport("eo")] public static extern IntPtr efl_class_get(IntPtr obj);
+    [DllImport(efl.Libs.Eo)] public static extern byte efl_class_functions_set(IntPtr klass_id, IntPtr object_ops, IntPtr class_ops);
+    [DllImport(efl.Libs.Eo)] public static extern IntPtr efl_data_scope_get(IntPtr obj, IntPtr klass);
+    [DllImport(efl.Libs.Eo)] public static extern IntPtr efl_super(IntPtr obj, IntPtr klass);
+    [DllImport(efl.Libs.Eo)] public static extern IntPtr efl_class_get(IntPtr obj);
     [DllImport("dl")] public static extern IntPtr dlsym
        (IntPtr handle, [MarshalAs(UnmanagedType.LPStr)] String name);
     [DllImport("dl")] public static extern IntPtr dlopen(String name, int flags);
 
-   [DllImport("eo")] public static extern bool efl_event_callback_priority_add(
+   [DllImport(efl.Libs.Eo)] public static extern bool efl_event_callback_priority_add(
               System.IntPtr obj,
               // FIXME commented to allow passing null stuff during test
               /* ref efl.kw_event.Description desc, */
@@ -49,7 +49,7 @@ public class Globals {
               short priority,
               efl.Event_Cb cb,
               System.IntPtr data);
-   [DllImport("eo")] public static extern bool efl_event_callback_del(
+   [DllImport(efl.Libs.Eo)] public static extern bool efl_event_callback_del(
               System.IntPtr obj,
               efl.kw_event.Description desc,
               efl.Event_Cb cb,

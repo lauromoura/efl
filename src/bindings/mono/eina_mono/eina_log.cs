@@ -7,9 +7,9 @@ namespace eina { // Manual wrappers around eina functions
 
 public class Log
 {
-    [DllImport("eina")] private static extern int eina_init();
+    [DllImport(efl.Libs.Eina)] private static extern int eina_init();
 
-    [DllImport("eina")] private static extern void eina_log_print(
+    [DllImport(efl.Libs.Eina)] private static extern void eina_log_print(
             int domain,
             Level level,
             [MarshalAs(UnmanagedType.LPStr)] String file,
@@ -17,13 +17,13 @@ public class Log
             int line,
             [MarshalAs(UnmanagedType.LPStr)] String message);
 
-    [DllImport("eina")] private static extern int eina_log_domain_register(
+    [DllImport(efl.Libs.Eina)] private static extern int eina_log_domain_register(
             [MarshalAs(UnmanagedType.LPStr)] String name,
             [MarshalAs(UnmanagedType.LPStr)] String color);
 
-    [DllImport("eina")] private static extern void eina_log_level_set(Level level);
+    [DllImport(efl.Libs.Eina)] private static extern void eina_log_level_set(Level level);
 
-    [DllImport("eina")] private static extern Level eina_log_level_get();
+    [DllImport(efl.Libs.Eina)] private static extern Level eina_log_level_get();
 
     public enum Level
     {

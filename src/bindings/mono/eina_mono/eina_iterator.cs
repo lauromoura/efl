@@ -9,20 +9,20 @@ namespace eina {
 
 public static class IteratorNativeFunctions
 {
-    [DllImport("eina")] public static extern void
+    [DllImport(efl.Libs.Eina)] public static extern void
         eina_iterator_free(IntPtr iterator);
-    [DllImport("eina")] public static extern IntPtr
+    [DllImport(efl.Libs.Eina)] public static extern IntPtr
         eina_iterator_container_get(IntPtr iterator);
-    [DllImport("eina")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eina)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eina_iterator_next(IntPtr iterator, out IntPtr data);
-    [DllImport("eina")] public static extern void
+    [DllImport(efl.Libs.Eina)] public static extern void
         eina_iterator_foreach(IntPtr iterator, IntPtr callback, IntPtr fdata);
-    [DllImport("eina")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eina)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eina_iterator_lock(IntPtr iterator);
-    [DllImport("eina")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eina)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eina_iterator_unlock(IntPtr iterator);
 
-    [DllImport("eina")] public static extern IntPtr
+    [DllImport(efl.Libs.Eina)] public static extern IntPtr
         eina_carray_iterator_new(IntPtr array);
 }
 
