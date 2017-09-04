@@ -108,6 +108,28 @@ _efl_animation_object_repeat_count_get(const Eo *eo_obj,
    return pd->repeat_count;
 }
 
+EOLIAN static void
+_efl_animation_object_start_delay_set(Eo *eo_obj,
+                                      Efl_Animation_Object_Data *pd,
+                                      double delay_time)
+{
+   EFL_ANIMATION_OBJECT_CHECK_OR_RETURN(eo_obj);
+
+   if (delay_time < 0.0) return;
+
+   pd->start_delay_time = delay_time;
+}
+
+EOLIAN static double
+_efl_animation_object_start_delay_get(Eo *eo_obj,
+                                      Efl_Animation_Object_Data *pd)
+{
+   EFL_ANIMATION_OBJECT_CHECK_OR_RETURN(eo_obj, 0.0);
+
+   return pd->start_delay_time;
+}
+
+
 EOLIAN static Eina_Bool
 _efl_animation_object_is_deleted(Eo *eo_obj,
                                  Efl_Animation_Object_Data *pd)
@@ -294,17 +316,14 @@ end:
 }
 
 static void
-_start(Eo *eo_obj, Efl_Animation_Object_Data *pd)
+_init_start(Eo *eo_obj, Efl_Animation_Object_Data *pd)
 {
-   if (pd->total_duration < 0.0) return;
-
    //Save the current state of the target
    efl_animation_object_target_state_save(eo_obj);
 
    pd->is_started = EINA_TRUE;
    pd->is_cancelled = EINA_FALSE;
    pd->is_ended = EINA_FALSE;
-   pd->is_paused = EINA_FALSE;
 
    pd->paused_time = 0.0;
 
@@ -318,10 +337,37 @@ _start(Eo *eo_obj, Efl_Animation_Object_Data *pd)
    //pre start event is supported within class only (protected event)
    efl_event_callback_call(eo_obj, EFL_ANIMATION_OBJECT_EVENT_PRE_START, NULL);
    efl_event_callback_call(eo_obj, EFL_ANIMATION_OBJECT_EVENT_START, NULL);
+}
+
+static void
+_start(Eo *eo_obj, Efl_Animation_Object_Data *pd)
+{
+   if (pd->total_duration < 0.0) return;
+
+   _init_start(eo_obj, pd);
 
    pd->animator = ecore_animator_add(_animator_cb, eo_obj);
 
    _animator_cb(eo_obj);
+}
+
+static Eina_Bool
+_start_delay_timer_cb(void *data)
+{
+   Eo *eo_obj = data;
+   EFL_ANIMATION_OBJECT_DATA_GET(eo_obj, pd);
+
+   pd->start_delay_timer = NULL;
+
+   if (pd->is_paused)
+     {
+        pd->time.pause_begin = ecore_loop_time_get();
+        _init_start(eo_obj, pd);
+     }
+   else
+     _start(eo_obj, pd);
+
+   return ECORE_CALLBACK_CANCEL;
 }
 
 EOLIAN static void
@@ -332,6 +378,15 @@ _efl_animation_object_start(Eo *eo_obj,
 
    if (pd->is_paused) return;
 
+   if (pd->start_delay_timer) return;
+
+   if (pd->start_delay_time > 0.0)
+     {
+        pd->start_delay_timer = ecore_timer_add(pd->start_delay_time,
+                                                _start_delay_timer_cb, eo_obj);
+        return;
+     }
+
    _start(eo_obj, pd);
 }
 
@@ -340,6 +395,9 @@ _efl_animation_object_cancel(Eo *eo_obj,
                              Efl_Animation_Object_Data *pd)
 {
    EFL_ANIMATION_OBJECT_CHECK_OR_RETURN(eo_obj);
+
+   ecore_timer_del(pd->start_delay_timer);
+   pd->start_delay_timer = NULL;
 
    pd->is_cancelled = EINA_TRUE;
    pd->is_ended = EINA_TRUE;
@@ -385,6 +443,8 @@ _efl_animation_object_pause(Eo *eo_obj,
 
    pd->is_paused = EINA_TRUE;
 
+   if (pd->start_delay_timer) return;
+
    ecore_animator_del(pd->animator);
    pd->animator = NULL;
 
@@ -402,6 +462,8 @@ _efl_animation_object_resume(Eo *eo_obj,
    if (!pd->is_paused) return;
 
    pd->is_paused = EINA_FALSE;
+
+   if (pd->start_delay_timer) return;
 
    pd->paused_time += (ecore_loop_time_get() - pd->time.pause_begin);
 
@@ -479,6 +541,9 @@ EOAPI EFL_VOID_FUNC_BODYV(efl_animation_object_duration_only_set, EFL_FUNC_CALL(
 EOAPI EFL_VOID_FUNC_BODYV(efl_animation_object_total_duration_set, EFL_FUNC_CALL(total_duration), double total_duration);
 EOAPI EFL_FUNC_BODY_CONST(efl_animation_object_total_duration_get, double, 0);
 
+EOAPI EFL_VOID_FUNC_BODYV(efl_animation_object_start_delay_set, EFL_FUNC_CALL(delay_time), double delay_time);
+EOAPI EFL_FUNC_BODY_CONST(efl_animation_object_start_delay_get, double, 0);
+
 EOAPI EFL_VOID_FUNC_BODYV(efl_animation_object_repeat_count_set, EFL_FUNC_CALL(count), int count);
 EOAPI EFL_FUNC_BODY_CONST(efl_animation_object_repeat_count_get, int, 0);
 
@@ -492,6 +557,8 @@ EOAPI EFL_FUNC_BODY_CONST(efl_animation_object_repeat_count_get, int, 0);
    EFL_OBJECT_OP_FUNC(efl_animation_object_duration_only_set, _efl_animation_object_duration_only_set), \
    EFL_OBJECT_OP_FUNC(efl_animation_object_total_duration_set, _efl_animation_object_total_duration_set), \
    EFL_OBJECT_OP_FUNC(efl_animation_object_total_duration_get, _efl_animation_object_total_duration_get), \
+   EFL_OBJECT_OP_FUNC(efl_animation_object_start_delay_set, _efl_animation_object_start_delay_set), \
+   EFL_OBJECT_OP_FUNC(efl_animation_object_start_delay_get, _efl_animation_object_start_delay_get), \
    EFL_OBJECT_OP_FUNC(efl_animation_object_repeat_count_set, _efl_animation_object_repeat_count_set), \
    EFL_OBJECT_OP_FUNC(efl_animation_object_repeat_count_get, _efl_animation_object_repeat_count_get)
 
