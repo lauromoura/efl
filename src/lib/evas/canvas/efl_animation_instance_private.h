@@ -19,6 +19,9 @@ typedef struct _Efl_Animation_Instance_Data
 {
    Ecore_Animator *animator;
 
+   Ecore_Timer    *start_delay_timer;
+   double          start_delay_time;
+
    struct
      {
         double begin;

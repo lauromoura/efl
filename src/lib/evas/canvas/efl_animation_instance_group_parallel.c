@@ -124,6 +124,10 @@ _efl_animation_instance_group_parallel_efl_animation_instance_total_duration_get
         double child_total_duration =
            efl_animation_instance_total_duration_get(inst);
 
+        double start_delay = efl_animation_instance_start_delay_get(inst);
+        if (start_delay > 0.0)
+          child_total_duration += start_delay;
+
         int child_repeat_count = efl_animation_instance_repeat_count_get(inst);
         if (child_repeat_count > 0)
           child_total_duration *= (child_repeat_count + 1);
@@ -178,18 +182,27 @@ _efl_animation_instance_group_parallel_efl_animation_instance_progress_set(Eo *e
    EINA_LIST_FOREACH(instances, l, inst)
      {
         double total_duration = efl_animation_instance_total_duration_get(inst);
+        double start_delay = efl_animation_instance_start_delay_get(inst);
         double inst_progress;
 
         if (total_duration == 0.0)
           inst_progress = 1.0;
         else
           {
+             double elapsed_time_without_delay;
+
              //If instance is repeated, then recalculate progress.
              int repeated_count = _repeated_count_get(pd, inst);
              if (repeated_count > 0)
-               inst_progress = (elapsed_time - (total_duration * repeated_count)) / total_duration;
+               elapsed_time_without_delay =
+                  (elapsed_time - ((total_duration + start_delay) * repeated_count)) - start_delay;
              else
-               inst_progress = elapsed_time / total_duration;
+               elapsed_time_without_delay = elapsed_time - start_delay;
+
+             //Instance should not start to wait for start delay time.
+             if (elapsed_time_without_delay < 0.0) continue;
+
+             inst_progress = elapsed_time_without_delay / total_duration;
 
              if (inst_progress > 1.0)
                inst_progress = 1.0;

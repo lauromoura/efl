@@ -87,6 +87,9 @@ EOAPI double efl_animation_instance_duration_get(const Eo *obj);
 EOAPI void efl_animation_instance_total_duration_set(Eo *obj, double total_duration);
 EOAPI double efl_animation_instance_total_duration_get(const Eo *obj);
 
+EOAPI void efl_animation_instance_start_delay_set(Eo *obj, double delay_time);
+EOAPI double efl_animation_instance_start_delay_get(const Eo *obj);
+
 EOAPI void efl_animation_instance_repeat_count_set(Eo *obj, int count);
 EOAPI int efl_animation_instance_repeat_count_get(const Eo *obj);
 

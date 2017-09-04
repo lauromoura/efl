@@ -116,6 +116,27 @@ _efl_animation_repeat_count_get(Eo *eo_obj, Efl_Animation_Data *pd)
    return pd->repeat_count;
 }
 
+EOLIAN static void
+_efl_animation_start_delay_set(Eo *eo_obj,
+                               Efl_Animation_Data *pd,
+                               double delay_time)
+{
+   EFL_ANIMATION_CHECK_OR_RETURN(eo_obj);
+
+   if (delay_time < 0.0) return;
+
+   pd->start_delay_time = delay_time;
+}
+
+EOLIAN static double
+_efl_animation_start_delay_get(Eo *eo_obj,
+                               Efl_Animation_Data *pd)
+{
+   EFL_ANIMATION_CHECK_OR_RETURN(eo_obj, 0.0);
+
+   return pd->start_delay_time;
+}
+
 EOLIAN static Efl_Object *
 _efl_animation_efl_object_constructor(Eo *eo_obj,
                                       Efl_Animation_Data *pd)
@@ -126,6 +147,8 @@ _efl_animation_efl_object_constructor(Eo *eo_obj,
 
    pd->duration = 0.0;
    pd->total_duration = 0.0;
+
+   pd->start_delay_time = 0.0;
 
    pd->repeat_count = 0;
 

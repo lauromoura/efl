@@ -124,6 +124,10 @@ _efl_animation_instance_group_sequential_efl_animation_instance_total_duration_g
         double child_total_duration =
            efl_animation_instance_total_duration_get(inst);
 
+        double start_delay = efl_animation_instance_start_delay_get(inst);
+        if (start_delay > 0.0)
+          child_total_duration += start_delay;
+
         int child_repeat_count = efl_animation_instance_repeat_count_get(inst);
         if (child_repeat_count > 0)
           child_total_duration *= (child_repeat_count + 1);
@@ -182,6 +186,7 @@ _efl_animation_instance_group_sequential_efl_animation_instance_progress_set(Eo 
 
         //Sum the current total duration
         double total_duration = efl_animation_instance_total_duration_get(inst);
+        double start_delay = efl_animation_instance_start_delay_get(inst);
 
         double inst_progress;
 
@@ -192,10 +197,17 @@ _efl_animation_instance_group_sequential_efl_animation_instance_progress_set(Eo 
              //If instance is repeated, then recalculate progress.
              int repeated_count = _repeated_count_get(pd, inst);
              if (repeated_count > 0)
-               sum_prev_total_duration += (total_duration * repeated_count);
+               sum_prev_total_duration +=
+                  ((total_duration + start_delay) * repeated_count);
 
-             inst_progress =
-                (elapsed_time - sum_prev_total_duration) / total_duration;
+             double elapsed_time_without_delay =
+                elapsed_time - sum_prev_total_duration - start_delay;
+
+             //Instance should not start to wait for start delay time.
+             if (elapsed_time_without_delay < 0.0) break;
+
+             inst_progress = elapsed_time_without_delay / total_duration;
+
              if (inst_progress > 1.0)
                inst_progress = 1.0;
 
@@ -218,8 +230,9 @@ _efl_animation_instance_group_sequential_efl_animation_instance_progress_set(Eo 
                }
           }
 
-        //Update the sum of the previous instances' total durations
-        sum_prev_total_duration += total_duration;
+        /* Update the sum of the previous instances' total durations and start
+         * delays */
+        sum_prev_total_duration += (total_duration + start_delay);
 
         if ((inst_progress == 1.0) &&
             !efl_animation_instance_final_state_keep_get(inst))
