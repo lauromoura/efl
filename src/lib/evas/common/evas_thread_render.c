@@ -177,6 +177,7 @@ evas_thread_worker_func(void *data EINA_UNUSED, Eina_Thread thread EINA_UNUSED)
 out:
    /* WRN: add a memory barrier or use a lock if we add more code here */
    evas_thread_exited = 1;
+   evas_thread_worker = 0;
    return NULL;
 }
 
@@ -260,7 +261,6 @@ evas_thread_shutdown(void)
              goto timeout_shutdown;
           }
      }
-
    eina_thread_join(evas_thread_worker);
 timeout_shutdown:
    eina_lock_free(&evas_thread_queue_lock);
