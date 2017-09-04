@@ -27,6 +27,7 @@
 #include "eina_thread.h"
 #include "eina_sched.h"
 #include "eina_cpu.h"
+#include "eina_hash.h"
 
 /* undefs EINA_ARG_NONULL() so NULL checks are not compiled out! */
 #include "eina_safety_checks.h"
@@ -47,6 +48,11 @@
 #endif
 #endif
 
+static Eina_Lock validator_lock;
+static Eina_Hash *validator = NULL;
+
+#define VALIDATE_THREAD(t) (!!eina_hash_find(validator, &t))
+
 static inline void *
 _eina_thread_join(Eina_Thread t)
 {
@@ -65,7 +71,7 @@ _eina_thread_create(Eina_Thread *t, int affinity, void *(*func)(void *data), voi
 #ifndef _WIN32
    sigset_t oldset, newset;
 #endif
-   
+
    pthread_attr_init(&attr);
    if (affinity >= 0)
      {
@@ -127,6 +133,7 @@ struct _Eina_Thread_Call
 
    Eina_Thread_Priority prio;
    int affinity;
+   Eina_Thread t;
 };
 
 static void *
@@ -148,6 +155,10 @@ _eina_internal_call(void *context)
    r = c->func((void*) c->data, eina_thread_self());
    EINA_THREAD_CLEANUP_POP(EINA_TRUE);
    EINA_THREAD_CLEANUP_POP(EINA_TRUE);
+
+   eina_lock_take(&validator_lock);
+   eina_hash_del(validator, &c->t, c);
+   eina_lock_release(&validator_lock);
 
    return r;
 }
@@ -185,7 +196,11 @@ eina_thread_create(Eina_Thread *t,
    // valgrind complains c is lost - but it's not - it is handed to the
    // child thread to be freed when c->func returns in _eina_internal_call().
    if (_eina_thread_create(t, affinity, _eina_internal_call, c))
-     return EINA_TRUE;
+     {
+        eina_hash_add(validator, t, c);
+        c->t = *t;
+        return EINA_TRUE;
+     }
 
    free(c);
    return EINA_FALSE;
@@ -194,12 +209,14 @@ eina_thread_create(Eina_Thread *t,
 EAPI void *
 eina_thread_join(Eina_Thread t)
 {
+   EINA_SAFETY_ON_TRUE_RETURN_VAL(VALIDATE_THREAD(t), NULL);
    return _eina_thread_join(t);
 }
 
 EAPI Eina_Bool
 eina_thread_name_set(Eina_Thread t, const char *name)
 {
+   EINA_SAFETY_ON_TRUE_RETURN_VAL(VALIDATE_THREAD(t), EINA_FALSE);
 #ifdef EINA_HAVE_PTHREAD_SETNAME
    char buf[16];
    if (name)
@@ -225,6 +242,7 @@ EAPI Eina_Bool
 eina_thread_cancel(Eina_Thread t)
 {
    if (!t) return EINA_FALSE;
+   EINA_SAFETY_ON_TRUE_RETURN_VAL(VALIDATE_THREAD(t), EINA_FALSE);
    return pthread_cancel((pthread_t)t) == 0;
 }
 
@@ -270,6 +288,11 @@ EAPI const void *EINA_THREAD_JOIN_CANCELED = PTHREAD_CANCELED;
 Eina_Bool
 eina_thread_init(void)
 {
+   int id = 0;
+   validator = eina_hash_int64_new(NULL);
+   eina_lock_new(&validator_lock);
+   //id 0 is our NOP so its ok
+   eina_hash_add(validator, &id, validator);
    return EINA_TRUE;
 }
 

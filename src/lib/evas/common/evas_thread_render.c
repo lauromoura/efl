@@ -261,6 +261,7 @@ evas_thread_shutdown(void)
              goto timeout_shutdown;
           }
      }
+
    eina_thread_join(evas_thread_worker);
 timeout_shutdown:
    eina_lock_free(&evas_thread_queue_lock);
