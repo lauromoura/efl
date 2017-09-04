@@ -16,9 +16,8 @@ public class Config {
         eina.Error.Init();
     }
 
-    public static void Shutdown() {
-        if (eina_shutdown() != 0)
-            throw (new efl.EflException("Failed to shutdown all Eina modules"));
+    public static int Shutdown() {
+        return eina_shutdown();
     }
 
 }
