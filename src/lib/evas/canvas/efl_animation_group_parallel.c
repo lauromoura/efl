@@ -109,6 +109,10 @@ _efl_animation_group_parallel_efl_animation_instance_create(Eo *eo_obj,
    double start_delay_time = efl_animation_start_delay_get(eo_obj);
    efl_animation_instance_start_delay_set(group_inst, start_delay_time);
 
+   Efl_Animation_Instance_Repeat_Mode repeat_mode =
+      (Efl_Animation_Instance_Repeat_Mode)efl_animation_repeat_mode_get(eo_obj);
+   efl_animation_instance_repeat_mode_set(group_inst, repeat_mode);
+
    int repeat_count = efl_animation_repeat_count_get(eo_obj);
    efl_animation_instance_repeat_count_set(group_inst, repeat_count);
 

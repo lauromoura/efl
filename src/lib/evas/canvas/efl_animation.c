@@ -96,6 +96,27 @@ _efl_animation_final_state_keep_get(Eo *eo_obj, Efl_Animation_Data *pd)
 }
 
 EOLIAN static void
+_efl_animation_repeat_mode_set(Eo *eo_obj,
+                               Efl_Animation_Data *pd,
+                               Efl_Animation_Repeat_Mode mode)
+{
+   EFL_ANIMATION_CHECK_OR_RETURN(eo_obj);
+
+   if ((mode == EFL_ANIMATION_REPEAT_MODE_RESTART) ||
+       (mode == EFL_ANIMATION_REPEAT_MODE_REVERSE))
+     pd->repeat_mode = mode;
+}
+
+EOLIAN static Efl_Animation_Repeat_Mode
+_efl_animation_repeat_mode_get(Eo *eo_obj, Efl_Animation_Data *pd)
+{
+   EFL_ANIMATION_CHECK_OR_RETURN(eo_obj,
+                                 EFL_ANIMATION_REPEAT_MODE_RESTART);
+
+   return pd->repeat_mode;
+}
+
+EOLIAN static void
 _efl_animation_repeat_count_set(Eo *eo_obj,
                                 Efl_Animation_Data *pd,
                                 int count)

@@ -177,6 +177,7 @@ _efl_animation_instance_group_sequential_efl_animation_instance_progress_set(Eo 
    double elapsed_time = progress * group_total_duration;
 
    double sum_prev_total_duration = 0.0;
+
    Eina_List *l;
    Efl_Animation_Instance *inst;
    EINA_LIST_FOREACH(instances, l, inst)
@@ -187,8 +188,9 @@ _efl_animation_instance_group_sequential_efl_animation_instance_progress_set(Eo 
         //Sum the current total duration
         double total_duration = efl_animation_instance_total_duration_get(inst);
         double start_delay = efl_animation_instance_start_delay_get(inst);
-
         double inst_progress;
+
+        Eina_Bool start_repeat = EINA_FALSE;
 
         if (total_duration == 0.0)
           inst_progress = 1.0;
@@ -225,6 +227,8 @@ _efl_animation_instance_group_sequential_efl_animation_instance_progress_set(Eo 
                          {
                             repeated_count++;
                             _repeated_count_set(pd, inst, repeated_count);
+
+                            start_repeat = EINA_TRUE;
                          }
                     }
                }
@@ -234,9 +238,24 @@ _efl_animation_instance_group_sequential_efl_animation_instance_progress_set(Eo 
          * delays */
         sum_prev_total_duration += (total_duration + start_delay);
 
-        if ((inst_progress == 1.0) &&
-            !efl_animation_instance_final_state_keep_get(inst))
+        if ((inst_progress == 1.0) && (!start_repeat) &&
+            (!efl_animation_instance_final_state_keep_get(inst)))
           continue;
+
+        /* If instance is repeated with reverse mode, then the progress value
+         * should be modified as (1.0 - progress). */
+        Efl_Animation_Instance_Repeat_Mode repeat_mode
+           = efl_animation_instance_repeat_mode_get(inst);
+        if (repeat_mode == EFL_ANIMATION_INSTANCE_REPEAT_MODE_REVERSE)
+          {
+             int repeated_count = _repeated_count_get(pd, inst);
+             if (repeated_count > 0)
+               {
+                  if ((((repeated_count % 2) == 1) && (!start_repeat)) ||
+                      (((repeated_count % 2) == 0) && (start_repeat)))
+                    inst_progress = 1.0 - inst_progress;
+               }
+          }
 
         efl_animation_instance_progress_set(inst, inst_progress);
      }

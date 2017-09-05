@@ -185,6 +185,8 @@ _efl_animation_instance_group_parallel_efl_animation_instance_progress_set(Eo *e
         double start_delay = efl_animation_instance_start_delay_get(inst);
         double inst_progress;
 
+        Eina_Bool start_repeat = EINA_FALSE;
+
         if (total_duration == 0.0)
           inst_progress = 1.0;
         else
@@ -221,8 +223,25 @@ _efl_animation_instance_group_parallel_efl_animation_instance_progress_set(Eo *e
                          {
                             repeated_count++;
                             _repeated_count_set(pd, inst, repeated_count);
+
+                            start_repeat = EINA_TRUE;
                          }
                     }
+               }
+          }
+
+        /* If instance is repeated with reverse mode, then the progress value
+         * should be modified as (1.0 - progress). */
+        Efl_Animation_Instance_Repeat_Mode repeat_mode
+           = efl_animation_instance_repeat_mode_get(inst);
+        if (repeat_mode == EFL_ANIMATION_INSTANCE_REPEAT_MODE_REVERSE)
+          {
+             int repeated_count = _repeated_count_get(pd, inst);
+             if (repeated_count > 0)
+               {
+                  if ((((repeated_count % 2) == 1) && (!start_repeat)) ||
+                      (((repeated_count % 2) == 0) && (start_repeat)))
+                    inst_progress = 1.0 - inst_progress;
                }
           }
 
