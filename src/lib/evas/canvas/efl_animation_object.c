@@ -87,6 +87,28 @@ _efl_animation_object_total_duration_get(Eo *eo_obj, Efl_Animation_Object_Data *
 }
 
 EOLIAN static void
+_efl_animation_object_repeat_mode_set(Eo *eo_obj,
+                                      Efl_Animation_Object_Data *pd,
+                                      Efl_Animation_Object_Repeat_Mode mode)
+{
+   EFL_ANIMATION_OBJECT_CHECK_OR_RETURN(eo_obj);
+
+   if ((mode == EFL_ANIMATION_OBJECT_REPEAT_MODE_RESTART) ||
+       (mode == EFL_ANIMATION_OBJECT_REPEAT_MODE_REVERSE))
+     pd->repeat_mode = mode;
+}
+
+EOLIAN static Efl_Animation_Object_Repeat_Mode
+_efl_animation_object_repeat_mode_get(const Eo *eo_obj,
+                                      Efl_Animation_Object_Data *pd)
+{
+   EFL_ANIMATION_OBJECT_CHECK_OR_RETURN((Eo *)eo_obj,
+                                        EFL_ANIMATION_OBJECT_REPEAT_MODE_RESTART);
+
+   return pd->repeat_mode;
+}
+
+EOLIAN static void
 _efl_animation_object_repeat_count_set(Eo *eo_obj,
                                        Efl_Animation_Object_Data *pd,
                                        int count)
@@ -271,6 +293,9 @@ _animator_cb(void *data)
    else
      pd->progress = (elapsed_time - paused_time) / total_duration;
 
+   if (!pd->is_direction_forward)
+     pd->progress = 1.0 - pd->progress;
+
    //Reset previous animation effect before applying animation effect
    /* FIXME: When the target state is saved, it may not be finished to calculate
     * target geometry.
@@ -296,6 +321,9 @@ end:
 
         pd->time.begin = ecore_loop_time_get();
         pd->paused_time = 0.0;
+
+        if (pd->repeat_mode == EFL_ANIMATION_OBJECT_REPEAT_MODE_REVERSE)
+          pd->is_direction_forward = !pd->is_direction_forward;
 
         efl_animation_object_target_state_reset(eo_obj);
 
@@ -324,6 +352,7 @@ _init_start(Eo *eo_obj, Efl_Animation_Object_Data *pd)
    pd->is_started = EINA_TRUE;
    pd->is_cancelled = EINA_FALSE;
    pd->is_ended = EINA_FALSE;
+   pd->is_direction_forward = EINA_TRUE;
 
    pd->paused_time = 0.0;
 
@@ -424,6 +453,9 @@ _efl_animation_object_progress_set(Eo *eo_obj,
 
    if ((progress < 0.0) || (progress > 1.0)) return;
 
+   if (!pd->is_direction_forward)
+     pd->progress = 1.0 - pd->progress;
+
    Efl_Animation_Object_Animate_Event_Info event_info;
    event_info.progress = progress;
 
@@ -489,6 +521,7 @@ _efl_animation_object_efl_object_constructor(Eo *eo_obj,
    pd->duration = 0.0;
    pd->total_duration = 0.0;
 
+   pd->repeat_mode = EFL_ANIMATION_OBJECT_REPEAT_MODE_RESTART;
    pd->repeat_count = 0;
 
    pd->is_deleted = EINA_FALSE;
@@ -544,6 +577,9 @@ EOAPI EFL_FUNC_BODY_CONST(efl_animation_object_total_duration_get, double, 0);
 EOAPI EFL_VOID_FUNC_BODYV(efl_animation_object_start_delay_set, EFL_FUNC_CALL(delay_time), double delay_time);
 EOAPI EFL_FUNC_BODY_CONST(efl_animation_object_start_delay_get, double, 0);
 
+EOAPI EFL_VOID_FUNC_BODYV(efl_animation_object_repeat_mode_set, EFL_FUNC_CALL(mode), Efl_Animation_Object_Repeat_Mode mode);
+EOAPI EFL_FUNC_BODY_CONST(efl_animation_object_repeat_mode_get, Efl_Animation_Object_Repeat_Mode, 0);
+
 EOAPI EFL_VOID_FUNC_BODYV(efl_animation_object_repeat_count_set, EFL_FUNC_CALL(count), int count);
 EOAPI EFL_FUNC_BODY_CONST(efl_animation_object_repeat_count_get, int, 0);
 
@@ -559,6 +595,8 @@ EOAPI EFL_FUNC_BODY_CONST(efl_animation_object_repeat_count_get, int, 0);
    EFL_OBJECT_OP_FUNC(efl_animation_object_total_duration_get, _efl_animation_object_total_duration_get), \
    EFL_OBJECT_OP_FUNC(efl_animation_object_start_delay_set, _efl_animation_object_start_delay_set), \
    EFL_OBJECT_OP_FUNC(efl_animation_object_start_delay_get, _efl_animation_object_start_delay_get), \
+   EFL_OBJECT_OP_FUNC(efl_animation_object_repeat_mode_set, _efl_animation_object_repeat_mode_set), \
+   EFL_OBJECT_OP_FUNC(efl_animation_object_repeat_mode_get, _efl_animation_object_repeat_mode_get), \
    EFL_OBJECT_OP_FUNC(efl_animation_object_repeat_count_set, _efl_animation_object_repeat_count_set), \
    EFL_OBJECT_OP_FUNC(efl_animation_object_repeat_count_get, _efl_animation_object_repeat_count_get)
 
