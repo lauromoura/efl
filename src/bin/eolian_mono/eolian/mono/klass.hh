@@ -137,7 +137,7 @@ struct klass
          //   *sink++ = ',';
        }
      // if(cls.immediate_inherits.empty())
-       if(!as_generator("\n" << scope_tab << "efl.eo.IWrapper").generate(sink, attributes::unused, context)) return false;
+       if(!as_generator("\n" << scope_tab << "efl.eo.IWrapper, IDisposable").generate(sink, attributes::unused, context)) return false;
      if(!as_generator("\n{\n").generate(sink, attributes::unused, context)) return false;
      
      if(!as_generator(*(scope_tab << function_declaration))
@@ -170,7 +170,7 @@ struct klass
      //   {
          if(!as_generator
             (
-             "public class " << string << "Concrete : " << string << ", IDisposable\n{\n"
+             "public class " << string << "Concrete : " << string << "\n{\n"
              << scope_tab << "System.IntPtr handle;\n"
              << scope_tab << "public System.IntPtr raw_handle {\n"
              << scope_tab << scope_tab << "get { return handle; }\n"
@@ -254,7 +254,7 @@ struct klass
 
          if(!as_generator
             (
-             "public " << class_type << " " << string << "Inherit : " << string << ", IDisposable\n{\n"
+             "public " << class_type << " " << string << "Inherit : " << string << "\n{\n"
              << scope_tab << "System.IntPtr handle;\n"
              << scope_tab << "public static System.IntPtr klass = System.IntPtr.Zero;\n"
              << scope_tab << "private static readonly object klassAllocLock = new object();\n"
