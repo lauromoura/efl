@@ -37,9 +37,14 @@ public class Globals {
     [DllImport(efl.Libs.Eo)] public static extern IntPtr efl_data_scope_get(IntPtr obj, IntPtr klass);
     [DllImport(efl.Libs.Eo)] public static extern IntPtr efl_super(IntPtr obj, IntPtr klass);
     [DllImport(efl.Libs.Eo)] public static extern IntPtr efl_class_get(IntPtr obj);
-    [DllImport("dl")] public static extern IntPtr dlsym
+#if WIN32
+    public static IntPtr RTLD_DEFAULT = new IntPtr(1);
+#else
+    public static IntPtr RTLD_DEFAULT = new IntPtr(0);
+#endif
+    [DllImport(efl.Libs.Evil)] public static extern IntPtr dlerror();
+    [DllImport(efl.Libs.Evil)] public static extern IntPtr dlsym
        (IntPtr handle, [MarshalAs(UnmanagedType.LPStr)] String name);
-    [DllImport("dl")] public static extern IntPtr dlopen(String name, int flags);
 
    [DllImport(efl.Libs.Eo)] public static extern bool efl_event_callback_priority_add(
               System.IntPtr obj,

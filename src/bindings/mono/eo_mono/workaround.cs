@@ -67,10 +67,12 @@ public struct Description {
     {
         if (!descriptions.ContainsKey(name))
         {
-            // FIXME Other libraries....
-            eina.Log.Debug("Loading {name}");
-            IntPtr library = efl.eo.Globals.dlopen("/opt/efl-mono/lib/libecore.so", efl.eo.Globals.RTLD_NOW);
-            IntPtr data = efl.eo.Globals.dlsym(library, name);
+            IntPtr data = efl.eo.Globals.dlsym(efl.eo.Globals.RTLD_DEFAULT, name);
+
+            if (data == IntPtr.Zero) {
+                string error = Marshal.PtrToStringAnsi(efl.eo.Globals.dlerror());
+                throw new Exception(error);
+            }
             descriptions.Add(name, data);
         }
 

@@ -15,6 +15,7 @@ public class Libs {
     public const string Eina = "libeina-1";
     public const string Eo = "libeo-1";
     public const string Evas = "libevas-1";
+    public const string Evil = "libevil-1";
 
     public const string CustomExports = "libeflcustomexportsmono-0";
 #else
@@ -22,6 +23,7 @@ public class Libs {
     public const string Eina = "eina";
     public const string Eo = "eo";
     public const string Evas = "evas";
+    public const string Evil = "dl"; // Used for dlsym, dlopen and dlerror
 
     public const string CustomExports = "eflcustomexportsmono";
 #endif
