@@ -188,11 +188,16 @@ tests/efl_mono/libefl_mono_test.dll$(EXEEXT): $(efl_mono_test_eolian_mono_files)
 	@rm -f tests/efl_mono/libefl_mono_test.dll$(EXEEXT)
 	$(AM_V_MCS) $(MCS) $(MCS_FLAGS) -r:$(abs_builddir)/lib/efl_mono/libefl_mono.dll$(EXEEXT) -out:$@ -t:library $(filter %.cs, $(^))
 
+TEST_PATHS = '$(abs_top_builddir)/src/lib/efl_mono:$(abs_top_builddir)/src/lib/efl_mono/.libs:$(abs_top_builddir)/src/lib/eina/.libs:$(abs_top_builddir)/src/lib/ecore/.libs:$(abs_top_builddir)/src/lib/ecore_evas/.libs:$(abs_top_builddir)/src/lib/eo/.libs:$(abs_top_builddir)/src/lib/evas/.libs'
+
 AM_TESTS_ENVIRONMENT += MONO='mono'; export MONO;
-AM_TESTS_ENVIRONMENT += MONO_CONFIG='$(builddir)/tests/efl_mono/efl_mono.exe.config'; export MONO_CONFIG;
 AM_TESTS_ENVIRONMENT += MONO_BUILDPATH='$(abs_top_builddir)'; export MONO_BUILDPATH;
-AM_TESTS_ENVIRONMENT += MONO_PATH='$(abs_top_builddir)/src/lib/efl_mono:$(LD_LIBRARY_PATH_APPEND)'; export MONO_PATH;
+AM_TESTS_ENVIRONMENT += MONO_PATH='$(TEST_PATHS)'; export MONO_PATH;
+if HAVE_WIN32
+AM_TESTS_ENVIRONMENT += PATH='$(PATH):$(TEST_PATHS):$(abs_top_builddir)/src/tests/efl_mono/.libs:$(abs_top_builddir)/src/lib/evil/.libs:$(abs_top_builddir)/src/lib/ecore_win32/.libs:$(abs_top_builddir)/src/lib/ector/.libs:$(abs_top_builddir)/src/lib/eet/.libs:$(abs_top_builddir)/src/lib/efl/.libs:$(abs_top_builddir)/src/lib/emile/.libs'; export PATH;
+endif
 AM_TESTS_ENVIRONMENT += EINA_LOG_LEVEL=8; export EINA_LOG_LEVEL;
+AM_TESTS_ENVIRONMENT += EXEEXT='$(EXEEXT)'; export EXEEXT;
 
 check_PROGRAMS += tests/efl_mono/efl_mono.exe
 TESTS += tests/efl_mono/mono_test_driver.sh

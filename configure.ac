@@ -5593,7 +5593,6 @@ src/lib/eina/eina_config.h
 src/lib/efl/Efl_Config.h
 src/lib/elementary/Elementary_Options.h
 src/scripts/eo/eo_debug
-src/tests/efl_mono/efl_mono.exe.config
 src/examples/efl_mono/examples_mono.config
 src/examples/efl_mono/EinaArray01.sh
 src/examples/efl_mono/EinaBinbuf01.sh
