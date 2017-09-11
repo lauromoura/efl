@@ -27,8 +27,8 @@
 #ifdef _WIN32
 # ifdef EAPI
 #  undef EAPI
-#  define EAPI
 # endif
+# define EAPI
 #else
 #include "elm_code_parse.c"
 #include "elm_code_widget_selection.c"
