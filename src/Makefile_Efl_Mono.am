@@ -195,6 +195,8 @@ AM_TESTS_ENVIRONMENT += MONO_BUILDPATH='$(abs_top_builddir)'; export MONO_BUILDP
 AM_TESTS_ENVIRONMENT += MONO_PATH='$(TEST_PATHS)'; export MONO_PATH;
 if HAVE_WIN32
 AM_TESTS_ENVIRONMENT += PATH='$(PATH):$(TEST_PATHS):$(abs_top_builddir)/src/tests/efl_mono/.libs:$(abs_top_builddir)/src/lib/evil/.libs:$(abs_top_builddir)/src/lib/ecore_win32/.libs:$(abs_top_builddir)/src/lib/ector/.libs:$(abs_top_builddir)/src/lib/eet/.libs:$(abs_top_builddir)/src/lib/efl/.libs:$(abs_top_builddir)/src/lib/emile/.libs'; export PATH;
+else
+AM_TESTS_ENVIRONMENT += LD_LIBRARY_PATH='$(LD_LIBRARY_PATH):$(TEST_PATHS)'; export LD_LIBRARY_PATH;
 endif
 AM_TESTS_ENVIRONMENT += EINA_LOG_LEVEL=8; export EINA_LOG_LEVEL;
 AM_TESTS_ENVIRONMENT += EXEEXT='$(EXEEXT)'; export EXEEXT;

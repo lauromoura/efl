@@ -24,11 +24,12 @@
 #undef DBG
 #define DBG(...) do { } while (0);
 
-#ifdef EAPI
-# undef EAPI
-#endif
-
-#ifndef _WIN32
+#ifdef _WIN32
+# ifdef EAPI
+#  undef EAPI
+#  define EAPI
+# endif
+#else
 #include "elm_code_parse.c"
 #include "elm_code_widget_selection.c"
 #include "elm_code_widget.c"
