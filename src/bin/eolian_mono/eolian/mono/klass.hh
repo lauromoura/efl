@@ -178,8 +178,8 @@ struct klass
              << scope_tab << "public System.IntPtr raw_klass {\n"
              << scope_tab << scope_tab << "get { return efl.eo.Globals.efl_class_get(handle); }\n"
              << scope_tab << "}\n"
-             << scope_tab << "[System.Runtime.InteropServices.DllImport(\"" << context_find_tag<library_context>(context).actual_library_name()
-             << "\")] static extern System.IntPtr\n"
+             << scope_tab << "[System.Runtime.InteropServices.DllImport(" << context_find_tag<library_context>(context).actual_library_name(cls.filename)
+             << ")] static extern System.IntPtr\n"
              << scope_tab << scope_tab << class_get_name << "();\n"
              << (class_type == "class" ? "" : "/*")
              << scope_tab << "public " << string << "Concrete(efl.Object parent = null)\n"

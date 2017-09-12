@@ -8,6 +8,7 @@
 #include <libgen.h>
 
 #include <string>
+#include <map>
 #include <algorithm>
 #include <stdexcept>
 #include <iosfwd>
@@ -40,9 +41,51 @@ struct options_type
    std::string dllimport;
    int v_major;
    int v_minor;
+   std::map<const std::string, std::string> references_map;
 };
 
 efl::eina::log_domain domain("eolian_mono");
+
+static std::vector<std::pair<std::string, std::string> >
+parse_reference(std::string argument)
+{
+    std::vector<std::pair<std::string, std::string> > ret;
+    std::string param_delim = " ";
+
+    std::string::size_type sep_idx = argument.find(':');
+
+    if (sep_idx == std::string::npos)
+      throw std::invalid_argument("Wrong reference mapping format.");
+
+    std::string library_name = argument.substr(0, sep_idx);
+    argument = argument.substr(sep_idx + 1);
+    try
+      {
+         while (true)
+           {
+              size_t delim_idx = argument.find(param_delim);
+
+              std::string param = argument.substr(0, delim_idx);
+              if (param == "")
+                  break;
+
+              size_t last_slash = param.find_last_of("/\\");
+
+              if (last_slash == std::string::npos)
+                last_slash = -1; // Probably it's just a filename
+
+              std::string filename = param.substr(last_slash + 1);
+              ret.push_back(std::pair<std::string, std::string>(filename, library_name));
+              argument = argument.substr(param.length() + param_delim.length());
+           }
+      }
+    catch (const std::out_of_range &e)
+      {
+         // Silently ignore the trailing '"' if present
+      }
+
+    return ret;
+}
 
 static bool
 opts_check(eolian_mono::options_type const& opts)
@@ -113,7 +156,7 @@ run(options_type const& opts)
            }
 
          eolian_mono::function_pointer
-           .generate(iterator, function_def, namespaces, efl::eolian::grammar::context_cons<eolian_mono::library_context>({opts.dllimport, opts.v_major, opts.v_minor}));
+           .generate(iterator, function_def, namespaces, efl::eolian::grammar::context_cons<eolian_mono::library_context>({opts.dllimport, opts.v_major, opts.v_minor, opts.references_map}));
      }
 
    if (klass)
@@ -122,7 +165,7 @@ run(options_type const& opts)
        std::vector<efl::eolian::grammar::attributes::klass_def> klasses{klass_def};
 
        eolian_mono::klass
-         .generate(iterator, klass_def, efl::eolian::grammar::context_cons<eolian_mono::library_context>({opts.dllimport, opts.v_major, opts.v_minor}));
+         .generate(iterator, klass_def, efl::eolian::grammar::context_cons<eolian_mono::library_context>({opts.dllimport, opts.v_major, opts.v_minor, opts.references_map}));
      }
    //else
      {
@@ -233,9 +276,10 @@ opts_get(int argc, char **argv)
        { "dllimport",      required_argument,       0,  'l' },
        { "vmaj", required_argument, 0, 'M' },
        { "vmin", required_argument, 0, 'm' },
+       { "references", required_argument, 0, 'r'},
        { 0,           0,                 0,   0  }
      };
-   const char* options = "I:D:o:c:M:m:arvh";
+   const char* options = "I:D:o:c:M:m:ar:vh";
 
    int c, idx;
    while ( (c = getopt_long(argc, argv, options, long_options, &idx)) != -1)
@@ -264,6 +308,22 @@ opts_get(int argc, char **argv)
         else if (c == 'm')
           {
             opts.v_minor = std::stoi(optarg);
+          }
+        else if (c == 'r')
+          {
+             try
+               {
+                  std::vector<std::pair<std::string, std::string> > names = eolian_mono::parse_reference(optarg);
+                 for (auto&& p : names)
+                   {
+                      opts.references_map[p.first] = p.second;
+                   }
+               }
+             catch (const std::invalid_argument &e)
+               {
+                   _usage(argv[0]);
+                   assert(false && e.what());
+               }
           }
         else if (c == 'v')
           {
