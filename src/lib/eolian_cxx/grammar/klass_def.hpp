@@ -430,6 +430,7 @@ struct function_def
   std::string name;
   std::vector<parameter_def> parameters;
   std::string c_name;
+  std::string filename;
   bool is_beta;
   bool is_protected;
 
@@ -439,6 +440,7 @@ struct function_def
       && lhs.name == rhs.name
       && lhs.parameters == rhs.parameters
       && lhs.c_name == rhs.c_name
+      && lhs.filename == rhs.filename
       && lhs.is_beta == rhs.is_beta
       && lhs.is_protected == rhs.is_protected;
   }
@@ -448,8 +450,8 @@ struct function_def
   }
   
   function_def(type_def return_type, std::string name, std::vector<parameter_def> parameters
-               , std::string c_name, bool is_beta)
-    : return_type(return_type), name(name), parameters(parameters), c_name(c_name), is_beta(is_beta) {}
+               , std::string c_name, std::string filename, bool is_beta)
+    : return_type(return_type), name(name), parameters(parameters), c_name(c_name), filename(filename), is_beta(is_beta) {}
   function_def() = default;
   function_def( ::Eolian_Function const* function, Eolian_Function_Type type, Eolian_Unit const* unit)
     : return_type(void_)
@@ -502,6 +504,15 @@ struct function_def
            parameters.insert(parameters.end(), values.begin(), values.end());
        }
      c_name = eolian_function_full_c_name_get(function, type, EINA_FALSE);
+     if (type != EOLIAN_FUNCTION_POINTER)
+       {
+          const Eolian_Class *klass = eolian_function_class_get(function);
+          filename = eolian_class_file_get(klass);
+       }
+     else
+       {
+          filename = "";
+       }
      is_beta = eolian_function_is_beta(function);
      is_protected = eolian_function_scope_get(function, type) == EOLIAN_SCOPE_PROTECTED;
      is_protected = eolian_function_scope_get(function, type) == EOLIAN_SCOPE_PROTECTED;
@@ -629,6 +640,7 @@ struct klass_def
 {
   std::string eolian_name;
   std::string cxx_name;
+  std::string filename;
   std::vector<std::string> namespaces;
   std::vector<function_def> functions;
   std::set<klass_name, compare_klass_name_by_name> inherits;
@@ -640,6 +652,7 @@ struct klass_def
   {
     return lhs.eolian_name == rhs.eolian_name
       && lhs.cxx_name == rhs.cxx_name
+      && lhs.filename == lhs.filename
       && lhs.namespaces == rhs.namespaces
       && lhs.functions == rhs.functions
       && lhs.inherits == rhs.inherits
@@ -651,13 +664,13 @@ struct klass_def
     return !(lhs == rhs);
   }
 
-  klass_def(std::string eolian_name, std::string cxx_name
+  klass_def(std::string eolian_name, std::string cxx_name, std::string filename
             , std::vector<std::string> namespaces
             , std::vector<function_def> functions
             , std::set<klass_name, compare_klass_name_by_name> inherits
             , class_type type
             , std::set<klass_name, compare_klass_name_by_name> immediate_inherits)
-    : eolian_name(eolian_name), cxx_name(cxx_name)
+    : eolian_name(eolian_name), cxx_name(cxx_name), filename(filename)
     , namespaces(namespaces)
     , functions(functions), inherits(inherits), type(type)
     , immediate_inherits(immediate_inherits)
@@ -670,6 +683,7 @@ struct klass_def
           this->namespaces.push_back(&*namespace_iterator);
        }
      cxx_name = eolian_name = eolian_class_name_get(klass);
+     filename = eolian_class_file_get(klass);
      for(efl::eina::iterator<Eolian_Function const> eolian_functions ( ::eolian_class_functions_get(klass, EOLIAN_PROPERTY))
        , functions_last; eolian_functions != functions_last; ++eolian_functions)
        {
