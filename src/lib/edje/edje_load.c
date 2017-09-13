@@ -603,10 +603,24 @@ _edje_device_add(Edje *ed, Efl_Input_Device *dev)
 
    EINA_LIST_FOREACH(ed->seats, l, s)
      {
-        if (s->name != name)
-          continue;
-        seat = s;
-        break;
+        //we have found a mathing seat!
+        if (s->name == name)
+          {
+             seat = s;
+             break;
+          }
+
+        /* s->name beeing NULL means someone setted before focus on a part,
+         * while no single seat was known to evas, this is some kind of
+         * broken state, and we should now claime those focus ed elements
+         * for us, since we are the first real seat
+         */
+        if (!s->name && eina_list_count(ed->seats) == 0)
+          {
+             seat = s;
+             s->name = name;
+             break;
+          }
      }
 
    if (!seat)
