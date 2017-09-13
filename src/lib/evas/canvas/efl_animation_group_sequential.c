@@ -115,6 +115,9 @@ _efl_animation_group_sequential_efl_animation_instance_create(Eo *eo_obj,
    int repeat_count = efl_animation_repeat_count_get(eo_obj);
    efl_animation_instance_repeat_count_set(group_inst, repeat_count);
 
+   Efl_Interpolator *interpolator = efl_animation_interpolator_get(eo_obj);
+   efl_animation_instance_interpolator_set(group_inst, interpolator);
+
    return group_inst;
 }
 

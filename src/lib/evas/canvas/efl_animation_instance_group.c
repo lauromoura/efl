@@ -111,6 +111,25 @@ _efl_animation_instance_group_efl_animation_instance_final_state_keep_set(Eo *eo
                                                state_keep);
 }
 
+EOLIAN static void
+_efl_animation_instance_group_efl_animation_instance_interpolator_set(Eo *eo_obj,
+                                                                      Efl_Animation_Instance_Group_Data *pd,
+                                                                      Efl_Interpolator *interpolator)
+{
+   EFL_ANIMATION_INSTANCE_GROUP_CHECK_OR_RETURN(eo_obj);
+
+   Eina_List *l;
+   Efl_Animation_Instance *inst;
+
+   EINA_LIST_FOREACH(pd->instances, l, inst)
+     {
+        efl_animation_instance_interpolator_set(inst, interpolator);
+     }
+
+   efl_animation_instance_interpolator_set(efl_super(eo_obj, MY_CLASS),
+                                           interpolator);
+}
+
 EOLIAN static Efl_Object *
 _efl_animation_instance_group_efl_object_constructor(Eo *eo_obj,
                                                      Efl_Animation_Instance_Group_Data *pd)
@@ -197,6 +216,7 @@ EOAPI EFL_FUNC_BODY(efl_animation_instance_group_instances_get, Eina_List *, NUL
    EFL_OBJECT_OP_FUNC(efl_animation_instance_group_instances_get, _efl_animation_instance_group_instances_get), \
    EFL_OBJECT_OP_FUNC(efl_animation_instance_target_set, _efl_animation_instance_group_efl_animation_instance_target_set), \
    EFL_OBJECT_OP_FUNC(efl_animation_instance_duration_set, _efl_animation_instance_group_efl_animation_instance_duration_set), \
-   EFL_OBJECT_OP_FUNC(efl_animation_instance_final_state_keep_set, _efl_animation_instance_group_efl_animation_instance_final_state_keep_set)
+   EFL_OBJECT_OP_FUNC(efl_animation_instance_final_state_keep_set, _efl_animation_instance_group_efl_animation_instance_final_state_keep_set), \
+   EFL_OBJECT_OP_FUNC(efl_animation_instance_interpolator_set, _efl_animation_instance_group_efl_animation_instance_interpolator_set)
 
 #include "efl_animation_instance_group.eo.c"

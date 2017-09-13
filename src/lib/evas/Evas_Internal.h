@@ -102,6 +102,9 @@ EOAPI Efl_Animation_Instance_Repeat_Mode efl_animation_instance_repeat_mode_get(
 EOAPI void efl_animation_instance_repeat_count_set(Eo *obj, int count);
 EOAPI int efl_animation_instance_repeat_count_get(const Eo *obj);
 
+EOAPI void efl_animation_instance_interpolator_set(Eo *obj, Efl_Object *interpolator);
+EOAPI Efl_Object *efl_animation_instance_interpolator_get(const Eo *obj);
+
 EWAPI extern const Efl_Event_Description _EFL_ANIMATION_INSTANCE_EVENT_PRE_START;
 #define EFL_ANIMATION_INSTANCE_EVENT_PRE_START (&(_EFL_ANIMATION_INSTANCE_EVENT_PRE_START))
 
