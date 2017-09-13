@@ -41,6 +41,8 @@ typedef struct _Efl_Animation_Object_Data
    int                              repeat_count;
    int                              remaining_repeat_count;
 
+   Efl_Interpolator                *interpolator;
+
    Eina_Bool                        is_deleted : 1;
    Eina_Bool                        is_started : 1;
    Eina_Bool                        is_cancelled : 1;
