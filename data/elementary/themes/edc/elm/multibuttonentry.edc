@@ -27,6 +27,54 @@ group { name: "elm/multibuttonentry/base/default";
    }
 }
 
+group { name: "elm/multibuttonentry/base/entry_separate";
+   data.item: "horizontal_pad" 0;
+   data.item: "vertical_pad" 0;
+   data.item: "closed_height" 0;
+   parts {
+      part { name: "bg";
+         type: RECT;
+         scale: 1;
+         description { state: "default" 0.0;
+            color_class: "multibuttonentry_bg";
+         }
+      }
+      part { name: "elm.swallow.background";
+         type: SWALLOW;
+         scale: 1;
+         description { state: "default" 0.0;
+            rel1.to: "bg";
+            rel2.to: "bg";
+         }
+      }
+      part { name: "entry.swallow"; type: SWALLOW;
+         description { state: "default" 0.0;
+            rel1 {
+                to: "bg";
+                relative: 0.0 1.0;
+            }
+            rel2 {
+                to: "bg";
+                relative: 1.0 1.0;
+            }
+            align: 0.5 1.0;
+         }
+      }
+      part { name: "box.swallow"; type: SWALLOW;
+         description { state: "default" 0.0;
+            rel1 {
+                to: "bg";
+                relative: 0.0 0.0;
+            }
+            rel2 {
+                to: "entry.swallow";
+                relative: 1.0 0.0;
+            }
+         }
+      }
+   }
+}
+
 group { name: "elm/multibuttonentry/label/default";
    parts {
       part { name: "elm.text"; type: TEXT; mouse_events: 0;
