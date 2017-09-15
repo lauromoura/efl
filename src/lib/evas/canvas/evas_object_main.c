@@ -2850,6 +2850,25 @@ _efl_canvas_object_event_animation_get(Eo *eo_obj EINA_UNUSED,
    return NULL;
 }
 
+/* This function is to show object if show is called during hide animation.
+ * If show is called during hide animation is running, then the running hide
+ * animation is cancelled and show operation is proceeded. */
+Eina_Bool
+_efl_canvas_object_event_animation_is_running(Eo *eo_obj,
+                                              Efl_Animation_Event_Type event)
+{
+   if (_event_animation_instance_get(eo_obj, event))
+     return EINA_TRUE;
+
+   return EINA_FALSE;
+}
+
+void
+_efl_canvas_object_event_animation_cancel(Eo *eo_obj)
+{
+   _all_animation_instances_cancel(eo_obj);
+}
+
 
 /* legacy */
 
