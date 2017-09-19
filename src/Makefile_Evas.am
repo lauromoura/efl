@@ -129,7 +129,8 @@ lib/evas/canvas/evas_vg_private.h \
 lib/evas/canvas/evas_image_private.h \
 lib/evas/canvas/evas_polygon_private.h \
 lib/evas/canvas/efl_canvas_surface.h \
-lib/evas/common3d/primitives/primitive_common.h
+lib/evas/common3d/primitives/primitive_common.h \
+lib/evas/gesture/efl_gesture_private.h
 
 # Linebreak
 
