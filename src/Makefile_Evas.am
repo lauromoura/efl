@@ -44,6 +44,11 @@ evas_eolian_pub_files = \
 	lib/evas/canvas/efl_input_hold.eo \
 	lib/evas/canvas/efl_input_focus.eo \
 	lib/evas/canvas/efl_gfx_map.eo \
+	lib/evas/gesture/efl_gesture_touch.eo \
+	lib/evas/gesture/efl_gesture.eo \
+	lib/evas/gesture/efl_gesture_tap.eo \
+	lib/evas/gesture/efl_gesture_recognizer.eo \
+	lib/evas/gesture/efl_gesture_manager.eo \
 	$(NULL)
 
 evas_eolian_legacy_files = \
@@ -57,10 +62,14 @@ evas_eolian_legacy_files = \
 	$(NULL)
 
 evas_eolian_priv_files = \
-	lib/evas/include/evas_ector_buffer.eo
+	lib/evas/include/evas_ector_buffer.eo \
+	lib/evas/gesture/efl_gesture_recognizer_tap.eo
+
 
 evas_eolian_type_files = \
-    lib/evas/canvas/evas_canvas3d_types.eot
+    lib/evas/canvas/evas_canvas3d_types.eot \
+    lib/evas/gesture/efl_gesture_types.eot
+
 
 evas_eolian_priv_c = $(evas_eolian_priv_files:%.eo=%.eo.c)
 evas_eolian_priv_h = $(evas_eolian_priv_files:%.eo=%.eo.h) \

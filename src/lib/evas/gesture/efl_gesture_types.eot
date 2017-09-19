@@ -1,0 +1,33 @@
+enum Efl.Gesture.Touch.State
+{
+   [[ This enum type describes the state of a touch event. ]]
+   legacy: efl_gesture_touch;
+   unknown = 0,
+   begin ,
+   update,
+   end,
+}
+
+enum Efl.Gesture.State
+{
+   [[ This enum type describes the state of a gesture. ]]
+   legacy: efl_gesture;
+   none    = 0,
+   started = 1, [[A continuous gesture has started.]]
+   updated,     [[A gesture continues.]]
+   finished,    [[A gesture has finished.]]
+   canceled,    [[A gesture was canceled.]]
+}
+
+enum Efl.Gesture.Recognizer.Result
+{
+   [[ This enum type describes the state of a gesture recognizer. ]]
+   legacy: efl_gesture;
+
+   ignore    = 0x0001,
+   maybe     = 0x0002,
+   trigger   = 0x0004,
+   finish    = 0x0008,
+   cancel    = 0x0010,
+   result_mask = 0x00ff,
+}
