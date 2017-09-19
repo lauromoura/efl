@@ -13,6 +13,7 @@ struct _Efl_Ui_Popup_Alert_Scroll_Data
    int max_scroll_h;
    Eina_Bool is_expandable_w;
    Eina_Bool is_expandable_h;
+   Eina_Bool is_sizing_eval;
 };
 
 #endif

@@ -39,6 +39,8 @@ _scroller_sizing_eval(Eo *obj, Efl_Ui_Popup_Alert_Scroll_Data *pd, int minw, int
    int w, h;
    evas_object_geometry_get(obj, NULL, NULL, &w, &h);
 
+   pd->is_sizing_eval = EINA_TRUE;
+
    if (pd->is_expandable_w && !pd->is_expandable_h)
      {
         if ((pd->max_scroll_w > -1) && (minw > pd->max_scroll_w))
@@ -80,11 +82,17 @@ _scroller_sizing_eval(Eo *obj, Efl_Ui_Popup_Alert_Scroll_Data *pd, int minw, int
              evas_object_resize(obj, pd->max_scroll_w, pd->max_scroll_h);
            }
      }
+
+   pd->is_sizing_eval = EINA_FALSE;
 }
 
 EOLIAN static void
 _efl_ui_popup_alert_scroll_elm_layout_sizing_eval(Eo *obj, Efl_Ui_Popup_Alert_Scroll_Data *pd)
 {
+   //FIXME: This variable is added to prevent unexpected sizing eval function
+   //         during scroller sizing calculation
+   if (pd->is_sizing_eval) return;
+
    elm_layout_sizing_eval(efl_super(obj, MY_CLASS));
 
    ELM_WIDGET_DATA_GET_OR_RETURN(obj, wd);
