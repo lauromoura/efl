@@ -216,6 +216,7 @@ lib/evas/canvas/efl_input_key.c \
 lib/evas/canvas/efl_input_pointer.c \
 lib/evas/canvas/efl_input_hold.c \
 lib/evas/canvas/efl_input_focus.c \
+lib/evas/gesture/efl_gesture_touch.c \
 $(NULL)
 
 EXTRA_DIST2 += \
