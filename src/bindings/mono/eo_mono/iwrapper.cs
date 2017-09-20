@@ -3,6 +3,8 @@ using System;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 
+using static eina.NativeCustomExportFunctions;
+
 namespace efl { namespace eo {
 
 public class Globals {
@@ -129,7 +131,7 @@ public class Globals {
         IntPtr ptr = IntPtr.Zero;
         if (!dict.TryGetValue(str, out ptr))
         {
-            ptr = Marshal.StringToHGlobalAuto(str);
+            ptr = eina.StringConversion.ManagedStringToNativeUtf8Alloc(str);
             dict[str] = ptr;
         }
 
@@ -254,21 +256,15 @@ public class MarshalTest<T, U> : ICustomMarshaler
     }
 }
 
-/* StringSurrenderMarshaler is a Custom Marshaler that both releases
- * string ownership to C when providing @in arguments and not
- * taking ownership from C when receiving strings in @out and return
- * parameters.
- *
- * It is needed as by default the CLI/CLR will take ownership of any string
- * passed to and received from the native interface.
- */
-public class StringSurrenderMarshaler : ICustomMarshaler {
+public class StringPassOwnershipMarshaler : ICustomMarshaler {
     public object MarshalNativeToManaged(IntPtr pNativeData) {
-        return Marshal.PtrToStringAnsi(pNativeData);
+        var ret = eina.StringConversion.NativeUtf8ToManagedString(pNativeData);
+        efl_mono_native_free(pNativeData);
+        return ret;
     }
 
     public IntPtr MarshalManagedToNative(object managedObj) {
-        return Marshal.StringToHGlobalAnsi((string)managedObj);
+        return efl_mono_native_strdup((string)managedObj);
     }
 
     public void CleanUpNativeData(IntPtr pNativeData) {
@@ -284,57 +280,50 @@ public class StringSurrenderMarshaler : ICustomMarshaler {
 
     public static ICustomMarshaler GetInstance(string cookie) {
         if (marshaler == null) {
-            marshaler = new StringSurrenderMarshaler();
+            marshaler = new StringPassOwnershipMarshaler();
         }
         return marshaler;
     }
-    static private StringSurrenderMarshaler marshaler;
+    static private StringPassOwnershipMarshaler marshaler;
 }
 
-/* StringOwnNativeMarshaler is a Custom Marshaler that releases the
- * native IntPtr upon converting to managed data.
- */
-public class StringOwnNativeMarshaler: ICustomMarshaler {
+public class StringKeepOwnershipMarshaler: ICustomMarshaler {
     public object MarshalNativeToManaged(IntPtr pNativeData) {
-        var ret = Marshal.PtrToStringAnsi(pNativeData);
+        return eina.StringConversion.NativeUtf8ToManagedString(pNativeData);
+    }
+
+    public IntPtr MarshalManagedToNative(object managedObj) {
+        return eina.StringConversion.ManagedStringToNativeUtf8Alloc((string)managedObj);
+    }
+
+    public void CleanUpNativeData(IntPtr pNativeData) {
         Marshal.FreeHGlobal(pNativeData);
+    }
+
+    public void CleanUpManagedData(object managedObj) {
+    }
+
+    public int GetNativeDataSize() {
+        return -1;
+    }
+
+    public static ICustomMarshaler GetInstance(string cookie) {
+        if (marshaler == null) {
+            marshaler = new StringKeepOwnershipMarshaler();
+        }
+        return marshaler;
+    }
+    static private StringKeepOwnershipMarshaler marshaler;
+}
+
+public class StringsharePassOwnershipMarshaler : ICustomMarshaler {
+    public object MarshalNativeToManaged(IntPtr pNativeData) {
+        var ret = eina.StringConversion.NativeUtf8ToManagedString(pNativeData);
+        eina.Stringshare.eina_stringshare_del(pNativeData);
         return ret;
     }
 
     public IntPtr MarshalManagedToNative(object managedObj) {
-        return Marshal.StringToHGlobalAnsi((string)managedObj);
-    }
-
-    public void CleanUpNativeData(IntPtr pNativeData) {
-    }
-
-    public void CleanUpManagedData(object managedObj) {
-    }
-
-    public int GetNativeDataSize() {
-        return -1;
-    }
-
-    public static ICustomMarshaler GetInstance(string cookie) {
-        if (marshaler == null) {
-            marshaler = new StringOwnNativeMarshaler();
-        }
-        return marshaler;
-    }
-    static private StringOwnNativeMarshaler marshaler;
-}
-
-/*
- * Custom marshaler for giving stringshare ownership to C.
- * This happens in @in own() direct calls and @out @own virtual
- * calls.
- */
-public class StringshareSurrenderMarshaler : ICustomMarshaler {
-    public object MarshalNativeToManaged(IntPtr pNativeData) {
-        return new object();
-    }
-
-    public IntPtr MarshalManagedToNative(object managedObj) {
         return eina.Stringshare.eina_stringshare_add((string)managedObj);
     }
 
@@ -351,30 +340,24 @@ public class StringshareSurrenderMarshaler : ICustomMarshaler {
 
     public static ICustomMarshaler GetInstance(string cookie) {
         if (marshaler == null) {
-            marshaler = new StringshareSurrenderMarshaler();
+            marshaler = new StringsharePassOwnershipMarshaler();
         }
         return marshaler;
     }
-    static private StringshareSurrenderMarshaler marshaler;
+    static private StringsharePassOwnershipMarshaler marshaler;
 }
 
-/*
- * Custom marshaler for receiving stringshare ownership in arguments,
- * like @out own() in direct calls and @in own() when called from C.
- */
-public class StringshareOwnOutMarshaler : ICustomMarshaler {
+public class StringshareKeepOwnershipMarshaler : ICustomMarshaler {
     public object MarshalNativeToManaged(IntPtr pNativeData) {
-        String str = Marshal.PtrToStringAnsi(pNativeData);
+        return eina.StringConversion.NativeUtf8ToManagedString(pNativeData);
+    }
+
+    public IntPtr MarshalManagedToNative(object managedObj) {
+        return eina.Stringshare.eina_stringshare_add((string)managedObj);
+    }
+
+    public void CleanUpNativeData(IntPtr pNativeData) {
         eina.Stringshare.eina_stringshare_del(pNativeData);
-        return str;
-    }
-
-    public IntPtr MarshalManagedToNative(object managedObj) {
-        return eina.Stringshare.eina_stringshare_add((string)managedObj);
-    }
-
-    public void CleanUpNativeData(IntPtr pNativeData) {
-        // No need to free as it's for own() parameters.
     }
 
     public void CleanUpManagedData(object managedObj) {
@@ -386,11 +369,11 @@ public class StringshareOwnOutMarshaler : ICustomMarshaler {
 
     public static ICustomMarshaler GetInstance(string cookie) {
         if (marshaler == null) {
-            marshaler = new StringshareOwnOutMarshaler();
+            marshaler = new StringshareKeepOwnershipMarshaler();
         }
         return marshaler;
     }
-    static private StringshareOwnOutMarshaler marshaler;
+    static private StringshareKeepOwnershipMarshaler marshaler;
 }
 
 } // namespace eo

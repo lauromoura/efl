@@ -121,27 +121,29 @@ struct klass
        }
 
      // Interface class
+     {
+     auto iface_cxt = context_add_tag(class_context{class_context::interface}, context);
      if(!as_generator
         (
          "public " /*<< class_type*/ "interface" /*<<*/ " " << string << " : "
          )
-        .generate(sink, cls.cxx_name, context))
+        .generate(sink, cls.cxx_name, iface_cxt))
        return false;
      for(auto first = std::begin(cls.immediate_inherits)
            , last = std::end(cls.immediate_inherits); first != last; ++first)
        {
          if(!as_generator("\n" << scope_tab << *(lower_case[string] << ".") << string << " ,")
-            .generate(sink, std::make_tuple(escape_namespace(first->namespaces), first->eolian_name), context))
+            .generate(sink, std::make_tuple(escape_namespace(first->namespaces), first->eolian_name), iface_cxt))
            return false;
          // if(std::next(first) != last)
          //   *sink++ = ',';
        }
      // if(cls.immediate_inherits.empty())
-       if(!as_generator("\n" << scope_tab << "efl.eo.IWrapper, IDisposable").generate(sink, attributes::unused, context)) return false;
-     if(!as_generator("\n{\n").generate(sink, attributes::unused, context)) return false;
+       if(!as_generator("\n" << scope_tab << "efl.eo.IWrapper, IDisposable").generate(sink, attributes::unused, iface_cxt)) return false;
+     if(!as_generator("\n{\n").generate(sink, attributes::unused, iface_cxt)) return false;
      
      if(!as_generator(*(scope_tab << function_declaration))
-        .generate(sink, cls.functions, context)) return false;
+        .generate(sink, cls.functions, iface_cxt)) return false;
 
      // FIXME Move the event generator into another generator like function?
      for (auto &&e : cls.events)
@@ -158,16 +160,18 @@ struct klass
          if (!as_generator(
                      scope_tab << "event EventHandler" << wrapper_args_type << " " 
                      << evt_name << ";\n"
-                     ).generate(sink, NULL, context))
+                     ).generate(sink, NULL, iface_cxt))
              return false;
        }
 
-     if(!as_generator("}\n").generate(sink, attributes::unused, context)) return false;
+     if(!as_generator("}\n").generate(sink, attributes::unused, iface_cxt)) return false;
+     }
 
      auto class_get_name = *(lower_case[string] << "_") << lower_case[string] << "_class_get";
      // Concrete class
      // if(class_type == "class")
-     //   {
+       {
+         auto concrete_cxt = context_add_tag(class_context{class_context::concrete}, context);
          if(!as_generator
             (
              "public class " << string << "Concrete : " << string << "\n{\n"
@@ -178,7 +182,7 @@ struct klass
              << scope_tab << "public System.IntPtr raw_klass {\n"
              << scope_tab << scope_tab << "get { return efl.eo.Globals.efl_class_get(handle); }\n"
              << scope_tab << "}\n"
-             << scope_tab << "[System.Runtime.InteropServices.DllImport(" << context_find_tag<library_context>(context).actual_library_name(cls.filename)
+             << scope_tab << "[System.Runtime.InteropServices.DllImport(" << context_find_tag<library_context>(concrete_cxt).actual_library_name(cls.filename)
              << ")] static extern System.IntPtr\n"
              << scope_tab << scope_tab << class_get_name << "();\n"
              << (class_type == "class" ? "" : "/*")
@@ -221,17 +225,17 @@ struct klass
                 cls.cxx_name, cls.cxx_name, cls.namespaces, cls.eolian_name
                 , cls.cxx_name, cls.namespaces, cls.eolian_name, cls.cxx_name
                 , cls.cxx_name)
-              , context))
+              , concrete_cxt))
            return false;
 
-         if (!generate_events(sink, cls, context))
+         if (!generate_events(sink, cls, concrete_cxt))
              return false;
 
-         if (!generate_events_registration(sink, cls, context))
+         if (!generate_events_registration(sink, cls, concrete_cxt))
              return false;
      
          if(!as_generator(*(function_definition))
-            .generate(sink, cls.functions, context)) return false;
+            .generate(sink, cls.functions, concrete_cxt)) return false;
 
          for(auto first = std::begin(cls.inherits)
                , last = std::end(cls.inherits); first != last; ++first)
@@ -239,16 +243,17 @@ struct klass
              attributes::klass_def klass(get_klass(*first, NULL), NULL);
              
              if(!as_generator(*(function_definition))
-                .generate(sink, klass.functions, context)) return false;
+                .generate(sink, klass.functions, concrete_cxt)) return false;
            }
 
          
-         if(!as_generator("}\n").generate(sink, attributes::unused, context)) return false;
-       // }
+         if(!as_generator("}\n").generate(sink, attributes::unused, concrete_cxt)) return false;
+       }
 
      // Inherit class
      if(class_type == "class")
        {
+        auto inherit_cxt = context_add_tag(class_context{class_context::inherit}, context);
         bool cls_has_string_return = has_string_return(cls);
         bool cls_has_stringshare_return = has_stringshare_return(cls);
 
@@ -266,7 +271,7 @@ struct klass
              << scope_tab << "public System.IntPtr raw_klass {\n"
              << scope_tab << scope_tab << "get { return klass; }\n"
              << scope_tab << "}\n"
-             << scope_tab << "[System.Runtime.InteropServices.DllImport(\"" << context_find_tag<library_context>(context).library_name
+             << scope_tab << "[System.Runtime.InteropServices.DllImport(\"" << context_find_tag<library_context>(inherit_cxt).library_name
              << "\")] static extern System.IntPtr\n"
              << scope_tab << scope_tab << class_get_name << "();\n"
              << scope_tab << "public " << string << "Inherit(efl.Object parent = null, System.Type interface1 = null)\n"
@@ -307,17 +312,17 @@ struct klass
                 cls.cxx_name, cls.cxx_name, cls.namespaces, cls.eolian_name
                 , cls.cxx_name, cls.cxx_name, cls.namespaces, cls.eolian_name, cls.cxx_name
                 , cls.cxx_name)
-              , context))
+              , inherit_cxt))
            return false;
 
-         if (!generate_events(sink, cls, context))
+         if (!generate_events(sink, cls, inherit_cxt))
              return false;
 
-         if (!generate_events_registration(sink, cls, context))
+         if (!generate_events_registration(sink, cls, inherit_cxt))
              return false;
      
          if(!as_generator(*(function_definition(true)))
-            .generate(sink, cls.functions, context)) return false;
+            .generate(sink, cls.functions, inherit_cxt)) return false;
 
          for(auto first = std::begin(cls.inherits)
                , last = std::end(cls.inherits); first != last; ++first)
@@ -325,11 +330,11 @@ struct klass
              attributes::klass_def klass(get_klass(*first, NULL), NULL);
              
              if(!as_generator(*(function_definition(true)))
-                .generate(sink, klass.functions, context)) return false;
+                .generate(sink, klass.functions, inherit_cxt)) return false;
            }
 
          
-         if(!as_generator("}\n").generate(sink, attributes::unused, context)) return false;
+         if(!as_generator("}\n").generate(sink, attributes::unused, inherit_cxt)) return false;
        }
 
      std::size_t function_count = cls.functions.size();
@@ -350,6 +355,7 @@ struct klass
      // Native Inherit class
      if(class_type == "class")
        {
+         auto inative_cxt = context_add_tag(class_context{class_context::inherit_native}, context);
          if(!as_generator
             (
              "public " << class_type << " " << string << "NativeInherit {\n"
@@ -358,14 +364,14 @@ struct klass
              << scope_tab << scope_tab << "Efl_Op_Description[] descs = new Efl_Op_Description[" << grammar::int_ << "];\n"
              << *(function_registration(index_generator, cls))
             )
-            .generate(sink, std::make_tuple(cls.cxx_name, function_count, cls.functions), context))
+            .generate(sink, std::make_tuple(cls.cxx_name, function_count, cls.functions), inative_cxt))
            return false;
          for(auto first = std::begin(cls.inherits)
                , last = std::end(cls.inherits); first != last; ++first)
            {
              attributes::klass_def klass(get_klass(*first, NULL), NULL);
              if(!as_generator(*(function_registration(index_generator, cls)))
-                .generate(sink, klass.functions, context)) return false;
+                .generate(sink, klass.functions, inative_cxt)) return false;
            }
 
          if(!as_generator
@@ -382,15 +388,15 @@ struct klass
              << scope_tab << scope_tab << "IntPtr ops_ptr = Marshal.AllocHGlobal(Marshal.SizeOf(ops));\n"
              << scope_tab << scope_tab << "Marshal.StructureToPtr(ops, ops_ptr, false);\n"
              << scope_tab << scope_tab << "efl.eo.Globals.efl_class_functions_set(klass, ops_ptr, IntPtr.Zero);\n"
-            ).generate(sink, attributes::unused, context)) return false;
+            ).generate(sink, attributes::unused, inative_cxt)) return false;
          
          
          if(!as_generator(scope_tab << scope_tab << "return 1;\n"
                           << scope_tab << "}\n")
-            .generate(sink, attributes::unused, context)) return false;
+            .generate(sink, attributes::unused, inative_cxt)) return false;
      
          if(!as_generator(*(native_function_definition(cls)))
-            .generate(sink, cls.functions, context)) return false;
+            .generate(sink, cls.functions, inative_cxt)) return false;
 
          for(auto first = std::begin(cls.inherits)
                , last = std::end(cls.inherits); first != last; ++first)
@@ -398,10 +404,10 @@ struct klass
              attributes::klass_def klass(get_klass(*first, NULL), NULL);
              
              if(!as_generator(*(native_function_definition(cls)))
-                .generate(sink, klass.functions, context)) return false;
+                .generate(sink, klass.functions, inative_cxt)) return false;
            }
          
-         if(!as_generator("}\n").generate(sink, attributes::unused, context)) return false;
+         if(!as_generator("}\n").generate(sink, attributes::unused, inative_cxt)) return false;
        }
      
      auto close_namespace = *(lit("} ")) << "\n";

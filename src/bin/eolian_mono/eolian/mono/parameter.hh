@@ -224,10 +224,10 @@ inline bool param_is_acceptable(attributes::parameter_def const &param, std::str
           && (param.type.has_own == want_own);
 }
 
-inline bool param_should_use_out_var(attributes::parameter_def const& param)
+inline bool param_should_use_out_var(attributes::parameter_def const& param, bool native)
 {
-   if (param_is_acceptable(param, "const char *", !WANT_OWN, WANT_OUT)
-           || param_is_acceptable(param, "Eina_Stringshare *", !WANT_OWN, WANT_OUT)
+   if ((native && param_is_acceptable(param, "const char *", !WANT_OWN, WANT_OUT))
+           || (native && param_is_acceptable(param, "Eina_Stringshare *", !WANT_OWN, WANT_OUT))
            || param_is_acceptable(param, "Eina_Binbuf *", !WANT_OWN, WANT_OUT)
            || param_is_acceptable(param, "Eina_Binbuf *", WANT_OWN, WANT_OUT)
            || param_is_acceptable(param, "const Eina_Binbuf *", !WANT_OWN, WANT_OUT)
@@ -264,7 +264,7 @@ inline bool param_should_use_out_var(attributes::parameter_def const& param)
    return false;
 }
 
-inline bool param_should_use_in_var(attributes::parameter_def const& param)
+inline bool param_should_use_in_var(attributes::parameter_def const& param, bool /*native*/)
 {
     if (param_is_acceptable(param, "Eina_Binbuf *", !WANT_OWN, !WANT_OUT)
         || param_is_acceptable(param, "Eina_Binbuf *", WANT_OWN, !WANT_OUT)
@@ -402,9 +402,9 @@ struct native_argument_invocation_generator
    {
      std::string arg = direction_modifier(param);
 
-     if (param_should_use_out_var(param))
+     if (param_should_use_out_var(param, true))
        arg += out_variable_name(param.param_name);
-     else if (param_should_use_in_var(param))
+     else if (param_should_use_in_var(param, true))
        arg += in_variable_name(param.param_name);
      else if (param.type.original_type.visit(is_fp_visitor{}))
        {
@@ -425,9 +425,9 @@ struct argument_invocation_generator
    {
      std::string arg = direction_modifier(param);
 
-     if (param_should_use_out_var(param))
+     if (param_should_use_out_var(param, false))
        arg += out_variable_name(param.param_name);
-     else if (param_should_use_in_var(param))
+     else if (param_should_use_in_var(param, false))
        arg += in_variable_name(param.param_name);
      else if (param.type.original_type.visit(is_fp_visitor{}))
        {
@@ -583,19 +583,7 @@ struct convert_out_variable_generator
    template <typename OutputIterator, typename Context>
    bool generate(OutputIterator sink, attributes::parameter_def const& param, Context const& context) const
    {
-      if (param_is_acceptable(param, "Eina_Stringshare *", !WANT_OWN, WANT_OUT))
-        {
-           return as_generator(
-               marshall_type << " " << string << " = default(" << marshall_type << ");\n"
-             ).generate(sink, std::make_tuple(param, out_variable_name(param.param_name), param), context);
-        }
-      else if (param_is_acceptable(param, "const char *", !WANT_OWN, WANT_OUT))
-        {
-           return as_generator(
-               marshall_type << " " << string << " = default(" << marshall_type << ");\n"
-            ).generate(sink, std::make_tuple(param, out_variable_name(param.param_name), param), context);
-        }
-      else if (param_is_acceptable(param, "Eina_Binbuf *", WANT_OWN, WANT_OUT)
+      if (param_is_acceptable(param, "Eina_Binbuf *", WANT_OWN, WANT_OUT)
                || param_is_acceptable(param, "Eina_Binbuf *", !WANT_OWN, WANT_OUT)
                || param_is_acceptable(param, "const Eina_Binbuf *", WANT_OWN, WANT_OUT)
                || param_is_acceptable(param, "const Eina_Binbuf *", !WANT_OWN, WANT_OUT)
@@ -727,29 +715,7 @@ struct convert_out_assign_generator
    template <typename OutputIterator, typename Context>
    bool generate(OutputIterator sink, attributes::parameter_def const& param, Context const& context) const
    {
-      if (param_is_acceptable(param, "Eina_Stringshare *", !WANT_OWN, WANT_OUT))
-        {
-           if (!as_generator(
-                escape_keyword(param.param_name) << " = Marshal.PtrToStringAnsi(" << out_variable_name(param.param_name) << ");\n"
-             ).generate(sink, attributes::unused, context))
-               return true;
-
-           if (param.type.has_own)
-             {
-                if (!as_generator(
-                    "eina.Stringshare.eina_stringshare_del(" << out_variable_name(param.param_name) << ");\n"
-                  ).generate(sink, attributes::unused, context))
-                    return false;
-             }
-
-        }
-      else if (param_is_acceptable(param, "const char *", !WANT_OWN, WANT_OUT))
-        {
-            return as_generator(
-                 string << " = Marshal.PtrToStringAuto(" << out_variable_name(param.param_name) << ");\n"
-               ).generate(sink, escape_keyword(param.param_name), context);
-        }
-      else if (param_is_acceptable(param, "Eina_Binbuf *", WANT_OWN, WANT_OUT)
+      if (param_is_acceptable(param, "Eina_Binbuf *", WANT_OWN, WANT_OUT)
                || param_is_acceptable(param, "Eina_Binbuf *", !WANT_OWN, WANT_OUT)
                || param_is_acceptable(param, "const Eina_Binbuf *", WANT_OWN, WANT_OUT)
                || param_is_acceptable(param, "const Eina_Binbuf *", !WANT_OWN, WANT_OUT)
@@ -838,27 +804,7 @@ struct convert_return_generator
    template <typename OutputIterator, typename Context>
    bool generate(OutputIterator sink, attributes::type_def const& ret_type, Context const& context) const
    {
-     if (ret_type.c_type == "Eina_Stringshare *" && !ret_type.has_own)
-       {
-         if (!as_generator("string _mng_str = Marshal.PtrToStringAuto(_ret_var);\n")
-             .generate(sink, attributes::unused, context))
-             return false;
-
-         if (!as_generator(scope_tab << scope_tab << "return _mng_str;\n").generate(sink, attributes::unused, context))
-             return false;
-       }
-     else if (ret_type.c_type == "const char *" && !ret_type.has_own)
-       {
-
-         if (!as_generator("string _mng_str = Marshal.PtrToStringAuto(_ret_var);\n")
-             .generate(sink, attributes::unused, context))
-             return false;
-
-         if (!as_generator(scope_tab << scope_tab << "return _mng_str;\n").generate(sink, attributes::unused, context))
-             return false;
-
-       }
-     else if (ret_type.c_type == "Eina_Binbuf *" || ret_type.c_type == "const Eina_Binbuf *")
+     if (ret_type.c_type == "Eina_Binbuf *" || ret_type.c_type == "const Eina_Binbuf *")
        {
            if (!as_generator("var _binbuf_ret = new eina.Binbuf(_ret_var, " << std::string{ret_type.has_own ? "true" : "false"} << ");\n"
                              << scope_tab << scope_tab << "return _binbuf_ret;\n")

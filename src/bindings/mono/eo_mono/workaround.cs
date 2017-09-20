@@ -70,7 +70,7 @@ public struct Description {
             IntPtr data = efl.eo.Globals.dlsym(efl.eo.Globals.RTLD_DEFAULT, name);
 
             if (data == IntPtr.Zero) {
-                string error = Marshal.PtrToStringAnsi(efl.eo.Globals.dlerror());
+                string error = eina.StringConversion.NativeUtf8ToManagedString(efl.eo.Globals.dlerror());
                 throw new Exception(error);
             }
             descriptions.Add(name, data);

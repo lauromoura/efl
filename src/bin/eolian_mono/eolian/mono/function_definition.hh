@@ -16,7 +16,7 @@
 #include "parameter.hh"
 #include "keyword.hh"
 #include "using_decl.hh"
-#include "library_context.hh"
+#include "generation_contexts.hh"
 
 namespace eolian_mono {
 
@@ -33,7 +33,7 @@ struct native_function_definition_generator
       {
     if(!as_generator
        ("\n\n" << scope_tab
-        << eolian_mono::marshall_annotation(true)
+        << eolian_mono::marshall_native_annotation(true)
         << " public delegate "
         << eolian_mono::marshall_type(true)
         << " "
@@ -45,6 +45,21 @@ struct native_function_definition_generator
         )
         << ");\n")
        .generate(sink, std::make_tuple(f.return_type, f.return_type, escape_keyword(f.name), f.parameters), context))
+      return false;
+
+    if(!as_generator
+       (scope_tab << "[System.Runtime.InteropServices.DllImport(" << context_find_tag<library_context>(context).actual_library_name(f.filename) << ")] "
+        << eolian_mono::marshall_native_annotation(true)
+        << " public static extern "
+        << eolian_mono::marshall_type(true)
+        << " " << string
+        << "(System.IntPtr obj"
+        << *grammar::attribute_reorder<-1, -1>
+        (
+         (", " << marshall_native_annotation << " " << marshall_parameter)
+        )
+        << ");\n")
+       .generate(sink, std::make_tuple(f.return_type, f.return_type, f.c_name, f.parameters), context))
       return false;
 
     std::string return_type;
@@ -75,7 +90,7 @@ struct native_function_definition_generator
         << scope_tab << scope_tab << scope_tab << "}\n"
         << eolian_mono::native_function_definition_epilogue(*klass)
         << scope_tab << scope_tab << "} else {\n"
-        << scope_tab << scope_tab << scope_tab << (return_type != "void" ? "return " : "") << string << "Inherit." << string
+        << scope_tab << scope_tab << scope_tab << (return_type != "void" ? "return " : "") << string
         << "(efl.eo.Globals.efl_super(obj, " << string << "Inherit.klass)" << *(", " << argument) << ");\n"
         << scope_tab << scope_tab << "}\n"
         << scope_tab << "}\n"
@@ -86,7 +101,10 @@ struct native_function_definition_generator
                                        , klass->cxx_name, escape_keyword(f.name)
                                        , f.parameters
                                        , f
-                                       , klass->cxx_name, f.c_name, klass->cxx_name, f.parameters), context))
+                                       , f.c_name
+                                       , klass->cxx_name, f.parameters
+                                      )
+                 , context))
       return false;
 
     if(!as_generator

@@ -1,7 +1,18 @@
-#ifndef EOLIAN_MONO_LIBRARY_CONTEXT_HH
-#define EOLIAN_MONO_LIBRARY_CONTEXT_HH
+#ifndef EOLIAN_MONO_GENERATION_CONTEXTS_HH
+#define EOLIAN_MONO_GENERATION_CONTEXTS_HH
 
 namespace eolian_mono {
+
+struct class_context
+{
+    enum wrapper_kind {
+        interface,
+        concrete,
+        inherit,
+        inherit_native,
+    };
+    wrapper_kind current_wrapper_kind;
+};
 
 struct library_context
 {

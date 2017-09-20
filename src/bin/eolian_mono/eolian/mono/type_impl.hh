@@ -88,13 +88,7 @@ struct visitor_generate
               {
                 return regular_type_def{" eina.Error", regular.base_qualifier, {}};
               }} // TODO
-           , {"string", true, [&]
-              {
-                regular_type_def r = regular;
-                r.base_qualifier.qualifier ^= qualifier_info::is_ref;
-                  return replace_base_type(r, " System.String");
-              }}
-           , {"string", false, [&]
+           , {"string", nullptr, [&]
               {
                 regular_type_def r = regular;
                 r.base_qualifier.qualifier ^= qualifier_info::is_ref;

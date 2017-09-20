@@ -777,7 +777,7 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
             value = String.Empty;
             return false;
         }
-        value = Marshal.PtrToStringAnsi(output);
+        value = StringConversion.NativeUtf8ToManagedString(output);
         return true;
     }
 
@@ -1037,7 +1037,7 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
                     if (x == null)
                         ret = IntPtr.Zero;
                     else {
-                        ret = Marshal.StringToHGlobalAnsi(x);
+                        ret = StringConversion.ManagedStringToNativeUtf8Alloc(x);
                         shouldFree = true;
                     }
                 }
@@ -1055,7 +1055,7 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
             case ValueType.UInt32:
                 return Convert.ToUInt32(data.ToInt32());
             case ValueType.String:
-                return Marshal.PtrToStringAuto(data);
+                return StringConversion.NativeUtf8ToManagedString(data);
             default:
                 return null;
         }

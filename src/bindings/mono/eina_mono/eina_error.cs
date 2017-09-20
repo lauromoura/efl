@@ -63,7 +63,7 @@ public struct Error : IComparable<Error>
     public static String MsgGet(Error error)
     {
         IntPtr cstr = eina_error_msg_get(error);
-        return Marshal.PtrToStringAuto(cstr);
+        return eina.StringConversion.NativeUtf8ToManagedString(cstr);
     }
 
     public static void RaiseIfOcurred()

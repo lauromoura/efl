@@ -13,29 +13,6 @@ namespace eina {
 
 public enum ElementType { NumericType, StringType, ObjectType };
 
-
-public static class NativeCustomExportFunctions
-{
-    [DllImport(efl.Libs.CustomExports)] public static extern void
-        efl_mono_native_free(IntPtr ptr);
-    [DllImport(efl.Libs.CustomExports)] public static extern void
-        efl_mono_native_free_ref(IntPtr ptr);
-    [DllImport(efl.Libs.CustomExports)] public static extern IntPtr
-        efl_mono_native_alloc_copy(IntPtr val, uint size);
-    [DllImport(efl.Libs.CustomExports)] public static extern IntPtr
-        efl_mono_native_strdup(string str);
-
-    [DllImport(efl.Libs.CustomExports)] public static extern IntPtr
-        efl_mono_native_ptr_compare_addr_get();
-    [DllImport(efl.Libs.CustomExports)] public static extern IntPtr
-        efl_mono_native_str_compare_addr_get();
-
-    [DllImport(efl.Libs.CustomExports)] public static extern IntPtr
-        efl_mono_native_free_addr_get();
-    [DllImport(efl.Libs.CustomExports)] public static extern IntPtr
-        efl_mono_native_efl_unref_addr_get();
-}
-
 public static class ContainerCommonData
 {
     public static IBaseElementTraits<IntPtr> intPtrTraits = null;
@@ -164,7 +141,7 @@ public class StringElementTraits<T> : IBaseElementTraits<T>
     {
         if (nat == IntPtr.Zero)
             return default(T);
-        return (T)(object)Marshal.PtrToStringAuto(nat);
+        return (T)(object)StringConversion.NativeUtf8ToManagedString(nat);
     }
 
     public T NativeToManagedRef(IntPtr nat)

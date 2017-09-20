@@ -6,6 +6,7 @@
 #include "grammar/case.hpp"
 #include "namespace.hh"
 #include "type_impl.hh"
+#include "generation_contexts.hh"
 
 namespace eolian_mono {
 
@@ -29,6 +30,8 @@ struct marshall_type_visitor_generate
    bool operator()(attributes::regular_type_def const& regular) const
    {
       using attributes::regular_type_def;
+      bool is_inherit_native = context_find_tag<class_context>(*context).current_wrapper_kind == class_context::inherit_native;
+
       struct match
       {
         eina::optional<std::string> name;
@@ -50,7 +53,7 @@ struct marshall_type_visitor_generate
               {
                 regular_type_def r = regular;
                 r.base_qualifier.qualifier ^= qualifier_info::is_ref;
-                if (is_return || is_out)
+                if (is_inherit_native && (is_return || is_out))
                     return replace_base_type(r, " System.IntPtr");
                 return replace_base_type(r, " System.String");
               }}
@@ -64,7 +67,7 @@ struct marshall_type_visitor_generate
               {
                 regular_type_def r = regular;
                 r.base_qualifier.qualifier ^= qualifier_info::is_ref;
-                if (is_return || is_out)
+                if (is_inherit_native && (is_return || is_out))
                    return replace_base_type(r, " System.IntPtr");
                 else
                    return replace_base_type(r, " System.String");

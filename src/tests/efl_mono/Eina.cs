@@ -745,8 +745,8 @@ class TestEinaArray
     {
         var a = new eina.Array<string>();
         Test.Assert(a.Handle != IntPtr.Zero);
-        Test.Assert(a.Push("test string"));
-        Test.Assert(a[0] == "test string");
+        Test.Assert(a.Push("test string §éΨبÿツ"));
+        Test.AssertEquals("test string §éΨبÿツ", a[0]);
     }
 
     public static void push_obj()
