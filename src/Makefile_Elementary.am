@@ -136,6 +136,8 @@ elm_public_eolian_files = \
 	lib/elementary/efl_ui_textpath.eo \
 	lib/elementary/efl_ui_textpath_internal_part.eo \
 	lib/elementary/efl_cnp.eo \
+	lib/elementary/efl_ui_dnd_drag.eo \
+	lib/elementary/efl_ui_dnd_drop.eo \
 	$(NULL)
 
 # Private classes (not exposed or shipped)
@@ -695,6 +697,7 @@ lib_elementary_libelementary_la_SOURCES = \
 	lib/elementary/efl_ui_focus_manager_root_focus.c \
 	lib/elementary/efl_ui_textpath.c \
 	lib/elementary/efl_cnp.c \
+	lib/elementary/efl_dnd.c \
 	$(NULL)
 
 
