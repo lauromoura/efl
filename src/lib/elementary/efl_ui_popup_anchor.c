@@ -29,70 +29,14 @@ _anchor_calc(Evas_Object *obj)
 
    Evas_Object *parent = efl_ui_popup_parent_window_get(obj);
 
-   elm_layout_sizing_eval(obj);
-
    evas_object_geometry_get(sd->anchor, &anchor_geom.x, &anchor_geom.y, &anchor_geom.w, &anchor_geom.h);
    evas_object_geometry_get(obj, NULL, NULL, &popup_size.w, &popup_size.h);
    evas_object_geometry_get(parent, NULL, NULL, &parent_size.w, &parent_size.h);
 
-   /* 1. Find align which display popup on exact position */
-
    sd->used_align = EFL_UI_POPUP_ALIGN_NONE;
 
-   for (int idx = 0; idx < 6; idx++)
-     {
-        Efl_Ui_Popup_Align cur_align;
-
-        if (idx == 0)
-          cur_align = sd->align;
-        else
-          cur_align = sd->priority[idx - 1];
-
-        if (cur_align == EFL_UI_POPUP_ALIGN_NONE)
-          continue;
-
-        switch(cur_align)
-          {
-             case EFL_UI_POPUP_ALIGN_TOP:
-               pos.x = anchor_geom.x + ((anchor_geom.w - popup_size.w) / 2);
-               pos.y = (anchor_geom.y - popup_size.h);
-               break;
-
-             case EFL_UI_POPUP_ALIGN_LEFT:
-               pos.x = (anchor_geom.x - popup_size.w);
-               pos.y = anchor_geom.y + ((anchor_geom.h - popup_size.h) / 2);
-               break;
-
-             case EFL_UI_POPUP_ALIGN_RIGHT:
-               pos.x = (anchor_geom.x + anchor_geom.w);
-               pos.y = anchor_geom.y + ((anchor_geom.h - popup_size.h) / 2);
-               break;
-
-             case EFL_UI_POPUP_ALIGN_BOTTOM:
-               pos.x = anchor_geom.x + ((anchor_geom.w - popup_size.w) / 2);
-               pos.y = (anchor_geom.y + anchor_geom.h);
-               break;
-
-             case EFL_UI_POPUP_ALIGN_CENTER:
-               pos.x = anchor_geom.x + ((anchor_geom.w - popup_size.w) / 2);
-               pos.y = anchor_geom.y + ((anchor_geom.h - popup_size.h) / 2);
-               break;
-
-             default:
-               break;
-          }
-
-        if ((pos.x >= 0) &&
-            ((pos.x + popup_size.w) <= parent_size.w) &&
-            (pos.y >= 0) &&
-            ((pos.y + popup_size.h) <= parent_size.h))
-          {
-             sd->used_align = cur_align;
-             goto end;
-          }
-     }
-
-   /* 2. Find align which display popup with shifting from exact position
+   /* 1. Find align which display popup.
+         It enables to shifting popup from exact position.
          LEFT, RIGHT - shift only y position within anchor object's height
          TOP, BOTTOM - shift only x position within anchor object's width
          CENTER - shift both x, y position within anchor object's area
@@ -196,7 +140,7 @@ _anchor_calc(Evas_Object *obj)
         goto end;
      }
 
-   /* 3. Move popup to fit first valid align although entire popup can't display */
+   /* 2. Move popup to fit first valid align although entire popup can't display */
 
    for (int idx = 0; idx < 6; idx++)
      {
@@ -379,6 +323,9 @@ EOLIAN static void
 _efl_ui_popup_anchor_elm_layout_sizing_eval(Eo *obj, Efl_Ui_Popup_Anchor_Data *pd EINA_UNUSED)
 {
    elm_layout_sizing_eval(efl_super(obj, MY_CLASS));
+
+   if (pd->anchor != NULL)
+     _anchor_calc(obj);
 }
 
 EOLIAN static void
