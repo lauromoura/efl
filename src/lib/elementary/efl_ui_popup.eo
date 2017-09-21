@@ -52,12 +52,26 @@ class Efl.Ui.Popup(Elm.Layout, Elm.Interface.Atspi_Widget_Action)
              type: Efl.Ui.Popup.Align;
          }
       }
+      @property timeout {
+         set {
+            [[ Set the timeout seconds.
+               After timeout seconds, popup will be deleted automatically.
+            ]]
+         }
+         get {
+            [[ Get the currently set timeout seconds.]]
+         }
+         values {
+             time: double;
+         }
+      }
    }
    implements {
       class.constructor;
       Efl.Object.constructor;
       Efl.Gfx.position { set; }
       Efl.Gfx.size { set; }
+      Efl.Gfx.visible { set; }
       Elm.Widget.theme_apply;
       Elm.Widget.widget_parent { set; }
       Elm.Layout.sizing_eval;
