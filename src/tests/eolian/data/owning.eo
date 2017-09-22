@@ -1,0 +1,27 @@
+struct @free(free_a) Test.A {
+
+}
+
+type B : free(Test.A, free_a);
+
+class Owning {
+   methods {
+     test1 {
+       params {
+         test1 : list<int> @owned;
+         test2 : iterator<int> @owned;
+         test3 : hash<int, int> @owned;
+         test4 : accessor<int> @owned;
+       }
+     }
+     test2 {
+       params {
+         test1 : list<free(B,free_b) @owned> @owned;
+         test2 : iterator<free(B,free_b) @owned> @owned;
+         test3 : hash<int, B @owned> @owned;
+         test4 : accessor<free(B,free_b) @owned> @owned;
+       }
+     }
+
+   }
+}
