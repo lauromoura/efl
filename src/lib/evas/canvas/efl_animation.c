@@ -38,6 +38,8 @@ _efl_animation_duration_set(Eo *eo_obj,
 {
    EFL_ANIMATION_CHECK_OR_RETURN(eo_obj);
 
+   efl_animation_total_duration_set(eo_obj, duration);
+
    pd->duration = duration;
 }
 
@@ -47,6 +49,16 @@ _efl_animation_duration_get(Eo *eo_obj, Efl_Animation_Data *pd)
    EFL_ANIMATION_CHECK_OR_RETURN(eo_obj, 0.0);
 
    return pd->duration;
+}
+
+EOLIAN static void
+_efl_animation_duration_only_set(Eo *eo_obj,
+                                 Efl_Animation_Data *pd,
+                                 double duration)
+{
+   EFL_ANIMATION_CHECK_OR_RETURN(eo_obj);
+
+   pd->duration = duration;
 }
 
 EOLIAN static void
@@ -175,6 +187,42 @@ _efl_animation_interpolator_get(Eo *eo_obj,
    EFL_ANIMATION_CHECK_OR_RETURN(eo_obj, NULL);
 
    return pd->interpolator;
+}
+
+EOLIAN static Efl_Animation_Instance *
+_efl_animation_instance_create(Eo *eo_obj, Efl_Animation_Data *pd EINA_UNUSED)
+{
+   EFL_ANIMATION_CHECK_OR_RETURN(eo_obj, NULL);
+
+   Efl_Animation_Instance *instance
+      = efl_add(EFL_ANIMATION_INSTANCE_CLASS, NULL);
+
+   Efl_Canvas_Object *target = efl_animation_target_get(eo_obj);
+   efl_animation_instance_target_set(instance, target);
+
+   Eina_Bool state_keep = efl_animation_final_state_keep_get(eo_obj);
+   efl_animation_instance_final_state_keep_set(instance, state_keep);
+
+   double duration = efl_animation_duration_get(eo_obj);
+   efl_animation_instance_duration_set(instance, duration);
+
+   double total_duration = efl_animation_total_duration_get(eo_obj);
+   efl_animation_instance_total_duration_set(instance, total_duration);
+
+   double start_delay_time = efl_animation_start_delay_get(eo_obj);
+   efl_animation_instance_start_delay_set(instance, start_delay_time);
+
+   Efl_Animation_Instance_Repeat_Mode repeat_mode =
+      (Efl_Animation_Instance_Repeat_Mode)efl_animation_repeat_mode_get(eo_obj);
+   efl_animation_instance_repeat_mode_set(instance, repeat_mode);
+
+   int repeat_count = efl_animation_repeat_count_get(eo_obj);
+   efl_animation_instance_repeat_count_set(instance, repeat_count);
+
+   Efl_Interpolator *interpolator = efl_animation_interpolator_get(eo_obj);
+   efl_animation_instance_interpolator_set(instance, interpolator);
+
+   return instance;
 }
 
 EOLIAN static Efl_Object *

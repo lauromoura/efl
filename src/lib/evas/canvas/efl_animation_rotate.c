@@ -184,9 +184,6 @@ _efl_animation_rotate_efl_animation_duration_set(Eo *eo_obj,
    //For a single animation, duration should be equal to or bigger than 0.0.
    if (duration < 0.0) return;
 
-   //For a single animation, total duration is the same as duration.
-   efl_animation_total_duration_set(eo_obj, duration);
-
    efl_animation_duration_set(efl_super(eo_obj, MY_CLASS), duration);
 }
 

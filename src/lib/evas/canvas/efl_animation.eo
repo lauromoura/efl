@@ -1,6 +1,6 @@
 import efl_animation_types;
 
-abstract Efl.Animation (Efl.Object)
+class Efl.Animation (Efl.Object)
 {
    [[Efl animation abstract class]]
    data: Efl_Animation_Data;
@@ -30,6 +30,12 @@ abstract Efl.Animation (Efl.Object)
          }
          values {
             duration: double; [[Duration value.]]
+         }
+      }
+      duration_only_set @protected {
+         [[Set duration only without setting total duration.]]
+         params {
+            @in duration: double; [[Duration value.]]
          }
       }
       @property total_duration {
@@ -88,6 +94,5 @@ abstract Efl.Animation (Efl.Object)
    implements {
       Efl.Object.constructor;
       Efl.Object.destructor;
-      @empty .instance_create;
    }
 }

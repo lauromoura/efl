@@ -1,6 +1,6 @@
 import efl_animation_types;
 
-abstract Efl.Animation.Instance (Efl.Object)
+class Efl.Animation.Instance (Efl.Object)
 {
    [[Efl animation instance abstract class]]
    data: Efl_Animation_Instance_Data;
@@ -39,7 +39,6 @@ abstract Efl.Animation.Instance (Efl.Object)
    implements {
       Efl.Object.constructor;
       Efl.Object.destructor;
-      @empty .progress_set;
    }
    events {
       start; [[Animation is going to start.]]

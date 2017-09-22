@@ -212,9 +212,6 @@ _efl_animation_instance_scale_efl_animation_instance_duration_set(Eo *eo_obj,
     * than 0.0. */
    if (duration < 0.0) return;
 
-   //For a single animation instance, total duration is the same as duration.
-   efl_animation_instance_total_duration_set(eo_obj, duration);
-
    efl_animation_instance_duration_set(efl_super(eo_obj, MY_CLASS), duration);
 }
 

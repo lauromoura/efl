@@ -84,7 +84,7 @@ _efl_animation_instance_group_efl_animation_instance_duration_set(Eo *eo_obj,
      }
 
 end:
-   efl_animation_instance_duration_set(efl_super(eo_obj, MY_CLASS), duration);
+   efl_animation_instance_duration_only_set(eo_obj, duration);
 
    /* efl_animation_instance_total_duration_get() should calculate the new total
     * duration. */
@@ -139,8 +139,8 @@ _efl_animation_instance_group_efl_object_constructor(Eo *eo_obj,
    pd->instances = NULL;
 
    //group animation instance does not affect its child duration by default.
-   efl_animation_instance_duration_set(efl_super(eo_obj, MY_CLASS),
-                                       EFL_ANIMATION_INSTANCE_GROUP_DURATION_NONE);
+   efl_animation_instance_duration_only_set(eo_obj,
+                                            EFL_ANIMATION_INSTANCE_GROUP_DURATION_NONE);
 
    return eo_obj;
 }
