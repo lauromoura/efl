@@ -1,6 +1,5 @@
 import efl_gfx_types;
 
-/*
 enum Efl.Image.Load.State
 {
    none = 0,      [[Not loading any image.]]
@@ -10,7 +9,6 @@ enum Efl.Image.Load.State
    error = 4,     [[Image load has failed. Call @Efl.Image.Load.load_error.get to know why.]]
    cancelled = 5  [[Image load has been cancelled.]]
 }
-*/
 
 interface Efl.Image.Load ()
 {
@@ -33,7 +31,6 @@ interface Efl.Image.Load ()
            will be kept in memory.
          ]]
       }
-      /*
       @property load_state {
          get {
             [[Queries information on the current state of load of the image.
@@ -46,7 +43,6 @@ interface Efl.Image.Load ()
             state: Efl.Image.Load.State; [[Image loading status]]
          }
       }
-      */
       @property load_size {
          [[The load size of an image.
 

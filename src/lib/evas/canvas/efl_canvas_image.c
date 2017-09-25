@@ -174,7 +174,8 @@ _evas_image_load_async_start(Eo *eo_obj)
 {
    Evas_Object_Protected_Data *obj = efl_data_scope_get(eo_obj, EFL_CANVAS_OBJECT_CLASS);
    Evas_Image_Data *o = efl_data_scope_get(eo_obj, EFL_CANVAS_IMAGE_INTERNAL_CLASS);
-
+   
+   o->load_state = EFL_IMAGE_LOAD_STATE_PENDING;
    evas_object_async_block(obj);
    _image_preload_internal(eo_obj, o, EINA_FALSE);
 }
@@ -193,6 +194,7 @@ _evas_image_load_async_cancel(Eo *eo_obj)
 
    evas_object_async_block(obj);
    _image_preload_internal(eo_obj, o, EINA_TRUE);
+   o->load_state = EFL_IMAGE_LOAD_STATE_CANCELLED;
 }
 
 EOLIAN static void
@@ -760,6 +762,15 @@ _efl_canvas_image_efl_gfx_buffer_buffer_copy_set(Eo *eo_obj, void *_pd EINA_UNUS
    Evas_Image_Data *o = efl_data_scope_get(eo_obj, EFL_CANVAS_IMAGE_INTERNAL_CLASS);
 
    return _image_pixels_set(obj, o, slice, size.w, size.h, stride, cspace, plane, EINA_TRUE);
+}
+
+EOLIAN Efl_Image_Load_State
+_efl_canvas_image_efl_image_load_load_state_get(Eo *eo_obj, void *pd EINA_UNUSED)
+{
+  //Evas_Object_Protected_Data *obj = efl_data_scope_get(eo_obj, EFL_CANVAS_OBJECT_CLASS);
+  Evas_Image_Data *o = efl_data_scope_get(eo_obj, EFL_CANVAS_IMAGE_INTERNAL_CLASS);
+
+  return o->load_state;
 }
 
 EOLIAN static Eina_Slice

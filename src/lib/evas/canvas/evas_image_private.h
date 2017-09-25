@@ -124,6 +124,8 @@ struct _Evas_Image_Data
    struct {
       short          w, h;
    } file_size;
+   
+   Efl_Image_Load_State load_state;
 
    Eina_Bool         changed : 1;
    Eina_Bool         dirty_pixels : 1;
