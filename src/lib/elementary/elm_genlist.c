@@ -2882,6 +2882,7 @@ _elm_genlist_item_content_focus_set(Elm_Gen_Item *it, Elm_Focus_Direction dir)
    EINA_LIST_FOREACH(it->item_focus_chain, l, focused_obj)
      if (elm_object_focus_get(focused_obj)) break;
 
+   /* FOCUS-FIXME
    if (focused_obj && (dir != ELM_FOCUS_PREVIOUS))
      {
         Evas_Object *nextfocus;
@@ -2895,6 +2896,7 @@ _elm_genlist_item_content_focus_set(Elm_Gen_Item *it, Elm_Focus_Direction dir)
              return;
           }
      }
+   */
 
    if (!l) l = it->item_focus_chain;
 
