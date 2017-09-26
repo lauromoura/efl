@@ -54,6 +54,8 @@ library_context::actual_library_name(const std::string filename) const
     int age = v_minor;
 
     name += std::to_string(current - age) + "\"";
+#else
+    name = '"' + name + '"';
 #endif
     return name;
 }
