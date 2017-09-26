@@ -1621,30 +1621,17 @@ elm_object_focus_set(Evas_Object *obj,
 {
    EINA_SAFETY_ON_NULL_RETURN(obj);
 
-   if (elm_widget_is(obj))
+   // ugly, but, special case for inlined windows
+   if (efl_isa(obj, EFL_UI_WIN_CLASS))
      {
-        if (focus == elm_widget_focus_get(obj)) return;
-
-        // ugly, but, special case for inlined windows
-        if (efl_isa(obj, EFL_UI_WIN_CLASS))
+        Evas_Object *inlined = elm_win_inlined_image_object_get(obj);
+        if (inlined)
           {
-             Evas_Object *inlined = elm_win_inlined_image_object_get(obj);
-
-             if (inlined)
-               {
-                  evas_object_focus_set(inlined, focus);
-                  return;
-               }
+             evas_object_focus_set(inlined, focus);
+             return;
           }
-        if (focus)
-          elm_obj_widget_focus_cycle(obj, ELM_FOCUS_NEXT);
-        else
-          elm_obj_widget_focused_object_clear(obj);
      }
-   else
-     {
-        evas_object_focus_set(obj, focus);
-     }
+   //FOCUS-FIXME
 }
 
 EAPI void
@@ -1667,21 +1654,21 @@ elm_object_focus_custom_chain_set(Evas_Object *obj,
                                   Eina_List   *objs)
 {
    EINA_SAFETY_ON_NULL_RETURN(obj);
-   elm_obj_widget_focus_custom_chain_set(obj, objs);
+   /* FOCUS-FIXME */
 }
 
 EAPI void
 elm_object_focus_custom_chain_unset(Evas_Object *obj)
 {
    EINA_SAFETY_ON_NULL_RETURN(obj);
-   elm_obj_widget_focus_custom_chain_unset(obj);
+   /* FOCUS-FIXME */
 }
 
 EAPI const Eina_List *
 elm_object_focus_custom_chain_get(const Evas_Object *obj)
 {
    EINA_SAFETY_ON_NULL_RETURN_VAL(obj, NULL);
-   return elm_obj_widget_focus_custom_chain_get(obj);
+   /* FOCUS-FIXME */
 }
 
 EAPI void
@@ -1690,7 +1677,7 @@ elm_object_focus_custom_chain_append(Evas_Object *obj,
                                      Evas_Object *relative_child)
 {
    EINA_SAFETY_ON_NULL_RETURN(obj);
-   elm_obj_widget_focus_custom_chain_append(obj, child, relative_child);
+   /* FOCUS-FIXME */
 }
 
 EAPI void
@@ -1699,7 +1686,7 @@ elm_object_focus_custom_chain_prepend(Evas_Object *obj,
                                       Evas_Object *relative_child)
 {
    EINA_SAFETY_ON_NULL_RETURN(obj);
-   elm_obj_widget_focus_custom_chain_prepend(obj, child, relative_child);
+   /* FOCUS-FIXME */
 }
 
 EINA_DEPRECATED EAPI void
@@ -1714,7 +1701,7 @@ elm_object_focus_next(Evas_Object        *obj,
                       Elm_Focus_Direction dir)
 {
    EINA_SAFETY_ON_NULL_RETURN(obj);
-   elm_obj_widget_focus_cycle(obj, dir);
+   /* FOCUS-FIXME */
 }
 
 EAPI Evas_Object *
@@ -1722,7 +1709,7 @@ elm_object_focus_next_object_get(const Evas_Object  *obj,
                                  Elm_Focus_Direction dir)
 {
    EINA_SAFETY_ON_NULL_RETURN_VAL(obj, NULL);
-   return elm_obj_widget_focus_next_object_get(obj, dir);
+   /* FOCUS-FIXME */
 }
 
 EAPI void
@@ -1731,7 +1718,7 @@ elm_object_focus_next_object_set(Evas_Object        *obj,
                                  Elm_Focus_Direction dir)
 {
    EINA_SAFETY_ON_NULL_RETURN(obj);
-   elm_obj_widget_focus_next_object_set(obj, next, dir);
+   /* FOCUS-FIXME */
 }
 
 EAPI Elm_Object_Item *
@@ -1739,7 +1726,7 @@ elm_object_focus_next_item_get(const Evas_Object  *obj,
                                Elm_Focus_Direction dir)
 {
    EINA_SAFETY_ON_NULL_RETURN_VAL(obj, NULL);
-   return elm_obj_widget_focus_next_item_get(obj, dir);
+   /* FOCUS-FIXME */
 }
 
 EAPI void
@@ -1748,14 +1735,14 @@ elm_object_focus_next_item_set(Evas_Object     *obj,
                                Elm_Focus_Direction dir)
 {
    EINA_SAFETY_ON_NULL_RETURN(obj);
-   elm_obj_widget_focus_next_item_set(obj, next_item, dir);
+   /* FOCUS-FIXME */
 }
 
 EAPI Evas_Object *
 elm_object_focused_object_get(const Evas_Object *obj)
 {
    EINA_SAFETY_ON_NULL_RETURN_VAL(obj, NULL);
-   return elm_obj_widget_focused_object_get(obj);
+   /* FOCUS-FIXME */
 }
 
 EAPI void
@@ -1778,28 +1765,28 @@ elm_object_focus_move_policy_set(Evas_Object *obj,
                                  Elm_Focus_Move_Policy policy)
 {
    EINA_SAFETY_ON_NULL_RETURN(obj);
-   elm_obj_widget_focus_move_policy_set(obj, policy);
+   /* FOCUS-FIXME */
 }
 
 EAPI Elm_Focus_Move_Policy
 elm_object_focus_move_policy_get(const Evas_Object *obj)
 {
    EINA_SAFETY_ON_NULL_RETURN_VAL(obj, EINA_FALSE);
-   return elm_obj_widget_focus_move_policy_get(obj);
+   /* FOCUS-FIXME */
 }
 
 EAPI Eina_Bool
 elm_object_focus_move_policy_automatic_get(const Evas_Object *obj)
 {
    EINA_SAFETY_ON_NULL_RETURN_VAL(obj, EINA_FALSE);
-   return elm_obj_widget_focus_move_policy_automatic_get(obj);
+   /* FOCUS-FIXME */
 }
 
 EAPI void
 elm_object_focus_move_policy_automatic_set(Evas_Object *obj, Eina_Bool automatic)
 {
    EINA_SAFETY_ON_NULL_RETURN(obj);
-   elm_obj_widget_focus_move_policy_automatic_set(obj, automatic);
+   /* FOCUS-FIXME */
 }
 
 EAPI void
