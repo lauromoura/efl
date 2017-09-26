@@ -1223,23 +1223,7 @@ _elm_win_focus_in(Ecore_Evas *ee)
    ELM_WIN_DATA_ALIVE_CHECK(obj, sd);
    if (sd->type != ELM_WIN_FAKE)
      {
-        if (!elm_obj_widget_focus_order_get(obj))
-          {
-             elm_obj_widget_focus_steal(obj, NULL);
-          }
-        else
-          {
-             Evas_Object *newest = NULL;
-             unsigned int newest_focus_order = 0;
-
-             newest = elm_widget_newest_focus_order_get
-                (obj, &newest_focus_order, EINA_TRUE);
-             if (newest &&
-                 (_elm_widget_onscreen_is(newest) || (newest == obj)))
-               elm_obj_widget_focus_restore(obj);
-             else
-               evas_object_focus_set(obj, EINA_TRUE);
-          }
+        /* FIXME bring again the focus to the last focused widget */
      }
 
    evas_object_smart_callback_call(obj, SIG_FOCUS_IN, NULL);
@@ -1632,68 +1616,6 @@ _elm_win_state_change(Ecore_Evas *ee)
         efl_event_callback_legacy_call
           (obj, EFL_UI_WIN_EVENT_WM_ROTATION_CHANGED, NULL);
      }
-}
-
-EOLIAN static Eina_Bool
-_efl_ui_win_elm_widget_focus_next_manager_is(Eo *obj EINA_UNUSED, Efl_Ui_Win_Data *_pd EINA_UNUSED)
-{
-   return EINA_TRUE;
-}
-
-EOLIAN static Eina_Bool
-_efl_ui_win_elm_widget_focus_next(Eo *obj, Efl_Ui_Win_Data *_pd EINA_UNUSED, Elm_Focus_Direction dir, Evas_Object **next, Elm_Object_Item **next_item)
-{
-   ELM_WIDGET_DATA_GET_OR_RETURN(obj, wd, EINA_FALSE);
-
-   const Eina_List *items;
-   void *(*list_data_get)(const Eina_List *list);
-
-   /* Focus chain */
-   if (wd->subobjs)
-     {
-        if (!(items = elm_obj_widget_focus_custom_chain_get(obj)))
-          {
-             items = wd->subobjs;
-             if (!items)
-               return EINA_FALSE;
-          }
-        list_data_get = eina_list_data_get;
-
-        elm_widget_focus_list_next_get(obj, items, list_data_get, dir, next, next_item);
-
-        if (*next) return EINA_TRUE;
-     }
-   *next = (Evas_Object *)obj;
-   return EINA_FALSE;
-}
-
-EOLIAN static Eina_Bool
-_efl_ui_win_elm_widget_focus_direction_manager_is(Eo *obj EINA_UNUSED, Efl_Ui_Win_Data *_pd EINA_UNUSED)
-{
-   return EINA_TRUE;
-}
-
-EOLIAN static Eina_Bool
-_efl_ui_win_elm_widget_focus_direction(Eo *obj, Efl_Ui_Win_Data *_pd EINA_UNUSED, const Evas_Object *base, double degree, Evas_Object **direction, Elm_Object_Item **direction_item, double *weight)
-{
-   const Eina_List *items;
-   void *(*list_data_get)(const Eina_List *list);
-
-   ELM_WIDGET_DATA_GET_OR_RETURN(obj, wd, EINA_FALSE);
-
-   /* Focus chain */
-   if (wd->subobjs)
-     {
-        if (!(items = elm_obj_widget_focus_custom_chain_get(obj)))
-          items = wd->subobjs;
-
-        list_data_get = eina_list_data_get;
-
-        return elm_widget_focus_list_direction_get
-                 (obj, base, items, list_data_get, degree, direction, direction_item, weight);
-     }
-
-   return EINA_FALSE;
 }
 
 EOLIAN static Eina_Bool
@@ -2756,7 +2678,7 @@ _win_img_hide(void *data,
               Evas_Object *obj EINA_UNUSED,
               void *event_info EINA_UNUSED)
 {
-   elm_obj_widget_focus_hide_handle(data);
+   /* FOCUS-FIXME */
 }
 
 static void
@@ -2776,7 +2698,7 @@ _win_img_focus_in(void *data,
                   Evas_Object *obj EINA_UNUSED,
                   void *event_info EINA_UNUSED)
 {
-   elm_obj_widget_focus_steal(data, NULL);
+   /* FOCUS-FIXME */
 }
 
 static void
@@ -2785,7 +2707,7 @@ _win_img_focus_out(void *data,
                    Evas_Object *obj EINA_UNUSED,
                    void *event_info EINA_UNUSED)
 {
-   elm_obj_widget_focused_object_clear(data);
+   /* FOCUS-FIXME */
 }
 
 static void
@@ -3677,11 +3599,7 @@ _elm_win_translate(void)
 void
 _elm_win_focus_reconfigure(void)
 {
-   const Eina_List *l;
-   Evas_Object *obj;
-
-   EINA_LIST_FOREACH(_elm_win_list, l, obj)
-     elm_obj_widget_focus_reconfigure(obj);
+   /* FOCUS-FIXME */
 }
 
 #ifdef HAVE_ELEMENTARY_X
