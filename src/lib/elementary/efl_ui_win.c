@@ -1223,7 +1223,14 @@ _elm_win_focus_in(Ecore_Evas *ee)
    ELM_WIN_DATA_ALIVE_CHECK(obj, sd);
    if (sd->type != ELM_WIN_FAKE)
      {
-        /* FIXME bring again the focus to the last focused widget */
+        Efl_Ui_Focus_Manager *man = sd->obj;
+        while(efl_ui_focus_manager_redirect_get(man))
+          {
+             man = efl_ui_focus_manager_redirect_get(man);
+          }
+
+        Evas_Object *focused = efl_ui_focus_manager_focus_get(man);
+        elm_obj_widget_on_focus_update(focused, NULL);
      }
 
    evas_object_smart_callback_call(obj, SIG_FOCUS_IN, NULL);
