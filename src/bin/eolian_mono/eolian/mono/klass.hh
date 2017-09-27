@@ -271,8 +271,8 @@ struct klass
              << scope_tab << "public System.IntPtr raw_klass {\n"
              << scope_tab << scope_tab << "get { return klass; }\n"
              << scope_tab << "}\n"
-             << scope_tab << "[System.Runtime.InteropServices.DllImport(\"" << context_find_tag<library_context>(inherit_cxt).library_name
-             << "\")] static extern System.IntPtr\n"
+             << scope_tab << "[System.Runtime.InteropServices.DllImport(" << context_find_tag<library_context>(inherit_cxt).actual_library_name(cls.filename)
+             << ")] static extern System.IntPtr\n"
              << scope_tab << scope_tab << class_get_name << "();\n"
              << scope_tab << "public " << string << "Inherit(efl.Object parent = null, System.Type interface1 = null)\n"
              << scope_tab << "{\n"
