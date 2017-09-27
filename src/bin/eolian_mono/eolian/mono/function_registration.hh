@@ -35,7 +35,11 @@ struct function_registration_generator
     auto index = index_generator();
     
     if(!as_generator
-       (scope_tab << scope_tab << "descs[" << index << "].api_func = efl.eo.Globals.dlsym(IntPtr.Zero, \"" << string << "\");\n"
+#ifdef _WIN32
+       (scope_tab << scope_tab << "descs[" << index << "].api_func = Marshal.StringToHGlobalAnsi(\"" << string << "\");\n"
+#else
+       (scope_tab << scope_tab << "descs[" << index << "].api_func = efl.eo.Globals.dlsym(efl.eo.Globals.RTLD_DEFAULT, \"" << string << "\");\n"
+#endif
         << scope_tab << scope_tab << "descs[" << index << "].func = Marshal.GetFunctionPointerForDelegate(" << string << "NativeInherit." << string << "_static_delegate);\n"
        )
        .generate(sink, std::make_tuple(f.c_name, klass->cxx_name, escape_keyword(f.name)), context))
