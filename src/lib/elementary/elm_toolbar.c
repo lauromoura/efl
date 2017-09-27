@@ -2928,30 +2928,6 @@ _elm_toolbar_efl_canvas_group_group_member_add(Eo *obj, Elm_Toolbar_Data *sd, Ev
      evas_object_raise(sd->hit_rect);
 }
 
-static Eina_List *
-_access_item_find_append(const Evas_Object *obj,
-                         Evas_Object *bx,
-                         Eina_List *items)
-{
-   Elm_Toolbar_Item_Data *it;
-   Eina_List *list;
-
-   ELM_TOOLBAR_DATA_GET(obj, sd);
-
-   list = evas_object_box_children_get(bx);
-   if (!list) return items;
-
-   EINA_INLIST_FOREACH (sd->items, it)
-     {
-        if (it->separator) continue;
-        if (eina_list_data_find(list, it->base->view))
-          items = eina_list_append(items, it->base->access_obj);
-     }
-   eina_list_free(list);
-
-   return items;
-}
-
 static Eina_Bool _elm_toolbar_smart_focus_next_enable = EINA_FALSE;
 
 static void
