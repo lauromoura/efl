@@ -526,7 +526,7 @@ _access_highlight_next_get(Evas_Object *obj, Elm_Focus_Direction dir)
              else if (type == ELM_ACCESS_ACTION_HIGHLIGHT_PREV && info->prev)
                target = info->prev;
           }
-
+   /* FOCUS-FIXME
         if (target)
           {
              _elm_access_highlight_set(target);
@@ -538,7 +538,7 @@ _access_highlight_next_get(Evas_Object *obj, Elm_Focus_Direction dir)
              ret = elm_obj_widget_focus_next_get(obj, dir, &target, NULL);
              if (ret && target)
                _elm_access_highlight_set(target);
-          }
+          }*/
      }
 
    action_by = ELM_ACCESS_ACTION_FIRST;
@@ -684,13 +684,13 @@ _elm_access_highlight_cycle(Evas_Object *obj, Elm_Focus_Direction dir)
           {
              if ((info) && (info->prev)) comming = info->prev;
           }
-        if (comming)
+        /*if (comming)
           {
              _elm_access_highlight_set(comming);
              elm_widget_focus_region_show(comming);
           }
         else
-          elm_obj_widget_focus_cycle(obj, dir);
+          elm_obj_widget_focus_cycle(obj, dir);*/
      }
 
    action_by = ELM_ACCESS_ACTION_FIRST;
