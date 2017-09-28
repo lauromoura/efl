@@ -74,7 +74,7 @@ public class StringElementTraits<T> : IBaseElementTraits<T>
 
     public IntPtr ManagedToNativeAlloc(T man)
     {
-        return efl_mono_native_strdup((string)(object)man);
+        return MemoryNative.StrDup((string)(object)man);
     }
 
     public IntPtr ManagedToNativeAllocRef(T man, bool refs)
@@ -89,7 +89,7 @@ public class StringElementTraits<T> : IBaseElementTraits<T>
         node.Val = ManagedToNativeAlloc(man);
         GCHandle pinnedData = GCHandle.Alloc(node, GCHandleType.Pinned);
         IntPtr ptr = pinnedData.AddrOfPinnedObject();
-        IntPtr nat = efl_mono_native_alloc_copy(ptr, (uint)(Marshal.SizeOf<InlistNode<IntPtr> >()));
+        IntPtr nat = MemoryNative.AllocCopy(ptr, Marshal.SizeOf<InlistNode<IntPtr> >());
         pinnedData.Free();
         return nat;
     }
@@ -102,7 +102,7 @@ public class StringElementTraits<T> : IBaseElementTraits<T>
     public void NativeFree(IntPtr nat)
     {
         if (nat != IntPtr.Zero)
-            efl_mono_native_free(nat);
+            MemoryNative.Free(nat);
     }
 
     public void NativeFreeRef(IntPtr nat, bool unrefs)
@@ -124,12 +124,12 @@ public class StringElementTraits<T> : IBaseElementTraits<T>
             return;
         if (freeElement)
             NativeFreeInlistNodeElement(nat);
-        efl_mono_native_free(nat);
+        MemoryNative.Free(nat);
     }
 
     public void NativeFreeInplace(IntPtr nat)
     {
-        efl_mono_native_free_ref(nat);
+        MemoryNative.FreeRef(nat);
     }
 
     public void ResidueFreeInplace(IntPtr nat)
@@ -169,12 +169,12 @@ public class StringElementTraits<T> : IBaseElementTraits<T>
 
     public IntPtr EinaCompareCb()
     {
-        return efl_mono_native_str_compare_addr_get();
+        return MemoryNative.StrCompareFuncPtrGet();
     }
 
     public IntPtr EinaFreeCb()
     {
-        return efl_mono_native_free_addr_get();
+        return MemoryNative.FreeFuncPtrGet();
     }
 
     public IntPtr EinaHashNew()
@@ -225,7 +225,7 @@ public class EflObjectElementTraits<T> : IBaseElementTraits<T>
         node.Val = ManagedToNativeAlloc(man);
         GCHandle pinnedData = GCHandle.Alloc(node, GCHandleType.Pinned);
         IntPtr ptr = pinnedData.AddrOfPinnedObject();
-        IntPtr nat = efl_mono_native_alloc_copy(ptr, (uint)(Marshal.SizeOf<InlistNode<IntPtr> >()));
+        IntPtr nat = MemoryNative.AllocCopy(ptr, Marshal.SizeOf<InlistNode<IntPtr> >());
         pinnedData.Free();
         return nat;
     }
@@ -262,7 +262,7 @@ public class EflObjectElementTraits<T> : IBaseElementTraits<T>
             return;
         if (freeElement)
             NativeFreeInlistNodeElement(nat);
-        efl_mono_native_free(nat);
+        MemoryNative.Free(nat);
     }
 
     public void NativeFreeInplace(IntPtr nat)
@@ -309,12 +309,12 @@ public class EflObjectElementTraits<T> : IBaseElementTraits<T>
 
     public IntPtr EinaCompareCb()
     {
-        return efl_mono_native_ptr_compare_addr_get();
+        return MemoryNative.PtrCompareFuncPtrGet();
     }
 
     public IntPtr EinaFreeCb()
     {
-        return efl_mono_native_efl_unref_addr_get();
+        return MemoryNative.EflUnrefFuncPtrGet();
     }
 
     public IntPtr EinaHashNew()
@@ -341,7 +341,7 @@ public abstract class PrimitiveElementTraits<T>
     {
         GCHandle pinnedData = GCHandle.Alloc(man, GCHandleType.Pinned);
         IntPtr ptr = pinnedData.AddrOfPinnedObject();
-        IntPtr nat = efl_mono_native_alloc_copy(ptr, (uint)(Marshal.SizeOf<T>()));
+        IntPtr nat = MemoryNative.AllocCopy(ptr, Marshal.SizeOf<T>());
         pinnedData.Free();
         return nat;
     }
@@ -352,7 +352,7 @@ public abstract class PrimitiveElementTraits<T>
         node.Val = man;
         GCHandle pinnedData = GCHandle.Alloc(node, GCHandleType.Pinned);
         IntPtr ptr = pinnedData.AddrOfPinnedObject();
-        IntPtr nat = efl_mono_native_alloc_copy(ptr, (uint)(Marshal.SizeOf< InlistNode<T> >()));
+        IntPtr nat = MemoryNative.AllocCopy(ptr, Marshal.SizeOf< InlistNode<T> >());
         pinnedData.Free();
         return nat;
     }
@@ -364,7 +364,7 @@ public abstract class PrimitiveElementTraits<T>
 
     public void NativeFree(IntPtr nat)
     {
-        efl_mono_native_free(nat);
+        MemoryNative.Free(nat);
     }
 
     public void NativeFreeInlistNodeElement(IntPtr nat)
@@ -374,7 +374,7 @@ public abstract class PrimitiveElementTraits<T>
 
     public void NativeFreeInlistNode(IntPtr nat, bool freeElement)
     {
-        efl_mono_native_free(nat);
+        MemoryNative.Free(nat);
     }
 
     public void NativeFreeInplace(IntPtr nat)
@@ -435,7 +435,7 @@ public abstract class PrimitiveElementTraits<T>
 
     public IntPtr EinaFreeCb()
     {
-        return efl_mono_native_free_addr_get();
+        return MemoryNative.FreeFuncPtrGet();
     }
 
     public IntPtr EinaInarrayNew(uint step)

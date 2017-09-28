@@ -19,6 +19,8 @@ public static class NativeCustomExportFunctions
     [DllImport(efl.Libs.CustomExports)] public static extern void
         efl_mono_native_free_ref(IntPtr ptr);
     [DllImport(efl.Libs.CustomExports)] public static extern IntPtr
+        efl_mono_native_alloc(uint count);
+    [DllImport(efl.Libs.CustomExports)] public static extern IntPtr
         efl_mono_native_alloc_copy(IntPtr val, uint size);
     [DllImport(efl.Libs.CustomExports)] public static extern IntPtr
         efl_mono_native_strdup(string str);
@@ -32,6 +34,56 @@ public static class NativeCustomExportFunctions
         efl_mono_native_free_addr_get();
     [DllImport(efl.Libs.CustomExports)] public static extern IntPtr
         efl_mono_native_efl_unref_addr_get();
+}
+
+/// <summary>Wrapper around native memory DllImport'd functions</summary>
+public static class MemoryNative {
+    public static void Free(IntPtr ptr)
+    {
+        NativeCustomExportFunctions.efl_mono_native_free(ptr);
+    }
+
+    public static void FreeRef(IntPtr ptr)
+    {
+        NativeCustomExportFunctions.efl_mono_native_free_ref(ptr);
+    }
+
+    // This public api uses int as Marshal.SizeOf return an int instead of uint.
+    public static IntPtr Alloc(int count)
+    {
+        return NativeCustomExportFunctions.efl_mono_native_alloc(Convert.ToUInt32(count));
+    }
+
+    public static IntPtr AllocCopy(IntPtr ptr, int count)
+    {
+        return NativeCustomExportFunctions.efl_mono_native_alloc_copy(ptr, Convert.ToUInt32(count));
+    }
+
+    public static IntPtr StrDup(string str)
+    {
+        return NativeCustomExportFunctions.efl_mono_native_strdup(str);
+    }
+
+    // IntPtr's for some native functions
+    public static IntPtr PtrCompareFuncPtrGet()
+    {
+        return NativeCustomExportFunctions.efl_mono_native_ptr_compare_addr_get();
+    }
+
+    public static IntPtr StrCompareFuncPtrGet()
+    {
+        return NativeCustomExportFunctions.efl_mono_native_str_compare_addr_get();
+    }
+
+    public static IntPtr FreeFuncPtrGet()
+    {
+        return NativeCustomExportFunctions.efl_mono_native_free_addr_get();
+    }
+
+    public static IntPtr EflUnrefFuncPtrGet()
+    {
+        return NativeCustomExportFunctions.efl_mono_native_efl_unref_addr_get();
+    }
 }
 
 public static class StringConversion

@@ -259,12 +259,12 @@ public class MarshalTest<T, U> : ICustomMarshaler
 public class StringPassOwnershipMarshaler : ICustomMarshaler {
     public object MarshalNativeToManaged(IntPtr pNativeData) {
         var ret = eina.StringConversion.NativeUtf8ToManagedString(pNativeData);
-        efl_mono_native_free(pNativeData);
+        eina.MemoryNative.Free(pNativeData);
         return ret;
     }
 
     public IntPtr MarshalManagedToNative(object managedObj) {
-        return efl_mono_native_strdup((string)managedObj);
+        return eina.MemoryNative.StrDup((string)managedObj);
     }
 
     public void CleanUpNativeData(IntPtr pNativeData) {
