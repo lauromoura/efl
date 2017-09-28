@@ -94,7 +94,7 @@ static internal class UnsafeNativeMethods {
     internal static extern int eina_value_compare_wrapper(IntPtr handle, IntPtr other);
 
     [DllImport(efl.Libs.Eina, CharSet=CharSet.Ansi)]
-    internal static extern String eina_value_to_string(IntPtr handle); // We take ownership of the returned string.
+    internal static extern IntPtr eina_value_to_string(IntPtr handle); // We take ownership of the returned string.
 
     [DllImport(efl.Libs.CustomExports)]
     [return: MarshalAsAttribute(UnmanagedType.U1)]
@@ -911,7 +911,10 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
     public override String ToString()
     {
         SanityChecks();
-        return eina_value_to_string(this.Handle);
+        IntPtr ptr = eina_value_to_string(this.Handle);
+        String str = Marshal.PtrToStringAnsi(ptr);
+        MemoryNative.Free(ptr);
+        return str;
     }
 
     /// <summary>Empties an optional eina.Value, freeing what was previously contained.</summary>
