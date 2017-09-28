@@ -297,7 +297,7 @@ public class StringKeepOwnershipMarshaler: ICustomMarshaler {
     }
 
     public void CleanUpNativeData(IntPtr pNativeData) {
-        Marshal.FreeHGlobal(pNativeData);
+        // No need to free. The Native side will keep the ownership.
     }
 
     public void CleanUpManagedData(object managedObj) {
@@ -357,7 +357,7 @@ public class StringshareKeepOwnershipMarshaler : ICustomMarshaler {
     }
 
     public void CleanUpNativeData(IntPtr pNativeData) {
-        eina.Stringshare.eina_stringshare_del(pNativeData);
+        // No need to free, as the native side will keep ownership.
     }
 
     public void CleanUpManagedData(object managedObj) {
