@@ -452,7 +452,7 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
 
     // Constructor to be used by the "FromContainerDesc" methods.
     private Value() {
-        this.Handle = Marshal.AllocHGlobal(eina_value_sizeof());
+        this.Handle = MemoryNative.Alloc(eina_value_sizeof());
         this.Ownership = ValueOwnership.Managed;
     }
 
@@ -466,7 +466,7 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
     {
         if (type.IsContainer())
             throw new ArgumentException("To use container types you must provide a subtype");
-        this.Handle = Marshal.AllocHGlobal(eina_value_sizeof());
+        this.Handle = MemoryNative.Alloc(eina_value_sizeof());
         this.Ownership = ValueOwnership.Managed;
         Setup(type);
     }
@@ -477,7 +477,7 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
         if (!containerType.IsContainer())
             throw new ArgumentException("First type must be a container type.");
 
-        this.Handle = Marshal.AllocHGlobal(eina_value_sizeof());
+        this.Handle = MemoryNative.Alloc(eina_value_sizeof());
         this.Ownership = ValueOwnership.Managed;
 
         Setup(containerType, subtype, step);
@@ -486,11 +486,11 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
     /// <summary>Constructor to build value from Values_Natives passed by value from C
     public Value(Value_Native value)
     {
-        this.Handle = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(Value_Native)));
+        this.Handle = MemoryNative.Alloc(Marshal.SizeOf(typeof(Value_Native)));
         try {
             Marshal.StructureToPtr(value, this.Handle, false);
         } catch {
-            Marshal.FreeHGlobal(this.Handle);
+            MemoryNative.Free(this.Handle);
             throw;
         }
         this.Ownership = ValueOwnership.Managed;
@@ -547,7 +547,7 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
             if (!Flushed)
                 eina_value_flush_wrapper(this.Handle);
 
-            Marshal.FreeHGlobal(this.Handle);
+            MemoryNative.Free(this.Handle);
         }
         Disposed = true;
     }
@@ -714,7 +714,7 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
         OptionalSanityChecks();
         ValueType subtype = value.GetValueType();
 
-        IntPtr ptr_val = Marshal.AllocHGlobal(subtype.MarshalSizeOf());
+        IntPtr ptr_val = MemoryNative.Alloc(subtype.MarshalSizeOf());
         IntPtr native_type = ValueTypeBridge.GetNative(subtype);
 
         try {
@@ -739,7 +739,7 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
 
             return eina_value_optional_pset(this.Handle, native_type, ptr_val);
         } finally {
-            Marshal.FreeHGlobal(ptr_val);
+            MemoryNative.Free(ptr_val);
         }
     }
 

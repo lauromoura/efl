@@ -94,7 +94,7 @@ public static class StringConversion
             return IntPtr.Zero;
 
         byte[] strbuf = Encoding.UTF8.GetBytes(managedString);
-        IntPtr native = Marshal.AllocHGlobal(strbuf.Length + 1);
+        IntPtr native = MemoryNative.Alloc(strbuf.Length + 1);
         Marshal.Copy(strbuf, 0, native, strbuf.Length);
         Marshal.WriteByte(native + strbuf.Length, 0); // write the terminating null
         return native;

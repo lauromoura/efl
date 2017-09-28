@@ -81,7 +81,7 @@ public class Globals {
         if(initializer != null)
             description.class_initializer = Marshal.GetFunctionPointerForDelegate(initializer);
 
-        IntPtr description_ptr = Marshal.AllocHGlobal(Marshal.SizeOf(description));
+        IntPtr description_ptr = eina.MemoryNative.Alloc(Marshal.SizeOf(description));
         Marshal.StructureToPtr(description, description_ptr, false);
       
         eina.Log.Debug("Going to register!");
@@ -154,7 +154,7 @@ public class Globals {
     {
         foreach(IntPtr ptr in dict.Values)
         {
-            Marshal.FreeHGlobal(ptr);
+            eina.MemoryNative.Free(ptr);
         }
     }
 

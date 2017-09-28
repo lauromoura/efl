@@ -49,7 +49,7 @@ public class DisposableIntPtr : IDisposable {
     protected virtual void Dispose(bool disposing)
     {
         if (!Disposed && ShouldFree) {
-            Marshal.FreeHGlobal(this.Handle);
+            MemoryNative.Free(this.Handle);
         }
         Disposed = true;
     }
