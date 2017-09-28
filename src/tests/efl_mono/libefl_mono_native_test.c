@@ -189,7 +189,7 @@ void _test_testing_call_in_stringshare(Eo *obj, EINA_UNUSED Test_Testing_Data *p
 
 void _test_testing_call_in_own_stringshare(Eo *obj, EINA_UNUSED Test_Testing_Data *pd, Eina_Stringshare *str)
 {
-  test_testing_in_own_stringshare(obj, str);
+  str = test_testing_in_own_stringshare(obj, str);
   eina_stringshare_del(str);
 }
 
