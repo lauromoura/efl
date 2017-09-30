@@ -4964,6 +4964,8 @@ _elm_win_finalize_internal(Eo *obj, Efl_Ui_Win_Data *sd, const char *name, Elm_W
    efl_canvas_object_type_set(obj, MY_CLASS_NAME_LEGACY);
    evas_object_smart_callbacks_descriptions_set(obj, _smart_callbacks);
 
+   evas_object_focus_set(obj, EINA_TRUE);
+
    if (getenv("ELM_FIRST_FRAME"))
      evas_event_callback_add(ecore_evas_get(tmp_sd.ee), EVAS_CALLBACK_RENDER_POST,
                              _elm_win_first_frame_do, getenv("ELM_FIRST_FRAME"));
