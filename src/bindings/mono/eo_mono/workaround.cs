@@ -196,8 +196,6 @@ public struct Animator_Tick {
 }
 }
 
-public interface File {}
-
 namespace canvas {
 
 namespace filter {

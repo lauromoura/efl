@@ -48,8 +48,7 @@ lib/efl/interfaces/efl_gfx_buffer.eo.cs \
 lib/efl/interfaces/efl_gfx_shape.eo.cs \
 lib/efl/interfaces/efl_gfx_gradient.eo.cs \
 lib/efl/interfaces/efl_gfx_gradient_linear.eo.cs \
-lib/efl/interfaces/efl_gfx_gradient_radial.eo.cs \
-lib/efl/interfaces/efl_file.eo.cs
+lib/efl/interfaces/efl_gfx_gradient_radial.eo.cs
 
 ecore_eolian_blacklisted_files = \
 lib/ecore/efl_io_closer_fd.eo.cs \
