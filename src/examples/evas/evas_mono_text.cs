@@ -42,7 +42,7 @@ class TestMain
         bg.KEY_DOWN += On_KeyDown;
 
         text = new evas.TextConcrete(canvas);
-        text.style_set(evas.Text_Style_Type.Outline_soft_shadow);
+        text.style_set(evas.Text_Style_Type.OutlineSoftShadow);
 
         text.color_set(0, 0, 0, 255);
         text.glow_color_set(255, 0, 0, 255);

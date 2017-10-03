@@ -219,6 +219,29 @@ public interface File {}
 
 namespace evas {
 
-public class Text_Style_Type {};
+/* Copied from Evas_Legacy.h */
+public enum Text_Style_Type
+{
+   Plain = 0, /**< plain, standard text */
+   Shadow, /**< text with shadow underneath */
+   Outline, /**< text with an outline */
+   SoftOutline, /**< text with a soft outline */
+   Glow, /**< text with a glow effect */
+   OutlineShadow, /**< text with both outline and shadow effects */
+   FarShadow, /**< text with (far) shadow underneath */
+   OutlineSoftShadow, /**< text with outline and soft shadow effects combined */
+   SoftShadow, /**< text with (soft) shadow underneath */
+   FarSoftShadow, /**< text with (far soft) shadow underneath */
+
+   // Shadow direction modifiers
+   ShadowDirectionBottomRight = 0 /* 0 >> 4 */, /**< shadow growing to bottom right */
+   ShadowDirectionBottom= 16 /* 1 >> 4 */, /**< shadow growing to the bottom */
+   ShadowDirectionBottomLeft = 32 /* 2 >> 4 */, /**< shadow growing to bottom left */
+   ShadowDirectionLeft = 48 /* 3 >> 4 */, /**< shadow growing to the left */
+   ShadowDirectionTopLeft = 64 /* 4 >> 4 */, /**< shadow growing to top left */
+   ShadowDirectionTop = 80 /* 5 >> 4 */, /**< shadow growing to the top */
+   ShadowDirectionTopRight = 96 /* 6 >> 4 */, /**< shadow growing to top right */
+   ShadowDirectionRight = 112 /* 7 >> 4 */ /**< shadow growing to the right */
+};
     
 }
