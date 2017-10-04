@@ -1452,6 +1452,28 @@ _edje_part_recalc_single_step(Edje_Part_Description_Common *desc,
      }
 }
 
+/**
+ * @internal
+ * Creates and returns a string of the format: "#RRGGBBAA"
+ * From given rgba integer values.
+ *
+ * @param[in] r The Red value - NOT NULL.
+ * @param[in] g The Green value - NOT NULL.
+ * @param[in] b The Blue value - NOT NULL.
+ * @param[in] a The Alpha value - NOT NULL.
+ */
+char *
+_edje_common_color_to_format(unsigned char r, unsigned char g,
+                            unsigned char b, unsigned char a)
+{
+   char *ret;
+   Eina_Strbuf *str = eina_strbuf_new();
+   eina_strbuf_append_printf(str, "%02x%02x%02x%02x",
+         r, g, b, a);
+   ret = eina_strbuf_string_steal(str);
+   return ret;
+}
+
 static void
 _edje_part_recalc_single_text(FLOAT_T sc EINA_UNUSED,
                               Edje *ed,
@@ -2400,7 +2422,7 @@ _edje_part_recalc_single_filter(Edje *ed,
    Eina_List *li1, *li2;
 
    /* handle TEXT, IMAGE, PROXY, SNAPSHOT part types here */
-   if (ep->part->type == EDJE_PART_TYPE_TEXT)
+   if (PART_IS_TEXT(ed, ep))
      {
         Edje_Part_Description_Text *chosen_edt = (Edje_Part_Description_Text *) chosen_desc;
         Edje_Part_Description_Text *edt = (Edje_Part_Description_Text *) desc;
@@ -2827,9 +2849,9 @@ _edje_part_recalc_single(Edje *ed,
      }
 
    /* if we have text that wants to make the min size the text size... */
-   if (ep->part->type == EDJE_PART_TYPE_TEXTBLOCK)
+   if (PART_IS_TEXTBLOCK(ed, ep))
      _edje_part_recalc_single_textblock(sc, ed, ep, (Edje_Part_Description_Text *)chosen_desc, params, &minw, &minh, &maxw, &maxh);
-   else if (ep->part->type == EDJE_PART_TYPE_TEXT)
+   else if (PART_IS_TEXT(ed, ep)) //legacy
      {
         _edje_part_recalc_single_text(sc, ed, ep, (Edje_Part_Description_Text*) desc, (Edje_Part_Description_Text*) chosen_desc, params, &minw, &minh, &maxw, &maxh);
         _edje_part_recalc_single_filter(ed, ep, desc, chosen_desc, pos);
@@ -4400,8 +4422,11 @@ _edje_part_recalc(Edje *ed, Edje_Real_Part *ep, int flags, Edje_Calc_Params *sta
              break;
 
            case EDJE_PART_TYPE_TEXT:
-             _edje_calc_params_need_type_text(p3);
-             p3->type.text->size = INTP(p1->type.text->size, p2->type.text->size, pos);
+             if (TEXT_LEGACY(ed))
+               {
+                  _edje_calc_params_need_type_text(p3);
+                  p3->type.text->size = INTP(p1->type.text->size, p2->type.text->size, pos);
+               }
              EINA_FALLTHROUGH;
 
              /* no break as we share code with the TEXTBLOCK type here. */
@@ -4598,6 +4623,7 @@ _edje_part_recalc(Edje *ed, Edje_Real_Part *ep, int flags, Edje_Calc_Params *sta
    if (!ed->calc_only)
      {
         Evas_Object *mo;
+        Eina_Bool text_legacy = TEXT_LEGACY(ed);
 
         /* Common move, resize and color_set for all part. */
         switch (ep->part->type)
@@ -4616,6 +4642,8 @@ _edje_part_recalc(Edje *ed, Edje_Real_Part *ep, int flags, Edje_Calc_Params *sta
              EINA_FALLTHROUGH;
            case EDJE_PART_TYPE_RECTANGLE:
              EINA_FALLTHROUGH;
+           case EDJE_PART_TYPE_TEXT:
+             EINA_FALLTHROUGH;
            case EDJE_PART_TYPE_TEXTBLOCK:
              EINA_FALLTHROUGH;
            case EDJE_PART_TYPE_BOX:
@@ -4625,6 +4653,7 @@ _edje_part_recalc(Edje *ed, Edje_Real_Part *ep, int flags, Edje_Calc_Params *sta
            case EDJE_PART_TYPE_SNAPSHOT:
              EINA_FALLTHROUGH;
            case EDJE_PART_TYPE_VECTOR:
+             if (!PART_IS_TEXT(ed, ep))
              evas_object_color_set(ep->object,
                                    (pf->color.r * pf->color.a) / 255,
                                    (pf->color.g * pf->color.a) / 255,
@@ -4715,10 +4744,6 @@ _edje_part_recalc(Edje *ed, Edje_Real_Part *ep, int flags, Edje_Calc_Params *sta
                   else
                     evas_object_clip_set(ep->object, ed->base.clipper);
                }
-             break;
-
-           case EDJE_PART_TYPE_TEXT:
-             /* This is correctly handle in _edje_text_recalc_apply at the moment. */
              break;
 
            case EDJE_PART_TYPE_GRADIENT:
@@ -4925,9 +4950,6 @@ _edje_part_recalc(Edje *ed, Edje_Real_Part *ep, int flags, Edje_Calc_Params *sta
         /* Some object need special recalc. */
         switch (ep->part->type)
           {
-           case EDJE_PART_TYPE_TEXT:
-             _edje_text_recalc_apply(ed, ep, pf, (Edje_Part_Description_Text*) chosen_desc, EINA_FALSE);
-             break;
 
            case EDJE_PART_TYPE_PROXY:
              _edje_proxy_recalc_apply(ed, ep, pf, (Edje_Part_Description_Proxy *)chosen_desc, pos);
@@ -4945,6 +4967,17 @@ _edje_part_recalc(Edje *ed, Edje_Real_Part *ep, int flags, Edje_Calc_Params *sta
              _edje_table_recalc_apply(ed, ep, pf, (Edje_Part_Description_Table *)chosen_desc);
              break;
 
+           case EDJE_PART_TYPE_TEXT:
+             if (text_legacy)
+               {
+                  _edje_text_recalc_apply(ed, ep, pf, (Edje_Part_Description_Text*) chosen_desc, EINA_FALSE);
+                  break;
+               }
+             else
+               {
+                  // non-legacy: fall-through as TEXTBLOCK
+                  EINA_FALLTHROUGH;
+               }
            case EDJE_PART_TYPE_TEXTBLOCK:
              _edje_textblock_recalc_apply(ed, ep, pf, (Edje_Part_Description_Text *)chosen_desc);
              break;

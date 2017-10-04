@@ -2547,6 +2547,22 @@ const char *   _edje_text_class_font_get(Edje *ed,
 const char *   _edje_text_font_get(const char *base, const char *new,
                                    char **free_later);
 
+#define EDJE_THEME_VERSION_CHECK(version, _major, _minor) \
+     ((version.major > (_major)) || \
+     ((version.major == (_major)) && (version.minor >= (_minor))))
+
+#define TEXT_LEGACY(ed) \
+    (!EDJE_THEME_VERSION_CHECK((ed)->file->efl_version, 1, 21))
+
+#define PART_IS_TEXTBLOCK(ed, ep) \
+   (((ep)->part->type == EDJE_PART_TYPE_TEXTBLOCK) || \
+    (!TEXT_LEGACY((ed)) && \
+     ((ep)->part->type == EDJE_PART_TYPE_TEXT)))
+
+#define PART_IS_TEXT(ed, ep) \
+    (TEXT_LEGACY((ed)) && \
+     ((ep)->part->type == EDJE_PART_TYPE_TEXT))
+
 void
 _edje_part_recalc_single_textblock(FLOAT_T sc,
                                    Edje *ed,
