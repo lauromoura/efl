@@ -109,6 +109,9 @@ if HAVE_WIN32
 MCS_FLAGS := $(MCS_FLAGS)
 MCS_FLAGS += -define:WIN32
 
+MSBUILD_GEN_FLAGS := $(MSBUILD_GEN_FLAGS)
+MSBUILD_GEN_FLAGS += -d WIN32
+
 endif
 
 efl_custom_exports_mono_files = \
@@ -161,6 +164,37 @@ lib/efl_mono/libefl_mono.dll$(EXEEXT): $(lib_efl_mono_libefl_mono_dll_SOURCES) l
 	@rm -f lib/efl_mono/libefl_mono.dll$(EXEEXT)
 	$(AM_V_MCS) $(MCS) $(MCS_FLAGS) -out:$@ -t:library $(filter %.cs, $(^))
 
+### MSBuild
+
+bin_PROGRAMS += bin/efl_mono_msbuild_gen/efl_mono_msbuild_gen
+
+bin_efl_mono_msbuild_gen_efl_mono_msbuild_gen_SOURCES = \
+    bin/efl_mono_msbuild_gen/main.cc
+
+bin_efl_mono_msbuild_gen_efl_mono_msbuild_gen_CXXFLAGS = \
+    -I$(top_builddir)/src/lib/efl \
+    -I$(top_srcdir)/src/lib/eolian_cxx/ \
+    -I$(top_srcdir)/src/bindings/cxx/eina_cxx \
+    @CHECK_CFLAGS@ @EINA_CFLAGS@ @EINA_CXX_CFLAGS@ @EO_CXX_CFLAGS@ \
+    @ECORE_CXX_CFLAGS@ @EO_CFLAGS@ @EOLIAN_CXX_CFLAGS@ @EOLIAN_CFLAGS@
+
+bin_efl_mono_msbuild_gen_efl_mono_msbuild_gen_LDADD = @CHECK_LIBS@ @USE_EOLIAN_LIBS@
+
+bin_efl_mono_msbuild_gen_efl_mono_msbuild_gen_DEPENDENCIES = @USE_EOLIAN_INTERNAL_LIBS@
+
+EFL_MONO_MSBUILD_GEN = EFL_RUN_IN_TREE=1 $(top_builddir)/src/bin/efl_mono_msbuild_gen/efl_mono_msbuild_gen${EXEEXT}
+_EFL_MONO_MSBUILD_GEN_DEP = bin/efl_mono_msbuild_gen/efl_mono_msbuild_gen${EXEEXT}
+
+../libefl_mono.csproj: $(lib_efl_mono_libefl_mono_dll_SOURCES) lib/efl_mono/$(am__dirstamp) $(efl_eolian_mono_files) $(_EFL_MONO_MSBUILD_GEN_DEP)
+	@rm -f $@
+	$(EFL_MONO_MSBUILD_GEN) $(MSBUILD_GEN_FLAGS) -o $@ $(filter %.cs, $(^))
+
+CLEANFILES += bin/efl_mono_msbuild_gen/efl.csproj
+
+nodist_pkgdata_DATA = ../libefl_mono.csproj
+
+### Tests
+
 if EFL_ENABLE_TESTS
 
 check_LTLIBRARIES += tests/efl_mono/libefl_mono_native_test.la
@@ -171,7 +205,7 @@ tests_efl_mono_libefl_mono_native_test_la_CPPFLAGS =  \
 -DPACKAGE_BUILD_DIR=\"$(abs_top_builddir)/src/tests/efl_mono\" \
 -DPACKAGE_DATA_DIR=\"$(datadir)/efl_js\" \
 -DTESTS_BUILD_DIR=\"$(top_builddir)/src/tests/efl_mono\" \
-@CHECK_CFLAGS@  @EOLIAN_CFLAGS@ @EINA_CFLAGS@ @EO_CFLAGS@ @ECORE_CFLAGS@ 
+@CHECK_CFLAGS@  @EOLIAN_CFLAGS@ @EINA_CFLAGS@ @EO_CFLAGS@ @ECORE_CFLAGS@
 tests_efl_mono_libefl_mono_native_test_la_LIBADD = \
 @CHECK_LIBS@ @USE_EO_LIBS@ @USE_EINA_LIBS@ @USE_EOLIAN_LIBS@
 tests_efl_mono_libefl_mono_native_test_la_LDFLAGS = -rpath $(abs_top_builddir)/tests/efl_mono @EFL_LTLIBRARY_FLAGS@

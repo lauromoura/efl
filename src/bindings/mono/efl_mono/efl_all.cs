@@ -59,6 +59,10 @@ public static class All {
         efl.eo.Config.Shutdown();
         eina.Config.Shutdown();
     }
+
+    public static int Main() {
+        return 0;
+    }
 }
 
 }

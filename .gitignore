@@ -42,6 +42,7 @@ tags
 *.eo.lua
 *.luac
 .dir-locals.el
+/libefl_mono.csproj
 /efl-*-doc.tar.bz2
 /ar-lib
 /stamp-h1
