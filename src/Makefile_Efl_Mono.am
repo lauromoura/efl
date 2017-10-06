@@ -72,7 +72,9 @@ $(filter-out $(eo_eolian_blacklisted_files),$(eo_eolian_files:%.eo=%.eo.cs)) \
 $(filter-out $(ecore_eolian_blacklisted_files),$(ecore_eolian_files_public:%.eo=%.eo.cs)) \
 $(ecore_eolian_type_files:%.eot=%.eot.cs) \
 $(filter-out $(efl_eolian_blacklisted_files),$(efl_eolian_files:%.eo=%.eo.cs)) \
+$(filter-out $(elementary_eolian_blacklisted_files),$(elm_public_eolian_files:%.eo=%.eo.cs)) \
 $(efl_eolian_type_files:%.eot=%.eot.cs) \
+$(elm_eolian_type_files:%.eot=%.eot.cs) \
 $(filter-out $(evas_eolian_blacklisted_files),$(evas_eolian_pub_files:%.eo=%.eo.cs)) \
 lib/evas/canvas/evas_box.eo.cs \
 lib/evas/canvas/evas_image.eo.cs \
@@ -341,8 +343,9 @@ EO_EO_FILES = -r Eo:"$(strip $(call rwildcard,lib/eo/,*.eo))"
 ECORE_EO_FILES = -r Ecore:"$(strip $(call rwildcard,lib/ecore/,*.eo))"
 EVAS_EO_FILES = -r Evas:"$(strip $(call rwildcard,lib/evas/,*.eo))"
 EFL_EO_FILES = -r Efl:"$(strip $(call rwildcard,lib/efl/,*.eo))"
+ELM_EO_FILES = -r Elementary:"$(strip $(call rwildcard,lib/elementary/,*.eo))"
 
-ALL_EO_FILES = $(EO_EO_FILES) $(ECORE_EO_FILES) $(EVAS_EO_FILES) $(EFL_EO_FILES)
+ALL_EO_FILES = $(EO_EO_FILES) $(ECORE_EO_FILES) $(EVAS_EO_FILES) $(EFL_EO_FILES) $(ELM_EO_FILES)
 
 lib/eo/%.eo.cs: lib/eo/%.eo $(_EOLIAN_MONO_DEP)
 	$(AM_V_EOLMONO) \
@@ -364,6 +367,11 @@ lib/efl/%.eo.cs: lib/efl/%.eo $(_EOLIAN_MONO_DEP)
 	$(MKDIR_P) $(dir $@); \
 	$(EOLIAN_MONO) $(EOLIAN_FLAGS) $(EOLIAN_MONO_FLAGS) --dllimport efl -o $@ $(ALL_EO_FILES) $<
 
+lib/elementary/%.eo.cs: lib/elementary/%.eo $(_EOLIAN_MONO_DEP)
+	$(AM_V_EOLMONO) \
+	$(MKDIR_P) $(dir $@); \
+	$(EOLIAN_MONO) $(EOLIAN_FLAGS) $(EOLIAN_MONO_FLAGS) --dllimport elementary -o $@ $(ALL_EO_FILES) $<
+
 lib/ecore/%.eot.cs: lib/ecore/%.eot $(_EOLIAN_MONO_DEP)
 	$(AM_V_EOLMONO) \
 	$(MKDIR_P) $(dir $@); \
@@ -378,6 +386,11 @@ lib/efl/%.eot.cs: lib/efl/%.eot $(_EOLIAN_MONO_DEP)
 	$(AM_V_EOLMONO) \
 	$(MKDIR_P) $(dir $@); \
 	$(EOLIAN_MONO) $(EOLIAN_FLAGS) $(EOLIAN_MONO_FLAGS) --dllimport efl -o $@ $(ALL_EO_FILES) $<
+
+lib/elementary/%.eot.cs: lib/elementary/%.eot $(_EOLIAN_MONO_DEP)
+	$(AM_V_EOLMONO) \
+	$(MKDIR_P) $(dir $@); \
+	$(EOLIAN_MONO) $(EOLIAN_FLAGS) $(EOLIAN_MONO_FLAGS) --dllimport elementary -o $@ $(ALL_EO_FILES) $<
 
 tests/efl_mono/%.eo.cs: tests/efl_mono/%.eo $(_EOLIAN_MONO_DEP)
 	$(AM_V_EOLMONO) \
