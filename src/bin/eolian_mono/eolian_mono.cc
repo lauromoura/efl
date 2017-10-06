@@ -156,7 +156,7 @@ run(options_type const& opts)
            }
 
          eolian_mono::function_pointer
-           .generate(iterator, function_def, namespaces, efl::eolian::grammar::context_cons<eolian_mono::library_context>({opts.dllimport, opts.v_major, opts.v_minor, opts.references_map}));
+           .generate(iterator, function_def, escape_namespace(namespaces), efl::eolian::grammar::context_cons<eolian_mono::library_context>({opts.dllimport, opts.v_major, opts.v_minor, opts.references_map}));
      }
 
    if (klass)

@@ -18,7 +18,12 @@ inline std::string escape_keyword(std::string const& name)
      || is_iequal(name,  "lock")
      || is_iequal(name, "event")
      || is_iequal(name, "in")
-     || is_iequal(name, "object"))
+     || is_iequal(name, "object")
+     || is_iequal(name, "interface")
+     || is_iequal(name, "string")
+     || is_iequal(name, "internal")
+     || is_iequal(name, "fixed")
+     || is_iequal(name, "base"))
     return "kw_" + name;
   return name;
 }

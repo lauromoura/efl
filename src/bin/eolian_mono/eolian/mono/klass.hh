@@ -629,7 +629,7 @@ struct klass
                  {
                    for (auto&& i : klass.namespaces) 
                      {
-                         wrapper_args_type << utils::to_lowercase(i) << ".";
+                         wrapper_args_type << escape_keyword(utils::to_lowercase(i)) << ".";
                      }
                    wrapper_args_type << upper_name << "_Args";
                    wrapper_args_template = "<" + wrapper_args_type.str() + ">";

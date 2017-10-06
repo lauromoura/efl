@@ -132,11 +132,12 @@ struct marshall_annotation_visitor_generate
    {
      const char no_return_prefix[] = "[MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(efl.eo.MarshalTest<";
      const char return_prefix[] = "[return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(efl.eo.MarshalTest<";
+     std::vector<std::string> namespaces = escape_namespace(klass_name.namespaces);
      return as_generator
        ((is_return ? return_prefix : no_return_prefix)
         << *(lower_case[string] << ".") << string
         << "Concrete, efl.eo." << (klass_name.base_qualifier & qualifier_info::is_own ? "OwnTag" : "NonOwnTag") << ">))]"
-        ).generate(sink, std::make_tuple(klass_name.namespaces, klass_name.eolian_name), *context);
+        ).generate(sink, std::make_tuple(namespaces, klass_name.eolian_name), *context);
    }
    bool operator()(attributes::complex_type_def const&) const
    {
@@ -226,11 +227,12 @@ struct marshall_native_annotation_visitor_generate
    {
      const char no_return_prefix[] = "[MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(efl.eo.MarshalTest<";
      const char return_prefix[] = "[return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(efl.eo.MarshalTest<";
+     std::vector<std::string> namespaces = escape_namespace(klass_name.namespaces);
      return as_generator
        ((is_return ? return_prefix : no_return_prefix)
         << *(lower_case[string] << ".") << string
         << "Concrete, efl.eo." << (klass_name.base_qualifier & qualifier_info::is_own ? "OwnTag" : "NonOwnTag") << ">))]"
-        ).generate(sink, std::make_tuple(klass_name.namespaces, klass_name.eolian_name), *context);
+        ).generate(sink, std::make_tuple(namespaces, klass_name.eolian_name), *context);
    }
    bool operator()(attributes::complex_type_def const&) const
    {
