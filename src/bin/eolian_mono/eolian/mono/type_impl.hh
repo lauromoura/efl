@@ -84,6 +84,16 @@ struct visitor_generate
            , {"ptrdiff", nullptr, [&] { return replace_base_type(regular, " long"); }}
            , {"intptr", nullptr, [&] { return replace_base_type(regular, " System.IntPtr"); }}
            , {"void_ptr", nullptr, [&] { return replace_base_type(regular, " System.IntPtr"); }}
+           , {"void", nullptr, [&]
+               {
+                  regular_type_def r = regular;
+                  r.namespaces.clear();
+                  if (is_out) // @inout too
+                      r.base_type = " System.IntPtr";
+                  else
+                      r.base_type = " void";
+                  return r;
+              }}
            , {"Error", nullptr, [&] // Eina.Error
               {
                 return regular_type_def{" eina.Error", regular.base_qualifier, {}};

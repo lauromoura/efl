@@ -106,6 +106,16 @@ struct marshall_type_visitor_generate
                     r.base_type = " eina.Value_Native";
                 return r;
                }}
+           , {"void", nullptr, [&]
+               {
+                regular_type_def r = regular;
+                r.namespaces.clear();
+                if (is_out) // @inout too
+                    r.base_type = " System.IntPtr";
+                else
+                    r.base_type = " void";
+                return r;
+               }}
            // , {"generic_value", true, [&]
            //    { return regular_type_def{" int", regular.base_qualifier, {}};
            //    }}
