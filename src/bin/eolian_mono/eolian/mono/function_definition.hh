@@ -44,7 +44,7 @@ struct native_function_definition_generator
          (", " << marshall_native_annotation << " " << marshall_parameter)
         )
         << ");\n")
-       .generate(sink, std::make_tuple(f.return_type, f.return_type, escape_keyword(f.name), f.parameters), context))
+       .generate(sink, std::make_tuple(f.return_type, f.return_type, f.c_name, f.parameters), context))
       return false;
 
     if(!as_generator
@@ -113,7 +113,7 @@ struct native_function_definition_generator
         << "_delegate "
         << string << "_static_delegate = new " << string << "_delegate(" << string << "NativeInherit." << string << ");\n"
        )
-       .generate(sink, std::make_tuple(escape_keyword(f.name), escape_keyword(f.name), escape_keyword(f.name), klass->cxx_name
+       .generate(sink, std::make_tuple(f.c_name, f.c_name, f.c_name, klass->cxx_name
                                        , escape_keyword(f.name)), context))
       return false;
     return true;

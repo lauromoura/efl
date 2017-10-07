@@ -42,7 +42,7 @@ struct function_registration_generator
 #endif
         << scope_tab << scope_tab << "descs[" << index << "].func = Marshal.GetFunctionPointerForDelegate(" << string << "NativeInherit." << string << "_static_delegate);\n"
        )
-       .generate(sink, std::make_tuple(f.c_name, klass->cxx_name, escape_keyword(f.name)), context))
+       .generate(sink, std::make_tuple(f.c_name, klass->cxx_name, f.c_name), context))
       return false;
     return true;
       }
