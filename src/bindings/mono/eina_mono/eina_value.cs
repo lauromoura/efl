@@ -496,6 +496,18 @@ public class Value : IDisposable, IComparable<Value>, IEquatable<Value>
         this.Ownership = ValueOwnership.Managed;
     }
 
+    /// <summary>Implicit conversion from managed value to native struct representation
+    public static implicit operator Value_Native(Value v)
+    {
+        return v.GetNative();
+    }
+
+    /// <summary>
+    public static implicit operator Value(Value_Native v)
+    {
+        return new Value(v);
+    }
+
     /// <summary>Creates an Value instance from a given array description.</summary>
     private static Value FromArrayDesc(eina.EinaNative.Value_Array arrayDesc)
     {
