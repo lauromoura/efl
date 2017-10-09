@@ -15482,7 +15482,6 @@ _efl_canvas_text_efl_text_style_shadow_direction_set(Eo *obj EINA_UNUSED, Efl_Ca
    ASYNC_BLOCK;
    _FMT_INFO_SET_START(shadow_direction, type);
    EVAS_TEXT_STYLE_SHADOW_DIRECTION_SET(_FMT(style), _map_shadow_dir[type].y);
-   printf("style: %d\n", _FMT(style));
    _FMT_INFO_SET_END();
 }
 

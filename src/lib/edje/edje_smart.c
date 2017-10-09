@@ -181,7 +181,7 @@ _edje_object_efl_gfx_position_set(Eo *obj, Edje *ed, Eina_Position2D pos)
         Edje_Real_Part *ep;
 
         ep = ed->table_parts[i];
-        if ((ep->type == EDJE_RP_TYPE_TEXT) && (ep->typedata.text))
+        if (PART_IS_TEXT(ed, ep) && ep->typedata.text)
           {
              evas_object_move(ep->object,
                               ed->x + ep->x + ep->typedata.text->offset.x,
