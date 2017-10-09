@@ -245,3 +245,55 @@ public enum Text_Style_Type
 };
     
 }
+
+namespace elm {
+
+[StructLayout(LayoutKind.Sequential)]
+public struct Theme
+{
+    public IntPtr pointer;
+}
+
+} // namespace elm
+
+namespace edje {
+
+public delegate void Signal_Cb(IntPtr data, IntPtr obj, IntPtr emission, IntPtr source);
+public delegate void Markup_Filter_Cb(IntPtr data, IntPtr obj, IntPtr part, IntPtr text );
+public delegate void Item_Provider_Cb(IntPtr data, IntPtr obj, IntPtr part, IntPtr item);
+// Message_Handler_Cb is now legacy
+
+[StructLayout(LayoutKind.Sequential)]
+public struct Perspective
+{
+    public IntPtr pointer;
+}
+
+namespace text {
+public delegate void Filter_Cb(IntPtr data, IntPtr obj, IntPtr part, int _type, IntPtr text);
+public delegate void Change_Cb(IntPtr data, IntPtr obj, IntPtr part);
+}
+
+
+} // namespace edje
+
+namespace efl { namespace ui {
+
+namespace focus {
+[StructLayout(LayoutKind.Sequential)]
+public struct Relations
+{
+    IntPtr right;
+    IntPtr left;
+    IntPtr top;
+    IntPtr down;
+    IntPtr next;
+    IntPtr prev;
+    String _type;
+    IntPtr parent;
+    IntPtr redirect;
+}
+
+}
+
+} /* namespace ui */ } // namespace efl
