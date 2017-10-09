@@ -187,10 +187,9 @@ _EFL_MONO_MSBUILD_GEN_DEP = bin/efl_mono_msbuild_gen/efl_mono_msbuild_gen${EXEEX
 
 ../libefl_mono.csproj: $(lib_efl_mono_libefl_mono_dll_SOURCES) lib/efl_mono/$(am__dirstamp) $(efl_eolian_mono_files) $(_EFL_MONO_MSBUILD_GEN_DEP)
 	@rm -f $@
-	$(EFL_MONO_MSBUILD_GEN) $(MSBUILD_GEN_FLAGS) -o $@ $(filter %.cs, $(^))
+	$(EFL_MONO_MSBUILD_GEN) $(MSBUILD_GEN_FLAGS) -o $@ -a libefl_mono.dll -t library $(patsubst %.cs,src/%.cs,$(filter %.cs, $(^)))
 
-CLEANFILES += bin/efl_mono_msbuild_gen/efl.csproj
-
+CLEANFILES += ../libefl_mono.csproj
 nodist_pkgdata_DATA = ../libefl_mono.csproj
 
 ### Tests
@@ -318,6 +317,18 @@ examples/efl_mono/FunctionPointer01.exe$(EXEEXT): $(examples_efl_mono_FunctionPo
 	@rm -f examples/efl_mono/FunctionPointer01_exe$(EXEEXT)
 	$(AM_V_MCS) $(MCS) $(MCS_FLAGS) -r:$(abs_top_builddir)/src/lib/efl_mono/libefl_mono.dll$(EXEEXT) -r:$(abs_top_builddir)/src/examples/efl_mono/libefl_mono_example.dll$(EXEEXT) -out:$@ $(filter %.cs, $(^))
 
+### MSBuild Examples
+
+../libefl_mono_example.csproj: $(efl_mono_example_eolian_mono_files) examples/efl_mono/$(am__dirstamp) examples/efl_mono/libefl_mono_native_example.la $(_EFL_MONO_MSBUILD_GEN_DEP)
+	@rm -f $@
+	$(EFL_MONO_MSBUILD_GEN) $(MSBUILD_GEN_FLAGS) -o $@ -a libefl_mono_example.dll -t library -r libefl_mono.dll $(patsubst %.cs,src/%.cs,$(filter %.cs, $(^)))
+
+../EinaArray01.csproj: $(examples_efl_mono_EinaArray01_exe_SOURCES) examples/efl_mono/$(am__dirstamp) examples/efl_mono/libefl_mono_native_example.la $(_EFL_MONO_MSBUILD_GEN_DEP)
+	@rm -f $@
+	$(EFL_MONO_MSBUILD_GEN) $(MSBUILD_GEN_FLAGS) -o $@ -a EinaArray01$(EXEEXT) -t exe -r libefl_mono.dll -r libefl_mono_example.dll $(patsubst %.cs,src/%.cs,$(filter %.cs, $(^)))
+
+CLEANFILES += ../libefl_mono_example.csproj ../EinaArray01.csproj
+nodist_pkgdata_DATA += ../libefl_mono_example.csproj ../EinaArray01.csproj
 
 SUFFIXES += .eo.cs
 
