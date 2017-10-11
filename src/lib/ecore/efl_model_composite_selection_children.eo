@@ -2,6 +2,6 @@ class Efl.Model.Composite.Selection.Children (Efl.Object, Efl.Model)
 {
    [[Efl model composite selection children class]]
    implements {
-      Efl.Model.property_set;
+      Efl.Model.property { set; }
    }
 }

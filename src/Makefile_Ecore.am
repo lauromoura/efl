@@ -19,8 +19,8 @@ ecore_eolian_files_public = \
 	lib/ecore/efl_io_stderr.eo \
 	lib/ecore/efl_io_file.eo \
         lib/ecore/efl_io_copier.eo \
-        lib/ecore/efl_io_buffered_stream.eo
-
+        lib/ecore/efl_io_buffered_stream.eo \
+	lib/ecore/efl_model_composite.eo
 
 ecore_eolian_files = \
 	$(ecore_eolian_files_public) \
@@ -91,6 +91,7 @@ lib/ecore/efl_model_item.c \
 lib/ecore/efl_model_container.c \
 lib/ecore/efl_model_container_item.c \
 lib/ecore/efl_model_container_private.h \
+lib/ecore/efl_model_composite.c \
 lib/ecore/efl_model_composite_boolean.c \
 lib/ecore/efl_model_composite_selection.c \
 lib/ecore/efl_model_accessor_view.c \

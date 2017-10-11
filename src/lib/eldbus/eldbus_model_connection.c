@@ -80,49 +80,45 @@ _eldbus_model_connection_efl_model_properties_get(Eo *obj EINA_UNUSED,
 }
 
 
-static Efl_Future*
-_eldbus_model_connection_efl_model_property_set(Eo *obj EINA_UNUSED,
-                                             Eldbus_Model_Connection_Data *pd EINA_UNUSED,
-                                             const char *property,
-                                             Eina_Value const* value EINA_UNUSED)
+static void
+_eldbus_model_connection_efl_model_property_set(Eo *obj, Eldbus_Model_Connection_Data *pd EINA_UNUSED,
+                                                const char *property, Eina_Value value)
 {
-   Efl_Promise* promise =  efl_add(EFL_PROMISE_CLASS, obj);
-   Efl_Future* future = efl_promise_future_get(promise);
-   ELDBUS_MODEL_ON_ERROR_EXIT_PROMISE_SET((strcmp(property, UNIQUE_NAME_PROPERTY) == 0), promise,
-                                          EFL_MODEL_ERROR_NOT_FOUND, future);
-   efl_promise_failed_set(promise, EFL_MODEL_ERROR_READ_ONLY);
-   return future;
+   if (!strcmp(property, UNIQUE_NAME_PROPERTY))
+     return eina_future_rejected(efl_loop_future_scheduler_get(obj), EFL_MODEL_ERROR_NOT_FOUND);
+   return eina_future_rejected(efl_loop_future_scheduler_get(obj), EFL_MODEL_ERROR_READ_ONLY);
 }
 
-static Efl_Future*
-_eldbus_model_connection_efl_model_property_get(Eo *obj EINA_UNUSED,
-                                             Eldbus_Model_Connection_Data *pd,
-                                             const char *property)
+static Eina_Value
+_eldbus_model_connection_efl_model_property_get(Eo *obj, Eldbus_Model_Connection_Data *pd,
+                                                const char *property)
 {
-   Efl_Promise *promise = efl_add(EFL_PROMISE_CLASS, obj);
-   Efl_Future *future = efl_promise_future_get(promise);
+   Eina_Value v = EINA_VALUE_EMPTY;
 
    DBG("(%p): property=%s", obj, property);
 
+   if (!strcmp(property, UNIQUE_NAME_PROPERTY)) goto on_error;
+
    if (!pd->connection)
      _eldbus_model_connection_connect(pd);
-
-   ELDBUS_MODEL_ON_ERROR_EXIT_PROMISE_SET((strcmp(property, UNIQUE_NAME_PROPERTY) == 0), promise,
-                                          EFL_MODEL_ERROR_NOT_FOUND, future);
 
    if (pd->unique_name == NULL)
      {
         const char *unique_name;
 
         unique_name = eldbus_connection_unique_name_get(pd->connection);
-        ELDBUS_MODEL_ON_ERROR_EXIT_PROMISE_SET(unique_name, promise, EFL_MODEL_ERROR_NOT_FOUND, future);
+        if (!unique_name) goto on_error;
         pd->unique_name = strdup(unique_name);
      }
 
-   Eina_Value* v = eina_value_new(EINA_VALUE_TYPE_STRING);
+   eina_value_setup(&v, EINA_VALUE_TYPE_STRING);
    eina_value_set(v, pd->unique_name);
-   efl_promise_value_set(promise, v, (Eina_Free_Cb)&eina_value_free);
-   return future;
+
+   return eina_future_resolved(efl_loop_future_scheduler_get(obj), v);
+
+ on_error:
+   return eina_future_rejected(efl_loop_future_scheduler_get(obj),
+                               EFL_MODEL_ERROR_NOT_FOUND);
 }
 
 static Eo *

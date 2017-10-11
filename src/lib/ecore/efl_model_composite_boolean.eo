@@ -13,10 +13,9 @@ class Efl.Model.Composite.Boolean (Efl.Object, Efl.Model, Efl.Ui.View)
    implements {
       Efl.Object.destructor;
       Efl.Model.properties { get; }
-      Efl.Model.property_get;
-      Efl.Model.property_set;
+      Efl.Model.property { get; set; }
       Efl.Model.children_slice_get;
-      Efl.Model.children_count_get;
+      Efl.Model.children_count { get; }
       Efl.Model.child_add;
       Efl.Model.child_del;
       Efl.Ui.View.model { set; get; }

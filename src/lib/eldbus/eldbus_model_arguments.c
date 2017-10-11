@@ -190,21 +190,19 @@ _eldbus_model_arguments_efl_model_children_slice_get(Eo *obj EINA_UNUSED,
                                                           unsigned start EINA_UNUSED,
                                                           unsigned count EINA_UNUSED)
 {
-   Efl_Promise *promise = efl_add(EFL_PROMISE_CLASS, obj);
-   efl_promise_failed_set(promise, EFL_MODEL_ERROR_NOT_SUPPORTED);
-   return efl_promise_future_get(promise);
+   return eina_future_rejected(efl_loop_future_scheduler_get(obj), EFL_MODEL_ERROR_NOT_SUPPORTED);
 }
 
-static Efl_Future*
-_eldbus_model_arguments_efl_model_children_count_get(Eo *obj EINA_UNUSED,
-                                                         Eldbus_Model_Arguments_Data *pd EINA_UNUSED)
+static unsigned int
+_eldbus_model_arguments_efl_model_children_count_get(Eo *obj, Eldbus_Model_Arguments_Data EINA_UNUSED)
 {
-   Efl_Promise *promise = efl_add(EFL_PROMISE_CLASS, obj);
-   Efl_Future* future = efl_promise_future_get(promise);
-   unsigned *count = malloc(sizeof(unsigned));
-   *count = 0;
-   efl_promise_value_set(promise, count, free);
-   return future;
+   Eina_Value v = EINA_VALUE_EMPTY;
+   unsigned long long zero = 0;
+
+   eina_value_setup(&v, EINA_VALUE_TYPE_UINT64);
+   eina_value_set(&v, &zero);
+
+   return eina_future_resolved(efl_loop_future_scheduler_get(obj), v);
 }
 
 static const char *
