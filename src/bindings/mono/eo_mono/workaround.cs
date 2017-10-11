@@ -171,46 +171,6 @@ public struct Rectangle {
 
 }
 
-namespace efl {
-namespace observable {
-public class Tuple {}
-}
-
-namespace loop {
-public struct Arguments {
-    public IntPtr argv; // FIXME It's an array underneath. Needs complex types support
-    [MarshalAsAttribute(UnmanagedType.U1)] public bool initialization;
-}
-}
-
-namespace model {
-public struct Property_Event {
-    public IntPtr changed_properties; // Array
-    public IntPtr invalidated_properties; // Array
-}
-}
-
-namespace kw_event {
-public struct Animator_Tick {
-    public eina.Rectangle update_area;
-}
-}
-
-namespace canvas {
-
-namespace filter {
-
-public class State {}
-
-}
-
-namespace image {
-
-        
-} }
-    
-}
-
 namespace eina {
 
 public interface File {}
@@ -244,17 +204,153 @@ public enum Text_Style_Type
    ShadowDirectionRight = 112 /* 7 >> 4 */ /**< shadow growing to the right */
 };
     
+
+// Copied from Evas_Common.h
+//
+//
+//
+
+public enum Callback_Type
+{
+  EVAS_CALLBACK_MOUSE_IN = 0, /**< Mouse In Event */
+  EVAS_CALLBACK_MOUSE_OUT, /**< Mouse Out Event */
+  EVAS_CALLBACK_MOUSE_DOWN, /**< Mouse Button Down Event */
+  EVAS_CALLBACK_MOUSE_UP, /**< Mouse Button Up Event */
+  EVAS_CALLBACK_MOUSE_MOVE, /**< Mouse Move Event */
+  EVAS_CALLBACK_MOUSE_WHEEL, /**< Mouse Wheel Event */
+  EVAS_CALLBACK_MULTI_DOWN, /**< Multi-touch Down Event */
+  EVAS_CALLBACK_MULTI_UP, /**< Multi-touch Up Event */
+  EVAS_CALLBACK_MULTI_MOVE, /**< Multi-touch Move Event */
+  EVAS_CALLBACK_FREE, /**< Object Being Freed (Called after Del) */
+  EVAS_CALLBACK_KEY_DOWN, /**< Key Press Event */
+  EVAS_CALLBACK_KEY_UP, /**< Key Release Event */
+  EVAS_CALLBACK_FOCUS_IN, /**< Focus In Event */
+  EVAS_CALLBACK_FOCUS_OUT, /**< Focus Out Event */
+  EVAS_CALLBACK_SHOW, /**< Show Event */
+  EVAS_CALLBACK_HIDE, /**< Hide Event */
+  EVAS_CALLBACK_MOVE, /**< Move Event */
+  EVAS_CALLBACK_RESIZE, /**< Resize Event */
+  EVAS_CALLBACK_RESTACK, /**< Restack Event */
+  EVAS_CALLBACK_DEL, /**< Object Being Deleted (called before Free) */
+  EVAS_CALLBACK_HOLD, /**< Events go on/off hold */
+  EVAS_CALLBACK_CHANGED_SIZE_HINTS, /**< Size hints changed event */
+  EVAS_CALLBACK_IMAGE_PRELOADED, /**< Image has been preloaded */
+  EVAS_CALLBACK_CANVAS_FOCUS_IN, /**< Canvas got focus as a whole */
+  EVAS_CALLBACK_CANVAS_FOCUS_OUT, /**< Canvas lost focus as a whole */
+  EVAS_CALLBACK_RENDER_FLUSH_PRE, /**< Called after render update regions have
+                                   * been calculated, but only if update regions exist */
+  EVAS_CALLBACK_RENDER_FLUSH_POST, /**< Called after render update regions have
+                                    * been sent to the display server, but only
+                                    * if update regions existed for the most recent frame */
+  EVAS_CALLBACK_CANVAS_OBJECT_FOCUS_IN, /**< Canvas object got focus */
+  EVAS_CALLBACK_CANVAS_OBJECT_FOCUS_OUT, /**< Canvas object lost focus */
+  EVAS_CALLBACK_IMAGE_UNLOADED, /**< Image data has been unloaded (by some mechanism in Evas that throw out original image data) */
+  EVAS_CALLBACK_RENDER_PRE, /**< Called just before rendering starts on the canvas target. @since 1.2 */
+  EVAS_CALLBACK_RENDER_POST, /**< Called just after rendering stops on the canvas target. @since 1.2 */
+  EVAS_CALLBACK_IMAGE_RESIZE, /**< Image size is changed. @since 1.8 */
+  EVAS_CALLBACK_DEVICE_CHANGED, /**< Devices added, removed or changed on canvas. @since 1.8 */
+  EVAS_CALLBACK_AXIS_UPDATE, /**< Input device changed value on some axis. @since 1.13 */
+  EVAS_CALLBACK_CANVAS_VIEWPORT_RESIZE, /**< Canvas viewport resized. @since 1.15 */
+  EVAS_CALLBACK_LAST /**< Sentinel value to indicate last enum field during
+                      * iteration */
+};
+
 }
 
 namespace elm {
 
-[StructLayout(LayoutKind.Sequential)]
-public struct Theme
-{
-    public IntPtr pointer;
+namespace atspi {
+public struct State_Set {
+    private ulong val;
+
+    public static implicit operator State_Set(ulong x)
+    {
+        return new State_Set{val=x};
+    }
+    public static implicit operator ulong(State_Set x)
+    {
+        return x.val;
+    }
 }
 
+[StructLayout(LayoutKind.Sequential)]
+public struct Relation_Set
+{
+    public IntPtr pointer; // list<ptr(elm.atspi.Relation)>
+}
+} // namespace atspi
+
+namespace gengrid { namespace item {
+[StructLayout(LayoutKind.Sequential)]
+public struct Class
+{
+    int version;
+    uint refcount;
+    [MarshalAsAttribute(UnmanagedType.U1)]bool delete_me;
+    IntPtr item_style;
+    IntPtr decorate_item_style;
+    IntPtr decorate_all_item_style;
+
+    // Delegates inside Elm_Gen_Item_Class_Functions
+    IntPtr text_get;
+    IntPtr content_get;
+    IntPtr state_get;
+    IntPtr del;
+    IntPtr filter_get;
+    IntPtr reusable_content_get;
+}
+} // namespace item
+} // namespace gengrid
+
+namespace genlist { namespace item {
+[StructLayout(LayoutKind.Sequential)]
+public struct Class
+{
+    int version;
+    uint refcount;
+    [MarshalAsAttribute(UnmanagedType.U1)]bool delete_me;
+    IntPtr item_style;
+    IntPtr decorate_item_style;
+    IntPtr decorate_all_item_style;
+
+    // Delegates inside Elm_Gen_Item_Class_Functions
+    IntPtr text_get;
+    IntPtr content_get;
+    IntPtr state_get;
+    IntPtr del;
+    IntPtr filter_get;
+    IntPtr reusable_content_get;
+}
+} // namespace item
+} // namespace genlist
+
 } // namespace elm
+
+// Global delegates
+public delegate IntPtr list_data_get_func_type(IntPtr l);
+public delegate void region_hook_func_type(IntPtr data, IntPtr obj);
+public delegate void slider_freefunc_type(IntPtr data);
+public delegate void slider_func_type(double val);
+
+public delegate int Eina_Compare_Cb(IntPtr a, IntPtr b);
+public delegate void Elm_Interface_Scrollable_Cb(IntPtr obj, IntPtr data);
+public delegate void Elm_Interface_Scrollable_Min_Limit_Cb(IntPtr obj,
+                                                     [MarshalAsAttribute(UnmanagedType.U1)]bool w,
+                                                     [MarshalAsAttribute(UnmanagedType.U1)]bool h);
+public delegate void Elm_Interface_Scrollable_Resize_Cb(IntPtr obj, evas.Coord w, evas.Coord h);
+public delegate void Elm_Entry_Item_Provider_Cb(IntPtr data, IntPtr obj, IntPtr item);
+public delegate void Elm_Entry_Filter_Cb(IntPtr data, IntPtr obj, IntPtr text);
+[return: MarshalAsAttribute(UnmanagedType.U1)]
+public delegate bool Elm_Multibuttonentry_Item_Filter_Cb(IntPtr obj, IntPtr item_label, IntPtr item_data, IntPtr data);
+public delegate IntPtr Elm_Multibuttonentry_Format_Cb(int count, IntPtr data);
+[return: MarshalAsAttribute(UnmanagedType.U1)]
+public delegate bool Elm_Fileselector_Filter_Func(IntPtr path, [MarshalAsAttribute(UnmanagedType.U1)]bool dir, IntPtr data);
+public delegate void Evas_Smart_Cb(IntPtr data, IntPtr obj, IntPtr event_info);
+public delegate void Elm_Gesture_Event_Cb(IntPtr data, IntPtr event_info);
+public delegate void Elm_Object_Item_Signal_Cb(IntPtr data, IntPtr item, IntPtr emission, IntPtr source);
+public delegate void Elm_Tooltip_Item_Content_Cb(IntPtr data, IntPtr obj, IntPtr tooltip, IntPtr item);
+public delegate void Elm_Sys_Notify_Send_Cb(IntPtr data, uint id);
+public delegate IntPtr Elm_Calendar_Format_Cb(IntPtr format);
 
 namespace edje {
 
@@ -262,12 +358,6 @@ public delegate void Signal_Cb(IntPtr data, IntPtr obj, IntPtr emission, IntPtr 
 public delegate void Markup_Filter_Cb(IntPtr data, IntPtr obj, IntPtr part, IntPtr text );
 public delegate void Item_Provider_Cb(IntPtr data, IntPtr obj, IntPtr part, IntPtr item);
 // Message_Handler_Cb is now legacy
-
-[StructLayout(LayoutKind.Sequential)]
-public struct Perspective
-{
-    public IntPtr pointer;
-}
 
 namespace text {
 public delegate void Filter_Cb(IntPtr data, IntPtr obj, IntPtr part, int _type, IntPtr text);
@@ -277,23 +367,61 @@ public delegate void Change_Cb(IntPtr data, IntPtr obj, IntPtr part);
 
 } // namespace edje
 
-namespace efl { namespace ui {
-
-namespace focus {
 [StructLayout(LayoutKind.Sequential)]
-public struct Relations
+public struct Elm_Code
 {
-    IntPtr right;
-    IntPtr left;
-    IntPtr top;
-    IntPtr down;
-    IntPtr next;
-    IntPtr prev;
-    String _type;
-    IntPtr parent;
-    IntPtr redirect;
+    IntPtr file;
+    IntPtr widgets;
+    IntPtr parsers;
+
+    // Below is inside _Elm_Code_Config
+    [MarshalAsAttribute(UnmanagedType.U1)]bool config;
 }
 
+[StructLayout(LayoutKind.Sequential)]
+public struct Elm_Code_Line
+{
+    IntPtr file;
+    IntPtr content;
+    uint length;
+    uint number;
+    IntPtr modified;
+
+    Elm_Code_Status_Type status;
+    IntPtr tokens;
+
+    IntPtr data;
+    IntPtr status_text;
 }
 
-} /* namespace ui */ } // namespace efl
+public enum Elm_Code_Status_Type {
+   ELM_CODE_STATUS_TYPE_DEFAULT = 0,
+   ELM_CODE_STATUS_TYPE_CURRENT,
+   ELM_CODE_STATUS_TYPE_IGNORED,
+   ELM_CODE_STATUS_TYPE_NOTE,
+   ELM_CODE_STATUS_TYPE_WARNING,
+   ELM_CODE_STATUS_TYPE_ERROR,
+   ELM_CODE_STATUS_TYPE_FATAL,
+
+   ELM_CODE_STATUS_TYPE_ADDED,
+   ELM_CODE_STATUS_TYPE_REMOVED,
+   ELM_CODE_STATUS_TYPE_CHANGED,
+
+   ELM_CODE_STATUS_TYPE_PASSED,
+   ELM_CODE_STATUS_TYPE_FAILED,
+
+   ELM_CODE_STATUS_TYPE_TODO,
+
+   ELM_CODE_STATUS_TYPE_COUNT
+};
+
+
+[StructLayout(LayoutKind.Sequential)]
+public struct Elm_Atspi_Action
+{
+    IntPtr name;
+    IntPtr action;
+    IntPtr param;
+    IntPtr func;
+}
+

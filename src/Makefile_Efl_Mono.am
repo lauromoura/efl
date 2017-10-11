@@ -15,7 +15,6 @@ bin_eolian_mono_eolian_mono_LDADD = @CHECK_LIBS@ @USE_EOLIAN_LIBS@
 bin_eolian_mono_eolian_mono_DEPENDENCIES = @USE_EOLIAN_INTERNAL_LIBS@
 
 evas_eolian_blacklisted_files = \
-lib/evas/canvas/efl_canvas_text_cursor.eo.cs \
 lib/evas/canvas/efl_canvas_text.eo.cs \
 lib/evas/canvas/efl_canvas_scene3d.eo.cs \
 lib/evas/canvas/evas_canvas3d_camera.eo.cs \
@@ -67,13 +66,22 @@ lib/ecore/efl_io_copier.eo.cs
 eo_eolian_blacklisted_files = \
 lib/eo/efl_object_override.eo.cs
 
-#$(filter-out $(elementary_eolian_blacklisted_files),$(elm_public_eolian_files:%.eo=%.eo.cs))
+elementary_eolian_blacklisted_files = \
+lib/elementary/elm_web.eo.cs \
+lib/elementary/elm_map.eo.cs \
+lib/elementary/elm_combobox.eo.cs \
+lib/elementary/elm_list.eo.cs \
+lib/elementary/elm_genlist.eo.cs \
+lib/elementary/elm_gengrid.eo.cs \
+lib/elementary/elm_glview.eo.cs
+
 efl_eolian_mono_files = \
 $(filter-out $(eo_eolian_blacklisted_files),$(eo_eolian_files:%.eo=%.eo.cs)) \
 $(filter-out $(ecore_eolian_blacklisted_files),$(ecore_eolian_files_public:%.eo=%.eo.cs)) \
 $(ecore_eolian_type_files:%.eot=%.eot.cs) \
 $(filter-out $(efl_eolian_blacklisted_files),$(efl_eolian_files:%.eo=%.eo.cs)) \
 $(filter-out $(edje_eolian_blacklisted_files),$(edje_eolian_files:%.eo=%.eo.cs)) \
+$(filter-out $(elementary_eolian_blacklisted_files),$(elm_public_eolian_files:%.eo=%.eo.cs)) \
 $(efl_eolian_type_files:%.eot=%.eot.cs) \
 $(edje_eolian_type_files:%.eot=%.eot.cs) \
 $(elm_eolian_type_files:%.eot=%.eot.cs) \

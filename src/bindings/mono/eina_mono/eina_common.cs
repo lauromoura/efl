@@ -115,4 +115,18 @@ public static class StringConversion
     }
 }
 
+public struct Unicode {
+    private uint val;
+
+    public static implicit operator Unicode(uint x)
+    {
+        return new Unicode{val=x};
+    }
+    public static implicit operator uint(Unicode x)
+    {
+        return x.val;
+    }
+}
+
+
 }
