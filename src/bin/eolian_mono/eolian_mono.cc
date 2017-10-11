@@ -25,6 +25,7 @@
 
 #include <eolian/mono/klass.hh>
 #include <eolian/mono/enum_definition.hh>
+#include <eolian/mono/struct_definition.hh>
 #include <eolian/mono/type_impl.hh>
 #include <eolian/mono/marshall_type_impl.hh>
 #include <eolian/mono/marshall_annotation.hh>
@@ -180,6 +181,7 @@ run(options_type const& opts)
                , struct_last; struct_iterator != struct_last; ++struct_iterator)
          {
             efl::eolian::grammar::attributes::struct_def struct_(&*struct_iterator);
+            eolian_mono::struct_definition.generate(iterator, struct_, efl::eolian::grammar::context_null());
          }
 
     }
