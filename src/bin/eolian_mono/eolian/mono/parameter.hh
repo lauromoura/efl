@@ -314,7 +314,11 @@ inline std::string in_variable_name(std::string const& param_name)
 
 inline std::string direction_modifier(attributes::parameter_def const& param)
 {
-   if (param.direction != attributes::parameter_direction::in)
+   if (param.direction == attributes::parameter_direction::inout)
+     {
+        return " ref ";
+     }
+   else if (param.direction != attributes::parameter_direction::in)
      {
         if (param.type.c_type == "Eina_Slice" || param.type.c_type == "Eina_Rw_Slice")
            return " ref ";
