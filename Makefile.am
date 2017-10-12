@@ -188,6 +188,11 @@ pc/eo-js.pc \
 pc/eina-js.pc
 endif
 
+if HAVE_MCS
+pkgconfig_DATA += \
+pc/efl-mono.pc
+endif
+
 if BUILD_ENGINE_SOFTWARE_X11
 pkgconfig_DATA += pc/evas-software-x11.pc
 endif

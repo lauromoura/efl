@@ -5619,6 +5619,7 @@ pc/eolian-js.pc
 pc/eo-js.pc
 pc/efl.pc
 pc/efl-cxx.pc
+pc/efl-mono.pc
 pc/efl-wl.pc
 pc/efl-core.pc
 pc/efl-net.pc
