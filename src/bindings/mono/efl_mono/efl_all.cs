@@ -18,6 +18,7 @@ public class Libs {
     public const string Evas = "libevas-1";
     public const string Evil = "libevil-1";
     public const string EcoreEvas = "libecore_evas-1";
+    public const string Edje = "libedje-1";
     public const string Elementary = "libelementary-1";
 
     public const string CustomExports = "libeflcustomexportsmono-0";
@@ -29,6 +30,7 @@ public class Libs {
     public const string Evas = "evas";
     public const string Evil = "dl"; // Used for dlsym, dlopen and dlerror
     public const string EcoreEvas = "ecore_evas";
+    public const string Edje = "edje";
     public const string Elementary = "elementary";
 
     public const string CustomExports = "eflcustomexportsmono";
