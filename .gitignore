@@ -43,6 +43,8 @@ tags
 *.luac
 .dir-locals.el
 /libefl_mono.csproj
+/libefl_mono_example.csproj
+/EinaArray01.csproj
 /efl-*-doc.tar.bz2
 /ar-lib
 /stamp-h1
