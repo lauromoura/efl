@@ -335,7 +335,7 @@ struct is_fp_visitor
 
    bool operator()(grammar::attributes::regular_type_def const &type) const
    {
-      return type.is_function_pointer;
+      return type.is_function_ptr;
    }
 
    template<typename T>

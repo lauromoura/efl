@@ -216,12 +216,6 @@ database_load(options_type const& opts)
          << "Failed parsing: " << opts.in_file << ".";
        assert(false && "Error parsing input file");
      }
-   if (!::eolian_database_validate())
-     {
-        EINA_CXX_DOM_LOG_ERR(eolian_mono::domain)
-          << "Eolian failed validating database.";
-        assert(false && "Error validating database");
-     }
 }
 
 } // namespace eolian_mono {

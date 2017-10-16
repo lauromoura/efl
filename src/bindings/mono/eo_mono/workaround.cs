@@ -95,13 +95,6 @@ public struct Dbg_Info {
 };
 #pragma warning restore 0169
 
-[StructLayout(LayoutKind.Sequential)]
-public struct Event {
-    public IntPtr obj;
-    public IntPtr desc;
-    public IntPtr info;
-};
-
 }
 
 namespace efl { namespace gfx {

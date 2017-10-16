@@ -58,7 +58,7 @@ int _example_numberwrapper_number_get(EINA_UNUSED Eo *obj, Example_Numberwrapper
 }
 
 
-void _example_numberwrapper_number_callback_set(EINA_UNUSED Eo *obj, Example_Numberwrapper_Data *pd, NumberCb cb, void *cb_data, Eina_Free_Cb cb_free_cb)
+void _example_numberwrapper_number_callback_set(EINA_UNUSED Eo *obj, Example_Numberwrapper_Data *pd, void *cb_data, NumberCb cb, Eina_Free_Cb cb_free_cb)
 {
    if (pd->free_cb)
       pd->free_cb(pd->cb_data);
