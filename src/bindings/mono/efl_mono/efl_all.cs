@@ -54,7 +54,7 @@ public static class All {
     public static void Init() {
         eina.Config.Init();
         efl.eo.Config.Init();
-        efl.ui.Config.Init();
+        //efl.ui.Config.Init();
         ecore_init();
         evas_init();
         eldbus.Config.Init();
@@ -69,7 +69,7 @@ public static class All {
         eldbus.Config.Shutdown();
         evas_shutdown();
         ecore_shutdown();
-        efl.ui.Config.Shutdown();
+        //efl.ui.Config.Shutdown();
         efl.eo.Config.Shutdown();
         eina.Config.Shutdown();
     }
