@@ -7,181 +7,181 @@ namespace eldbus {
 
 public static class EldbusMessageNativeFunctions
 {
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_message_ref(IntPtr msg);
 
-    [DllImport("eldbus")] public static extern void
+    [DllImport(efl.Libs.Eldbus)] public static extern void
         eldbus_message_unref(IntPtr msg);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_message_path_get(IntPtr msg);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_message_interface_get(IntPtr msg);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_message_member_get(IntPtr msg);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_message_destination_get(IntPtr msg);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_message_sender_get(IntPtr msg);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_message_signature_get(IntPtr msg);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_message_method_call_new(string dest, string path, string iface, string method);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_message_signal_new(string path, string _interface, string name);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_message_error_new(IntPtr msg, string error_name, string error_msg);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_message_method_return_new(IntPtr msg);
 
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_error_get(IntPtr msg, out IntPtr name, out IntPtr text);
 
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_arguments_get(IntPtr msg, string signature, out byte value);
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_arguments_get(IntPtr msg, string signature, out Int16 value);
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_arguments_get(IntPtr msg, string signature, out UInt16 value);
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_arguments_get(IntPtr msg, string signature, out Int32 value);
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_arguments_get(IntPtr msg, string signature, out UInt32 value);
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_arguments_get(IntPtr msg, string signature, out Int64 value);
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_arguments_get(IntPtr msg, string signature, out UInt64 value);
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_arguments_get(IntPtr msg, string signature, out double value);
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_arguments_get(IntPtr msg, string signature, out IntPtr value);
 
-//     [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+//     [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
 //         eldbus_message_arguments_vget(IntPtr msg, string signature, va_list ap);
 
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_arguments_append(IntPtr msg, string signature, byte value);
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_arguments_append(IntPtr msg, string signature, Int16 value);
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_arguments_append(IntPtr msg, string signature, UInt16 value);
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_arguments_append(IntPtr msg, string signature, Int32 value);
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_arguments_append(IntPtr msg, string signature, UInt32 value);
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_arguments_append(IntPtr msg, string signature, Int64 value);
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_arguments_append(IntPtr msg, string signature, UInt64 value);
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_arguments_append(IntPtr msg, string signature, double value);
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_arguments_append(IntPtr msg, string signature, string value);
 
-//     [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+//     [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
 //         eldbus_message_arguments_vappend(IntPtr msg, string signature, va_list ap);
 
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_message_iter_container_new(IntPtr iter, int type, string contained_signature);
 
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_iter_basic_append(IntPtr iter, int type, byte value);
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_iter_basic_append(IntPtr iter, int type, Int16 value);
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_iter_basic_append(IntPtr iter, int type, UInt16 value);
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_iter_basic_append(IntPtr iter, int type, Int32 value);
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_iter_basic_append(IntPtr iter, int type, UInt32 value);
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_iter_basic_append(IntPtr iter, int type, Int64 value);
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_iter_basic_append(IntPtr iter, int type, UInt64 value);
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_iter_basic_append(IntPtr iter, int type, double value);
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_iter_basic_append(IntPtr iter, int type, string value);
 
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_iter_arguments_append(IntPtr iter, string signature, out IntPtr value);
 
-//     [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+//     [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
 //         eldbus_message_iter_arguments_vappend(IntPtr iter, string signature, va_list ap);
 
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_iter_fixed_array_append(IntPtr iter, int type, IntPtr array, uint size);
 
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_iter_container_close(IntPtr iter, IntPtr sub);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_message_iter_get(IntPtr msg);
 
-    [DllImport("eldbus")] public static extern void
+    [DllImport(efl.Libs.Eldbus)] public static extern void
         eldbus_message_iter_basic_get(IntPtr iter, out byte value);
-    [DllImport("eldbus")] public static extern void
+    [DllImport(efl.Libs.Eldbus)] public static extern void
         eldbus_message_iter_basic_get(IntPtr iter, out Int16 value);
-    [DllImport("eldbus")] public static extern void
+    [DllImport(efl.Libs.Eldbus)] public static extern void
         eldbus_message_iter_basic_get(IntPtr iter, out UInt16 value);
-    [DllImport("eldbus")] public static extern void
+    [DllImport(efl.Libs.Eldbus)] public static extern void
         eldbus_message_iter_basic_get(IntPtr iter, out Int32 value);
-    [DllImport("eldbus")] public static extern void
+    [DllImport(efl.Libs.Eldbus)] public static extern void
         eldbus_message_iter_basic_get(IntPtr iter, out UInt32 value);
-    [DllImport("eldbus")] public static extern void
+    [DllImport(efl.Libs.Eldbus)] public static extern void
         eldbus_message_iter_basic_get(IntPtr iter, out Int64 value);
-    [DllImport("eldbus")] public static extern void
+    [DllImport(efl.Libs.Eldbus)] public static extern void
         eldbus_message_iter_basic_get(IntPtr iter, out UInt64 value);
-    [DllImport("eldbus")] public static extern void
+    [DllImport(efl.Libs.Eldbus)] public static extern void
         eldbus_message_iter_basic_get(IntPtr iter, out double value);
-    [DllImport("eldbus")] public static extern void
+    [DllImport(efl.Libs.Eldbus)] public static extern void
         eldbus_message_iter_basic_get(IntPtr iter, out IntPtr value);
 
-    [DllImport("eldbus")] public static extern string
+    [DllImport(efl.Libs.Eldbus)] public static extern string
         eldbus_message_iter_signature_get(IntPtr iter);
 
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_iter_next(IntPtr iter);
 
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_iter_get_and_next(IntPtr iter, char signature, out byte value);
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_iter_get_and_next(IntPtr iter, char signature, out Int16 value);
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_iter_get_and_next(IntPtr iter, char signature, out UInt16 value);
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_iter_get_and_next(IntPtr iter, char signature, out Int32 value);
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_iter_get_and_next(IntPtr iter, char signature, out UInt32 value);
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_iter_get_and_next(IntPtr iter, char signature, out Int64 value);
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_iter_get_and_next(IntPtr iter, char signature, out UInt64 value);
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_iter_get_and_next(IntPtr iter, char signature, out double value);
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_iter_get_and_next(IntPtr iter, char signature, out IntPtr value);
 
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_iter_fixed_array_get(IntPtr iter, int signature, out IntPtr value, out int n_elements);
 
-    [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+    [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
         eldbus_message_iter_arguments_get(IntPtr iter, string signature, out IntPtr value);
 
-//     [DllImport("eldbus")] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
+//     [DllImport(efl.Libs.Eldbus)] [return: MarshalAs(UnmanagedType.U1)] public static extern bool
 //         eldbus_message_iter_arguments_vget(IntPtr iter, string signature, va_list ap);
 
-    [DllImport("eldbus")] public static extern void
+    [DllImport(efl.Libs.Eldbus)] public static extern void
         eldbus_message_iter_del(IntPtr iter);
 }
 

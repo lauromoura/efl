@@ -7,58 +7,58 @@ namespace eldbus {
 
 public static class EldbusProxyNativeFunctions
 {
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_proxy_get(IntPtr obj, string _interface);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_proxy_ref(IntPtr proxy);
 
-    [DllImport("eldbus")] public static extern void
+    [DllImport(efl.Libs.Eldbus)] public static extern void
         eldbus_proxy_unref(IntPtr proxy);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_proxy_object_get(IntPtr proxy);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_proxy_interface_get(IntPtr proxy);
 
-    [DllImport("eldbus")] public static extern void
+    [DllImport(efl.Libs.Eldbus)] public static extern void
         eldbus_proxy_data_set(IntPtr proxy, string key, IntPtr data);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_proxy_data_get(IntPtr proxy, string key);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_proxy_data_del(IntPtr proxy, string key);
 
-    [DllImport("eldbus")] public static extern void
+    [DllImport(efl.Libs.Eldbus)] public static extern void
         eldbus_proxy_free_cb_add(IntPtr proxy, IntPtr cb, IntPtr data);
 
-    [DllImport("eldbus")] public static extern void
+    [DllImport(efl.Libs.Eldbus)] public static extern void
         eldbus_proxy_free_cb_del(IntPtr proxy, IntPtr cb, IntPtr data);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_proxy_method_call_new(IntPtr proxy, string member);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_proxy_send(IntPtr proxy, IntPtr msg, IntPtr cb, IntPtr cb_data, double timeout);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_proxy_send_and_block(IntPtr proxy, IntPtr msg, double timeout);
 
-//     [DllImport("eldbus")] public static extern IntPtr
+//     [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
 //         eldbus_proxy_call(IntPtr proxy, string member, IntPtr cb, IntPtr cb_data, double timeout, string signature, ...);
 //
-//     [DllImport("eldbus")] public static extern IntPtr
+//     [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
 //         eldbus_proxy_vcall(IntPtr proxy, string member, IntPtr cb, IntPtr cb_data, double timeout, string signature, va_list ap);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_proxy_signal_handler_add(IntPtr proxy, string member, IntPtr cb, IntPtr cb_data);
 
-    [DllImport("eldbus")] public static extern void
+    [DllImport(efl.Libs.Eldbus)] public static extern void
         eldbus_proxy_event_callback_add(IntPtr proxy, int type, IntPtr cb, IntPtr cb_data);
 
-    [DllImport("eldbus")] public static extern void
+    [DllImport(efl.Libs.Eldbus)] public static extern void
         eldbus_proxy_event_callback_del(IntPtr proxy, int type, IntPtr cb, IntPtr cb_data);
 }
 

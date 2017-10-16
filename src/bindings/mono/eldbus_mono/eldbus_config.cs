@@ -5,8 +5,8 @@ namespace eldbus {
 
 public static class Config
 {
-    [DllImport("eldbus")] private static extern int eldbus_init();
-    [DllImport("eldbus")] private static extern int eldbus_shutdown();
+    [DllImport(efl.Libs.Eldbus)] private static extern int eldbus_init();
+    [DllImport(efl.Libs.Eldbus)] private static extern int eldbus_shutdown();
 
     public static void Init()
     {

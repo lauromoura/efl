@@ -7,34 +7,34 @@ namespace eldbus {
 
 public static class EldbusPendingNativeFunctions
 {
-    [DllImport("eldbus")] public static extern void
+    [DllImport(efl.Libs.Eldbus)] public static extern void
         eldbus_pending_data_set(IntPtr pending, string key, IntPtr data);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_pending_data_get(IntPtr pending, string key);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_pending_data_del(IntPtr pending, string key);
 
-    [DllImport("eldbus")] public static extern void
+    [DllImport(efl.Libs.Eldbus)] public static extern void
         eldbus_pending_cancel(IntPtr pending);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_pending_destination_get(IntPtr pending);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_pending_path_get(IntPtr pending);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_pending_interface_get(IntPtr pending);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_pending_method_get(IntPtr pending);
 
-    [DllImport("eldbus")] public static extern void
+    [DllImport(efl.Libs.Eldbus)] public static extern void
         eldbus_pending_free_cb_add(IntPtr pending, IntPtr cb, IntPtr data);
 
-    [DllImport("eldbus")] public static extern void
+    [DllImport(efl.Libs.Eldbus)] public static extern void
         eldbus_pending_free_cb_del(IntPtr pending, IntPtr cb, IntPtr data);
 }
 

@@ -8,81 +8,81 @@ namespace eldbus {
 
 public static class EldbusConnectionNativeFunctions
 {
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_connection_get(eldbus.Connection.Type type);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_private_connection_get(eldbus.Connection.Type type);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_address_connection_get(string address);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_private_address_connection_get(string address);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_connection_ref(IntPtr conn);
 
-    [DllImport("eldbus")] public static extern void
+    [DllImport(efl.Libs.Eldbus)] public static extern void
         eldbus_connection_unref(IntPtr conn);
 
-    [DllImport("eldbus")] public static extern void
+    [DllImport(efl.Libs.Eldbus)] public static extern void
         eldbus_connection_free_cb_add(IntPtr conn, IntPtr cb, IntPtr data);
 
-    [DllImport("eldbus")] public static extern void
+    [DllImport(efl.Libs.Eldbus)] public static extern void
         eldbus_connection_free_cb_del(IntPtr conn, IntPtr cb, IntPtr data);
 
-    [DllImport("eldbus")] public static extern void
+    [DllImport(efl.Libs.Eldbus)] public static extern void
         eldbus_connection_data_set(IntPtr conn, IntPtr key, IntPtr data);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_connection_data_get(IntPtr conn, IntPtr key);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_connection_data_del(IntPtr conn, IntPtr key);
 
-    [DllImport("eldbus")] public static extern void
+    [DllImport(efl.Libs.Eldbus)] public static extern void
         eldbus_connection_event_callback_add(IntPtr conn, int type, IntPtr cb, IntPtr cb_data);
 
-    [DllImport("eldbus")] public static extern void
+    [DllImport(efl.Libs.Eldbus)] public static extern void
         eldbus_connection_event_callback_del(IntPtr conn, int type, IntPtr cb, IntPtr cb_data);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_connection_send(IntPtr conn, IntPtr msg, IntPtr cb, IntPtr cb_data, double timeout);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_connection_unique_name_get(IntPtr conn);
 
     // FreeDesktop.Org Methods
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_name_request(IntPtr conn, string bus, uint flags, IntPtr cb, IntPtr cb_data);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_name_release(IntPtr conn, string bus, IntPtr cb, IntPtr cb_data);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_name_owner_get(IntPtr conn, string bus, IntPtr cb, IntPtr cb_data);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_name_owner_has(IntPtr conn, string bus, IntPtr cb, IntPtr cb_data);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_names_list(IntPtr conn, IntPtr cb, IntPtr cb_data);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_names_activatable_list(IntPtr conn, IntPtr cb, IntPtr cb_data);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_hello(IntPtr conn, IntPtr cb, IntPtr cb_data);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_name_start(IntPtr conn, string bus, uint flags, IntPtr cb, IntPtr cb_data);
 
 //     typedef void (*Eldbus_Name_Owner_Changed_Cb)(void *data, const char *bus, const char *old_id, const char *new_id);
-//     [DllImport("eldbus")] public static extern void
+//     [DllImport(efl.Libs.Eldbus)] public static extern void
 //         eldbus_name_owner_changed_callback_add(IntPtr conn, string bus, Eldbus_Name_Owner_Changed_Cb cb, IntPtr cb_data, [MarshalAs(UnmanagedType.U1)] bool allow_initial_call);
-//     [DllImport("eldbus")] public static extern void
+//     [DllImport(efl.Libs.Eldbus)] public static extern void
 //         eldbus_name_owner_changed_callback_del(IntPtr conn, string bus, Eldbus_Name_Owner_Changed_Cb cb, IntPtr cb_data);
 }
 

@@ -20,6 +20,7 @@ public class Libs {
     public const string EcoreEvas = "libecore_evas-1";
     public const string Edje = "libedje-1";
     public const string Elementary = "libelementary-1";
+    public const string Eldbus = "libeldbus-1";
 
     public const string CustomExports = "libeflcustomexportsmono-0";
 #else
@@ -32,6 +33,7 @@ public class Libs {
     public const string EcoreEvas = "ecore_evas";
     public const string Edje = "edje";
     public const string Elementary = "elementary";
+    public const string Eldbus = "eldbus";
 
     public const string CustomExports = "eflcustomexportsmono";
 #endif

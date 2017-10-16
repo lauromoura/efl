@@ -9,19 +9,19 @@ namespace eldbus {
 
 public static class EldbusObjectNativeFunctions
 {
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_object_get(IntPtr conn, string bus, string path);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_object_ref(IntPtr obj);
 
-    [DllImport("eldbus")] public static extern void
+    [DllImport(efl.Libs.Eldbus)] public static extern void
         eldbus_object_unref(IntPtr obj);
 
-    [DllImport("eldbus")] public static extern void
+    [DllImport(efl.Libs.Eldbus)] public static extern void
         eldbus_object_free_cb_add(IntPtr obj, IntPtr cb, IntPtr data);
 
-    [DllImport("eldbus")] public static extern void
+    [DllImport(efl.Libs.Eldbus)] public static extern void
         eldbus_object_free_cb_del(IntPtr obj, IntPtr cb, IntPtr data);
 
 // typedef enum
@@ -34,48 +34,48 @@ public static class EldbusObjectNativeFunctions
 //    ELDBUS_OBJECT_EVENT_LAST    /**< sentinel, not a real event type */
 // } Eldbus_Object_Event_Type;
 //
-//     [DllImport("eldbus")] public static extern void
+//     [DllImport(efl.Libs.Eldbus)] public static extern void
 //         eldbus_object_event_callback_add(IntPtr obj, Eldbus_Object_Event_Type type, IntPtr cb, IntPtr cb_data);
 //
-//     [DllImport("eldbus")] public static extern void
+//     [DllImport(efl.Libs.Eldbus)] public static extern void
 //         eldbus_object_event_callback_del(IntPtr obj, Eldbus_Object_Event_Type type, IntPtr cb, IntPtr cb_data);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_object_connection_get(IntPtr obj);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_object_bus_name_get(IntPtr obj);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_object_path_get(IntPtr obj);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_object_send(IntPtr obj, IntPtr msg, IntPtr cb, IntPtr cb_data, double timeout);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_object_signal_handler_add(IntPtr obj, string _interface, string member, IntPtr cb, IntPtr cb_data);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_object_method_call_new(IntPtr obj, string _interface, string member);
 
     // FreeDesktop.Org Methods
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_object_peer_ping(IntPtr obj, IntPtr cb, IntPtr data);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_object_peer_machine_id_get(IntPtr obj, IntPtr cb, IntPtr data);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_object_introspect(IntPtr obj, IntPtr cb, IntPtr data);
 
-    [DllImport("eldbus")] public static extern IntPtr
+    [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
         eldbus_object_managed_objects_get(IntPtr obj, IntPtr cb, IntPtr data);
 
-//     [DllImport("eldbus")] public static extern IntPtr
+//     [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
 //         eldbus_object_manager_interfaces_added(IntPtr obj, Eldbus_Signal_Cb cb, IntPtr cb_data);
 //
-//     [DllImport("eldbus")] public static extern IntPtr
+//     [DllImport(efl.Libs.Eldbus)] public static extern IntPtr
 //         eldbus_object_manager_interfaces_removed(IntPtr obj, Eldbus_Signal_Cb cb, IntPtr cb_data);
 }
 
