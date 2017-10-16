@@ -257,7 +257,7 @@ inline void type_def::set(Eolian_Type const* eolian_type, Eolian_Unit const* uni
    c_type = ::eolian_type_c_type_get(eolian_type, ctype);
    // ::eina_stringshare_del(stringshare); // this crashes
    Eolian_Type const* stp = eolian_type_base_type_get(eolian_type);
-   has_own = !!::eolian_type_is_own(eolian_type);
+   has_own = !!::eolian_type_is_owned(eolian_type);
    is_ptr = !!::eolian_type_is_ptr(eolian_type);
    switch( ::eolian_type_type_get(eolian_type))
      {
@@ -831,7 +831,7 @@ struct struct_field_def
   {
      name = eolian_typedecl_struct_field_name_get(struct_field);
      try {
-        type.set(eolian_typedecl_struct_field_type_get(struct_field), NULL);
+        type.set(eolian_typedecl_struct_field_type_get(struct_field), NULL, EOLIAN_C_TYPE_DEFAULT);
      } catch(std::runtime_error const&) { /* Silently skip pointer fields*/ }
   }
 
