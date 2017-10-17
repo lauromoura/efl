@@ -345,6 +345,27 @@ struct is_fp_visitor
    }
 };
 
+struct type_name_visitor
+{
+   typedef type_name_visitor visitor_type;
+   typedef std::string result_type;
+
+   std::string operator()(grammar::attributes::regular_type_def const &type) const
+   {
+      std::stringstream type_name;
+      for (auto&& i : escape_namespace(type.namespaces))
+        type_name << i << ".";
+      type_name << type.base_type;
+      return type_name.str();
+   }
+
+   template<typename T>
+   std::string operator()(T const &) const
+   {
+       return "";
+   }
+};
+
 struct parameter_generator
 {
    template <typename OutputIterator, typename Context>
@@ -1112,11 +1133,23 @@ struct native_convert_function_pointer_generator
         return true;
 
       // Getting the type through C api
-      const Eolian_Typedecl *tpd = ::eolian_typedecl_alias_get_by_name(NULL, param.type.c_type.c_str());
+      std::string type_name = param.type.original_type.visit(type_name_visitor{});
+
+      const Eolian_Typedecl *tpd = ::eolian_typedecl_alias_get_by_name(NULL, type_name.c_str());
+      if (!tpd)
+        {
+           EINA_LOG_ERR("Failed to get typedecl for c type [%s]", param.type.c_type.c_str());
+           return false;
+        }
       if (eolian_typedecl_type_get(tpd) != EOLIAN_TYPEDECL_FUNCTION_POINTER)
         return true;
 
       const Eolian_Function *fd = eolian_typedecl_function_pointer_get(tpd);
+      if (!fd)
+        {
+           EINA_LOG_ERR("Failed to get function pointer info for c type [%s]", param.type.c_type.c_str());
+           return false;
+        }
       attributes::function_def f(fd, EOLIAN_FUNCTION_POINTER, NULL);
 
       std::string param_name = escape_keyword(param.param_name);
