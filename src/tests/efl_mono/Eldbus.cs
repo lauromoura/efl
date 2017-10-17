@@ -1,3 +1,5 @@
+#if !WIN32
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,14 +24,14 @@ public static class EldbusTestUtil
         return _ecore_loop_close;
     }
 
-    [DllImport("ecore")] public static extern IntPtr
+    [DllImport(efl.Libs.Ecore)] public static extern IntPtr
         ecore_timer_add(double _in, Ecore_Task_Cb func, IntPtr data);
-    [DllImport("ecore")] public static extern IntPtr
+    [DllImport(efl.Libs.Ecore)] public static extern IntPtr
         ecore_timer_del(IntPtr timer);
 
-    [DllImport("ecore")] public static extern void
+    [DllImport(efl.Libs.Ecore)] public static extern void
         ecore_main_loop_begin();
-    [DllImport("ecore")] public static extern void
+    [DllImport(efl.Libs.Ecore)] public static extern void
         ecore_main_loop_quit();
 
 
@@ -441,3 +443,5 @@ class TestEldbusMessage
 }
 
 }
+
+#endif
