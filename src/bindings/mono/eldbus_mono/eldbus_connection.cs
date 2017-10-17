@@ -195,6 +195,8 @@ public class Connection : IDisposable
             throw new SEHException("Eldbus: could not get `Pending' object from eldbus_connection_send");
         }
 
+        msg.Ref();
+
         return new eldbus.Pending(pending_hdl, false);
     }
 

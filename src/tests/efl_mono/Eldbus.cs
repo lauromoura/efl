@@ -82,12 +82,6 @@ class TestEldbusConnection
         conn.Dispose();
     }
 
-//     public static void eldbus_connection_send()
-//     {
-//         var conn = new eldbus.Connection(eldbus.Connection.Type.Session);
-//         conn.Dispose();
-//     }
-
     public static void eldbus_connection_get_unique_name()
     {
         var conn = new eldbus.Connection(eldbus.Connection.Type.Session);
@@ -389,8 +383,6 @@ class TestEldbusMessage
 
         msg.Unref();
         msg.Own = false;
-
-        Assert(msg.GetPath() == null);
 
         msg.Dispose();
         conn.Dispose();
