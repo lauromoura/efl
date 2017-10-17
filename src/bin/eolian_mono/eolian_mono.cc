@@ -139,8 +139,11 @@ run(options_type const& opts)
          }
      }()};
 
-   as_generator("using System;\nusing System.Runtime.InteropServices;\nusing System.Collections.Generic;\n")
-     .generate(iterator, efl::eolian::grammar::attributes::unused, efl::eolian::grammar::context_null());
+   if (!as_generator("using System;\nusing System.Runtime.InteropServices;\nusing System.Collections.Generic;\n")
+     .generate(iterator, efl::eolian::grammar::attributes::unused, efl::eolian::grammar::context_null()))
+     {
+        throw std::runtime_error("Failed to generate file preamble");
+     }
 
    EINA_ITERATOR_FOREACH(aliases, tp)
      {
@@ -156,8 +159,11 @@ run(options_type const& opts)
               namespaces.push_back(&*namespace_iterator);
            }
 
-         eolian_mono::function_pointer
-           .generate(iterator, function_def, escape_namespace(namespaces), efl::eolian::grammar::context_cons<eolian_mono::library_context>({opts.dllimport, opts.v_major, opts.v_minor, opts.references_map}));
+         if (!eolian_mono::function_pointer
+               .generate(iterator, function_def, escape_namespace(namespaces), efl::eolian::grammar::context_cons<eolian_mono::library_context>({opts.dllimport, opts.v_major, opts.v_minor, opts.references_map})))
+           {
+              throw std::runtime_error("Failed to generate function pointer wrapper");
+           }
      }
 
    if (klass)
@@ -165,8 +171,11 @@ run(options_type const& opts)
        efl::eolian::grammar::attributes::klass_def klass_def(klass, NULL);
        std::vector<efl::eolian::grammar::attributes::klass_def> klasses{klass_def};
 
-       eolian_mono::klass
-         .generate(iterator, klass_def, efl::eolian::grammar::context_cons<eolian_mono::library_context>({opts.dllimport, opts.v_major, opts.v_minor, opts.references_map}));
+       if (!eolian_mono::klass
+         .generate(iterator, klass_def, efl::eolian::grammar::context_cons<eolian_mono::library_context>({opts.dllimport, opts.v_major, opts.v_minor, opts.references_map})))
+         {
+            throw std::runtime_error("Failed to generate class");
+         }
      }
    //else
      {
@@ -174,14 +183,20 @@ run(options_type const& opts)
                , enum_last; enum_iterator != enum_last; ++enum_iterator)
          {
             efl::eolian::grammar::attributes::enum_def enum_(&*enum_iterator);
-            eolian_mono::enum_definition.generate(iterator, enum_, efl::eolian::grammar::context_null());
+            if (!eolian_mono::enum_definition.generate(iterator, enum_, efl::eolian::grammar::context_null()))
+              {
+                 throw std::runtime_error("Failed to generate enum");
+              }
          }
 
        for (efl::eina::iterator<const Eolian_Typedecl> struct_iterator( ::eolian_typedecl_structs_get_by_file(NULL, basename_input.c_str()))
                , struct_last; struct_iterator != struct_last; ++struct_iterator)
          {
             efl::eolian::grammar::attributes::struct_def struct_(&*struct_iterator);
-            eolian_mono::struct_definition.generate(iterator, struct_, efl::eolian::grammar::context_null());
+            if (!eolian_mono::struct_definition.generate(iterator, struct_, efl::eolian::grammar::context_null()))
+              {
+                 throw std::runtime_error("Failed to generate struct");
+              }
          }
 
     }
