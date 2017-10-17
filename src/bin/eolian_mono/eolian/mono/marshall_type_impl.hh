@@ -57,6 +57,22 @@ struct marshall_type_visitor_generate
                     return replace_base_type(r, " System.IntPtr");
                 return replace_base_type(r, " System.String");
               }}
+           , {"mstring", true, [&]
+              {
+                regular_type_def r = regular;
+                r.base_qualifier.qualifier ^= qualifier_info::is_ref;
+                // if(is_out || is_return)
+                return replace_base_type(r, " System.String");
+                // else return replace_base_type(r, " ::efl::eina::string_view");
+              }}
+           , {"mstring", false, [&]
+              {
+                regular_type_def r = regular;
+                r.base_qualifier.qualifier ^= qualifier_info::is_ref;
+                if (is_inherit_native && (is_return || is_out))
+                    return replace_base_type(r, " System.IntPtr");
+                return replace_base_type(r, " System.String");
+              }}
            , {"stringshare", true, [&]
               {
                 regular_type_def r = regular;
@@ -86,7 +102,7 @@ struct marshall_type_visitor_generate
                 r.namespaces.clear();
                 return r;
               }}
-           , {"generic_value", true, [&]
+           , {"any_value", true, [&]
                {
                 regular_type_def r = regular;
                 r.namespaces.clear();
@@ -96,7 +112,7 @@ struct marshall_type_visitor_generate
                     r.base_type = " eina.Value_Native";
                 return r;
                }}
-           , {"generic_value", false, [&]
+           , {"any_value", false, [&]
                {
                 regular_type_def r = regular;
                 r.namespaces.clear();
@@ -116,12 +132,6 @@ struct marshall_type_visitor_generate
                     r.base_type = " void";
                 return r;
                }}
-           // , {"generic_value", true, [&]
-           //    { return regular_type_def{" int", regular.base_qualifier, {}};
-           //    }}
-           // , {"generic_value", false, [&]
-           //    { return regular_type_def{" int", regular.base_qualifier, {}};
-           //    }}
         };
 
         if(eina::optional<bool> b = call_match

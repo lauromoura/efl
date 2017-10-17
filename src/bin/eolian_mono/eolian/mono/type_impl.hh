@@ -104,24 +104,27 @@ struct visitor_generate
                 r.base_qualifier.qualifier ^= qualifier_info::is_ref;
                 return replace_base_type(r, " System.String");
               }}
+           , {"mstring", nullptr, [&]
+              {
+                regular_type_def r = regular;
+                r.base_qualifier.qualifier ^= qualifier_info::is_ref;
+                return replace_base_type(r, " System.String");
+              }}
            , {"stringshare", nullptr, [&]
               {
                 regular_type_def r = regular;
                 r.base_qualifier.qualifier ^= qualifier_info::is_ref;
                 return replace_base_type(r, " System.String");
               }}
-           , {"generic_value", true, [&]
+           , {"any_value", true, [&]
               { return regular_type_def{" eina.Value", regular.base_qualifier, {}};
               }}
-           , {"generic_value", false, [&]
+           , {"any_value", false, [&]
               { return regular_type_def{" eina.Value", regular.base_qualifier, {}};
               }}
-           // , {"generic_value", true, [&]
-           //    { return regular_type_def{" ::efl::eina::value", regular.base_qualifier, {}};
-           //    }}
-           // , {"generic_value", false, [&]
-           //    { return regular_type_def{" ::efl::eina::value_view", regular.base_qualifier, {}};
-           //    }}
+           , {"any_value_ptr", nullptr, [&] 
+              { return regular_type_def{" System.IntPtr", regular.base_qualifier, {}};
+              }} // FIXME add proper support for any_value_ptr
         };
       // if(regular.base_type == "void_ptr")
       //   {
