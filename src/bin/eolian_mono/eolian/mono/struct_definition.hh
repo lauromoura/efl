@@ -23,7 +23,11 @@ static bool is_struct_blacklisted(attributes::struct_def const& struct_)
     }
 
   full_name += struct_.cxx_name;
-  return full_name == "Efl.Event.Description";
+  return full_name == "Efl.Event.Description"
+      || full_name == "Eina.File"
+      || full_name == "Eina.Binbuf"
+      || full_name == "Eina.Slice"
+      || full_name == "Eina.Rw_Slice";
 }
 
 struct struct_definition_generator
