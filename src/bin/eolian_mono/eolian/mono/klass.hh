@@ -63,11 +63,11 @@ struct get_event_args_visitor
     typedef std::string result_type;
     std::string operator()(grammar::attributes::regular_type_def const&) const
     {
-        return "(" + arg_type + ")Marshal.PtrToStructure(evt.info, typeof(" + arg_type + "))";
+        return "(" + arg_type + ")Marshal.PtrToStructure(evt.Info, typeof(" + arg_type + "))";
     }
     std::string operator()(grammar::attributes::klass_name const&) const
     {
-        return "new " + arg_type + "Concrete(evt.info)";
+        return "new " + arg_type + "Concrete(evt.Info)";
     }
     std::string operator()(attributes::complex_type_def const&) const
     {
