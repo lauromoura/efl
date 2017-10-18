@@ -329,64 +329,64 @@ endif
 endef
 
 
-noinst_PROGRAMS += examples/efl_mono/EinaArray01
+noinst_DATA += examples/efl_mono/EinaArray01.exe
 examples_efl_mono_EinaArray01_SOURCES = examples/efl_mono/EinaArray01.cs
-examples/efl_mono/EinaArray01$(EXEEXT): $(examples_efl_mono_EinaArray01_SOURCES) examples/efl_mono/$(am__dirstamp) lib/efl_mono/libefl_mono.dll$(EXEEXT) examples/efl_mono/libefl_mono_example.dll$(EXEEXT)
-	@rm -f examples/efl_mono/EinaArray01$(EXEEXT)
+examples/efl_mono/EinaArray01.exe: $(examples_efl_mono_EinaArray01_SOURCES) examples/efl_mono/$(am__dirstamp) lib/efl_mono/libefl_mono.dll$(EXEEXT) examples/efl_mono/libefl_mono_example.dll$(EXEEXT)
+	@rm -f examples/efl_mono/EinaArray01.exe
 	$(AM_V_MCS) $(MCS) $(MCS_FLAGS) -r:$(abs_top_builddir)/src/lib/efl_mono/libefl_mono.dll$(EXEEXT) -r:$(abs_top_builddir)/src/examples/efl_mono/libefl_mono_example.dll$(EXEEXT) -out:$@ $(filter %.cs, $(^))
 
-examples/efl_mono/EinaArray01.sh: examples/efl_mono/EinaArray01$(EXEEXT)
-	$(call mono_example_sh_gen,$@,EinaArray01$(EXEEXT))
+examples/efl_mono/EinaArray01.sh: examples/efl_mono/EinaArray01.exe
+	$(call mono_example_sh_gen,$@,EinaArray01.exe)
 
 
-noinst_PROGRAMS += examples/efl_mono/EinaBinbuf01
+noinst_DATA += examples/efl_mono/EinaBinbuf01.exe
 examples_efl_mono_EinaBinbuf01_SOURCES = examples/efl_mono/EinaBinbuf01.cs
-examples/efl_mono/EinaBinbuf01$(EXEEXT): $(examples_efl_mono_EinaBinbuf01_SOURCES) examples/efl_mono/$(am__dirstamp) lib/efl_mono/libefl_mono.dll$(EXEEXT) examples/efl_mono/libefl_mono_example.dll$(EXEEXT)
-	@rm -f examples/efl_mono/EinaBinbuf01$(EXEEXT)
+examples/efl_mono/EinaBinbuf01.exe: $(examples_efl_mono_EinaBinbuf01_SOURCES) examples/efl_mono/$(am__dirstamp) lib/efl_mono/libefl_mono.dll$(EXEEXT) examples/efl_mono/libefl_mono_example.dll$(EXEEXT)
+	@rm -f examples/efl_mono/EinaBinbuf01.exe
 	$(AM_V_MCS) $(MCS) $(MCS_FLAGS) -r:$(abs_top_builddir)/src/lib/efl_mono/libefl_mono.dll$(EXEEXT) -r:$(abs_top_builddir)/src/examples/efl_mono/libefl_mono_example.dll$(EXEEXT) -out:$@ $(filter %.cs, $(^))
 
-examples/efl_mono/EinaBinbuf01.sh: examples/efl_mono/EinaBinbuf01$(EXEEXT)
-	$(call mono_example_sh_gen,$@,EinaBinbuf01$(EXEEXT))
+examples/efl_mono/EinaBinbuf01.sh: examples/efl_mono/EinaBinbuf01.exe
+	$(call mono_example_sh_gen,$@,EinaBinbuf01.exe)
 
 
-noinst_PROGRAMS += examples/efl_mono/EinaError01
+noinst_DATA += examples/efl_mono/EinaError01.exe
 examples_efl_mono_EinaError01_SOURCES = examples/efl_mono/EinaError01.cs
-examples/efl_mono/EinaError01$(EXEEXT): $(examples_efl_mono_EinaError01_SOURCES) examples/efl_mono/$(am__dirstamp) lib/efl_mono/libefl_mono.dll$(EXEEXT) examples/efl_mono/libefl_mono_example.dll$(EXEEXT)
-	@rm -f examples/efl_mono/EinaError01$(EXEEXT)
+examples/efl_mono/EinaError01.exe: $(examples_efl_mono_EinaError01_SOURCES) examples/efl_mono/$(am__dirstamp) lib/efl_mono/libefl_mono.dll$(EXEEXT) examples/efl_mono/libefl_mono_example.dll$(EXEEXT)
+	@rm -f examples/efl_mono/EinaError01.exe
 	$(AM_V_MCS) $(MCS) $(MCS_FLAGS) -r:$(abs_top_builddir)/src/lib/efl_mono/libefl_mono.dll$(EXEEXT) -r:$(abs_top_builddir)/src/examples/efl_mono/libefl_mono_example.dll$(EXEEXT) -out:$@ $(filter %.cs, $(^))
 
-examples/efl_mono/EinaError01.sh: examples/efl_mono/EinaError01$(EXEEXT)
-	$(call mono_example_sh_gen,$@,EinaError01$(EXEEXT))
+examples/efl_mono/EinaError01.sh: examples/efl_mono/EinaError01.exe
+	$(call mono_example_sh_gen,$@,EinaError01.exe)
 
 
-noinst_PROGRAMS += examples/efl_mono/EinaHash01
+noinst_DATA += examples/efl_mono/EinaHash01.exe
 examples_efl_mono_EinaHash01_SOURCES = examples/efl_mono/EinaHash01.cs
-examples/efl_mono/EinaHash01$(EXEEXT): $(examples_efl_mono_EinaHash01_SOURCES) examples/efl_mono/$(am__dirstamp) lib/efl_mono/libefl_mono.dll$(EXEEXT) examples/efl_mono/libefl_mono_example.dll$(EXEEXT)
-	@rm -f examples/efl_mono/EinaHash01$(EXEEXT)
+examples/efl_mono/EinaHash01.exe: $(examples_efl_mono_EinaHash01_SOURCES) examples/efl_mono/$(am__dirstamp) lib/efl_mono/libefl_mono.dll$(EXEEXT) examples/efl_mono/libefl_mono_example.dll$(EXEEXT)
+	@rm -f examples/efl_mono/EinaHash01.exe
 	$(AM_V_MCS) $(MCS) $(MCS_FLAGS) -r:$(abs_top_builddir)/src/lib/efl_mono/libefl_mono.dll$(EXEEXT) -r:$(abs_top_builddir)/src/examples/efl_mono/libefl_mono_example.dll$(EXEEXT) -out:$@ $(filter %.cs, $(^))
 
-examples/efl_mono/EinaHash01.sh: examples/efl_mono/EinaHash01$(EXEEXT)
-	$(call mono_example_sh_gen,$@,EinaHash01$(EXEEXT))
+examples/efl_mono/EinaHash01.sh: examples/efl_mono/EinaHash01.exe
+	$(call mono_example_sh_gen,$@,EinaHash01.exe)
 
 
-noinst_PROGRAMS += examples/efl_mono/EoInherit01
+noinst_DATA += examples/efl_mono/EoInherit01.exe
 examples_efl_mono_EoInherit01_SOURCES = examples/efl_mono/EoInherit01.cs
-examples/efl_mono/EoInherit01$(EXEEXT): $(examples_efl_mono_EoInherit01_SOURCES) examples/efl_mono/$(am__dirstamp) lib/efl_mono/libefl_mono.dll$(EXEEXT) examples/efl_mono/libefl_mono_example.dll$(EXEEXT)
-	@rm -f examples/efl_mono/EoInherit01$(EXEEXT)
+examples/efl_mono/EoInherit01.exe: $(examples_efl_mono_EoInherit01_SOURCES) examples/efl_mono/$(am__dirstamp) lib/efl_mono/libefl_mono.dll$(EXEEXT) examples/efl_mono/libefl_mono_example.dll$(EXEEXT)
+	@rm -f examples/efl_mono/EoInherit01.exe
 	$(AM_V_MCS) $(MCS) $(MCS_FLAGS) -r:$(abs_top_builddir)/src/lib/efl_mono/libefl_mono.dll$(EXEEXT) -r:$(abs_top_builddir)/src/examples/efl_mono/libefl_mono_example.dll$(EXEEXT) -out:$@ $(filter %.cs, $(^))
 
-examples/efl_mono/EoInherit01.sh: examples/efl_mono/EoInherit01$(EXEEXT)
-	$(call mono_example_sh_gen,$@,EoInherit01$(EXEEXT))
+examples/efl_mono/EoInherit01.sh: examples/efl_mono/EoInherit01.exe
+	$(call mono_example_sh_gen,$@,EoInherit01.exe)
 
 
-noinst_PROGRAMS += examples/efl_mono/FunctionPointer01
+noinst_DATA += examples/efl_mono/FunctionPointer01.exe
 examples_efl_mono_FunctionPointer01_SOURCES = examples/efl_mono/FunctionPointer01.cs
-examples/efl_mono/FunctionPointer01$(EXEEXT): $(examples_efl_mono_FunctionPointer01_SOURCES) examples/efl_mono/$(am__dirstamp) lib/efl_mono/libefl_mono.dll$(EXEEXT) examples/efl_mono/libefl_mono_example.dll$(EXEEXT)
-	@rm -f examples/efl_mono/FunctionPointer01$(EXEEXT)
+examples/efl_mono/FunctionPointer01.exe: $(examples_efl_mono_FunctionPointer01_SOURCES) examples/efl_mono/$(am__dirstamp) lib/efl_mono/libefl_mono.dll$(EXEEXT) examples/efl_mono/libefl_mono_example.dll$(EXEEXT)
+	@rm -f examples/efl_mono/FunctionPointer01.exe
 	$(AM_V_MCS) $(MCS) $(MCS_FLAGS) -r:$(abs_top_builddir)/src/lib/efl_mono/libefl_mono.dll$(EXEEXT) -r:$(abs_top_builddir)/src/examples/efl_mono/libefl_mono_example.dll$(EXEEXT) -out:$@ $(filter %.cs, $(^))
 
-examples/efl_mono/FunctionPointer01.sh: examples/efl_mono/FunctionPointer01$(EXEEXT)
-	$(call mono_example_sh_gen,$@,FunctionPointer01$(EXEEXT))
+examples/efl_mono/FunctionPointer01.sh: examples/efl_mono/FunctionPointer01.exe
+	$(call mono_example_sh_gen,$@,FunctionPointer01.exe)
 
 MONO_EXAMPLE_STARTS = examples/efl_mono/EinaArray01.sh examples/efl_mono/EinaBinbuf01.sh examples/efl_mono/EinaError01.sh examples/efl_mono/EinaHash01.sh examples/efl_mono/EoInherit01.sh examples/efl_mono/FunctionPointer01.sh
 CLEANFILES += $(MONO_EXAMPLE_STARTS)
@@ -400,7 +400,7 @@ noinst_DATA += $(MONO_EXAMPLE_STARTS)
 
 ../EinaArray01.csproj: $(examples_efl_mono_EinaArray01_SOURCES) examples/efl_mono/$(am__dirstamp) examples/efl_mono/libefl_mono_native_example.la $(_EFL_MONO_MSBUILD_GEN_DEP)
 	@rm -f $@
-	$(EFL_MONO_MSBUILD_GEN) $(MSBUILD_GEN_FLAGS) -o $@ -a EinaArray01$(EXEEXT) -t exe -r libefl_mono.dll -r libefl_mono_example.dll $(patsubst %.cs,src/%.cs,$(filter %.cs, $(^)))
+	$(EFL_MONO_MSBUILD_GEN) $(MSBUILD_GEN_FLAGS) -o $@ -a EinaArray01.exe -t exe -r libefl_mono.dll -r libefl_mono_example.dll $(patsubst %.cs,src/%.cs,$(filter %.cs, $(^)))
 
 CLEANFILES += ../libefl_mono_example.csproj ../EinaArray01.csproj
 noinst_DATA += ../libefl_mono_example.csproj ../EinaArray01.csproj
