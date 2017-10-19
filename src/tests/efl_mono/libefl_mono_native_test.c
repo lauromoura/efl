@@ -103,10 +103,10 @@ const char *_test_testing_in_string(EINA_UNUSED Eo *obj, EINA_UNUSED Test_Testin
   return strcpy((char*)ret, str);
 }
 
-const char *_test_testing_in_own_string(EINA_UNUSED Eo *obj, EINA_UNUSED Test_Testing_Data *pd, const char *str)
+char *_test_testing_in_own_string(EINA_UNUSED Eo *obj, EINA_UNUSED Test_Testing_Data *pd, char *str)
 {
-  const char *ret = malloc(sizeof(char)*(strlen(str) + 1));
-  strcpy((char*)ret, str);
+  char *ret = malloc(sizeof(char)*(strlen(str) + 1));
+  strcpy(ret, str);
   free((void*)str); // Actually take ownership of it.
   return ret;
 }
@@ -152,7 +152,7 @@ void _test_testing_call_in_string(Eo *obj, EINA_UNUSED Test_Testing_Data *pd, co
   test_testing_in_string(obj, str);
 }
 
-void _test_testing_call_in_own_string(Eo *obj, EINA_UNUSED Test_Testing_Data *pd, const char *str)
+void _test_testing_call_in_own_string(Eo *obj, EINA_UNUSED Test_Testing_Data *pd, char *str)
 {
   test_testing_in_own_string(obj, str);
 }
