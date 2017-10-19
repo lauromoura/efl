@@ -87,7 +87,17 @@ inline bool is_function_blacklisted(std::string const& c_name)
     || c_name == "edje_obj_part_text_anchor_geometry_get" // duplicated signature
     || c_name == "efl_canvas_object_scale_get" // duplicated signature
     || c_name == "efl_canvas_object_scale_set" // duplicated signature
-    || c_name == "efl_ui_format_func_cb_set"
+    || c_name == "efl_ui_format_cb_set"
+    || c_name == "efl_access_parent_get"
+    || c_name == "efl_access_name_get"
+    || c_name == "efl_access_name_set"
+    || c_name == "efl_access_root_get"
+    || c_name == "efl_access_type_get"
+    || c_name == "efl_access_role_get"
+    || c_name == "efl_access_action_description_get"
+    || c_name == "efl_access_action_description_set"
+    || c_name == "efl_access_image_description_get"
+    || c_name == "efl_access_image_description_set"
     ;
 }
 

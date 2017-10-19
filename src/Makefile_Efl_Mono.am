@@ -72,6 +72,8 @@ lib/elementary/elm_map.eo.cs \
 lib/elementary/elm_combobox.eo.cs \
 lib/elementary/elm_list.eo.cs \
 lib/elementary/elm_genlist.eo.cs \
+lib/elementary/elm_view_list.eo.cs \
+lib/elementary/elm_genlist_item.eo.cs \
 lib/elementary/elm_gengrid.eo.cs \
 lib/elementary/elm_glview.eo.cs
 
@@ -85,14 +87,14 @@ $(filter-out $(elementary_eolian_blacklisted_files),$(elm_public_eolian_files:%.
 $(efl_eolian_type_files:%.eot=%.eot.cs) \
 $(edje_eolian_type_files:%.eot=%.eot.cs) \
 $(elm_eolian_type_files:%.eot=%.eot.cs) \
-$(filter-out $(evas_eolian_blacklisted_files),$(evas_eolian_pub_files:%.eo=%.eo.cs)) \
+$(filter-out $(evas_eolian_blacklisted_files),$(evas_canvas_eolian_pub_files:%.eo=%.eo.cs)) \
 lib/evas/canvas/evas_box.eo.cs \
 lib/evas/canvas/evas_image.eo.cs \
 lib/evas/canvas/efl_canvas_image.eo.cs \
 lib/evas/canvas/evas_table.eo.cs \
 lib/evas/canvas/evas_text.eo.cs \
 lib/efl/interfaces/efl_text_properties.eo.cs \
-$(evas_eolian_type_files:%.eot=%.eot.cs) \
+$(evas_canvas_eolian_type_files:%.eot=%.eot.cs) \
 lib/eo/eina_types.eot.cs
 
 ### Efl C++

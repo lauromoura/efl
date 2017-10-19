@@ -80,7 +80,7 @@ public struct Description {
     }
 };
 
-}
+} // namespace kw_event
 
 
 public delegate void Event_Cb(System.IntPtr data, ref Event evt);
@@ -126,9 +126,8 @@ public struct Annotation {
 
 public delegate void Signal_Cb(IntPtr data, IntPtr obj, IntPtr emission, IntPtr source);
 
-} // namespace efl
 
-namespace efl { namespace gfx {
+namespace gfx {
 
 public interface Buffer {}
 
@@ -136,7 +135,39 @@ namespace buffer {
 public struct Access_Mode {}
 }
         
-} }
+} // namespace gfx
+
+namespace access {
+
+public struct State_Set {
+    private ulong mask;
+
+    public static implicit operator State_Set(ulong x)
+    {
+        return new State_Set{mask=x};
+    }
+    public static implicit operator ulong(State_Set x)
+    {
+        return x.mask;
+    }
+}
+
+public struct Relation_Set {
+    private IntPtr mask;
+
+    public static implicit operator Relation_Set(IntPtr x)
+    {
+        return new Relation_Set{mask=x};
+    }
+    public static implicit operator IntPtr(Relation_Set x)
+    {
+        return x.mask;
+    }
+}
+
+} // namespace access
+
+} // namespace efl
 
 namespace evas { namespace font {
 
@@ -448,4 +479,7 @@ public struct Elm_Atspi_Action
     IntPtr param;
     IntPtr func;
 }
+
+// Some places stil use the non-namespaced Efl_Event_Cb
+public delegate void Efl_Event_Cb(System.IntPtr data, ref efl.Event evt);
 
