@@ -123,7 +123,7 @@ struct visitor_generate
               { return regular_type_def{" eina.Value", regular.base_qualifier, {}};
               }}
            , {"any_value_ptr", nullptr, [&] 
-              { return regular_type_def{" System.IntPtr", regular.base_qualifier, {}};
+              { return regular_type_def{" eina.Value", regular.base_qualifier, {}};
               }} // FIXME add proper support for any_value_ptr
         };
       // if(regular.base_type == "void_ptr")
