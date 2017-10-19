@@ -58,6 +58,12 @@ struct marshall_annotation_visitor_generate
           {"string", false, [&] {
                 return " [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef=typeof(efl.eo.StringKeepOwnershipMarshaler))]";
           }},
+          {"mstring", true, [&] {
+                return " [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef=typeof(efl.eo.StringPassOwnershipMarshaler))]";
+          }},
+          {"mstring", false, [&] {
+                return " [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef=typeof(efl.eo.StringKeepOwnershipMarshaler))]";
+          }},
           {"stringshare", true, [&] {
                 return " [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef=typeof(efl.eo.StringsharePassOwnershipMarshaler))]";
           }},
@@ -85,6 +91,12 @@ struct marshall_annotation_visitor_generate
                 return " [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef=typeof(efl.eo.StringPassOwnershipMarshaler))]";
           }},
           {"string", false, [&] {
+                return " [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef=typeof(efl.eo.StringKeepOwnershipMarshaler))]";
+          }},
+          {"mstring", true, [&] {
+                return " [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef=typeof(efl.eo.StringPassOwnershipMarshaler))]";
+          }},
+          {"mstring", false, [&] {
                 return " [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef=typeof(efl.eo.StringKeepOwnershipMarshaler))]";
           }},
           {"stringshare", true, [&] {
