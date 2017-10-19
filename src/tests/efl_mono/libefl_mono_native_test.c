@@ -3042,8 +3042,14 @@ Eina_Iterator *_test_testing_eina_iterator_obj_return_own(EINA_UNUSED Eo *obj, E
 // Callbacks and Function Pointers //
 //                                 //
 
-void _test_testing_set_callback(EINA_UNUSED Eo *obj, Test_Testing_Data *pd, SimpleCb cb, void *cb_data, Eina_Free_Cb cb_free_cb)
+void _test_testing_set_callback(EINA_UNUSED Eo *obj, Test_Testing_Data *pd, void *cb_data, SimpleCb cb, Eina_Free_Cb cb_free_cb)
 {
+   if (!pd)
+     {
+        EINA_LOG_ERR("Null private data");
+        return -1;
+     }
+
    if (pd->free_cb)
       pd->free_cb(pd->cb_data);
 
@@ -3089,7 +3095,7 @@ int _wrapper_cb(EINA_UNUSED void *data, int a)
 
 void _test_testing_call_set_callback(Eo *obj, EINA_UNUSED Test_Testing_Data *pd)
 {
-   test_testing_set_callback(obj, _wrapper_cb, efl_ref(obj), _free_callback);
+   test_testing_set_callback(obj, efl_ref(obj), _wrapper_cb, _free_callback);
 }
 
 void _test_testing_raises_eina_error(EINA_UNUSED Eo *obj, EINA_UNUSED Test_Testing_Data *pd)

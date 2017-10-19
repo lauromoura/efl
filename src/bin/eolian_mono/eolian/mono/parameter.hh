@@ -393,7 +393,7 @@ struct marshall_parameter_generator
             ).generate(sink, std::make_tuple(param, param_name), context);
 
       return as_generator(
-               type << "Internal " << param_name << ", IntPtr " << param_name << "_data, Eina_Free_Cb "
+               "IntPtr " << param_name << "_data, " << type << "Internal " << param_name << ", Eina_Free_Cb "
                << param_name << "_free_cb"
            ).generate(sink, param, context);
    }
@@ -413,7 +413,7 @@ struct argument_generator
            ).generate(sink, attributes::unused, context);
 
     return as_generator(
-            param_name << ", " << param_name << "_data, " << param_name << "_free_cb"
+            param_name << "_data, " << param_name << ", " << param_name << "_free_cb"
           ).generate(sink, attributes::unused, context);
 
    }
@@ -457,7 +457,7 @@ struct argument_invocation_generator
      else if (param.type.original_type.visit(is_fp_visitor{}))
        {
           std::string param_name = escape_keyword(param.param_name);
-          return as_generator(type << "Wrapper.Cb, GCHandle.ToIntPtr(" << param_name << "_handle), efl.eo.Globals.free_gchandle")
+          return as_generator("GCHandle.ToIntPtr(" << param_name << "_handle), " << type << "Wrapper.Cb, efl.eo.Globals.free_gchandle")
              .generate(sink, param.type, context);
        }
      else
