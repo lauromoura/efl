@@ -8,12 +8,29 @@
 
 namespace eolian_mono {
 
+// Blacklist structs that require some kind of manual binding.
+static bool is_function_ptr_blacklisted(attributes::function_def const& func, std::vector<std::string> const &namesp)
+{
+  std::stringstream full_name;
+
+  for (auto&& i : namesp)
+    full_name << i << ".";
+  full_name << func.name;
+
+  std::string name = full_name.str();
+
+  return name == "Efl.Ui.Format_Func_Cb";
+}
+
 struct function_pointer {
    template <typename OutputIterator, typename Context>
    bool generate(OutputIterator sink, attributes::function_def const& f, std::vector<std::string> const &namesp, Context const& context) const
    {
       // FIXME export Typedecl in eolian_cxx API
       std::vector<std::string> namespaces =  escape_namespace(namesp);
+
+      if (is_function_ptr_blacklisted(f, namesp))
+        return true;
 
       auto open_namespace = *("namespace " << string << " {") << "\n";
       if(!as_generator(open_namespace).generate(sink, namespaces, add_lower_case_context(context))) return false;

@@ -87,6 +87,7 @@ inline bool is_function_blacklisted(std::string const& c_name)
     || c_name == "edje_obj_part_text_anchor_geometry_get" // duplicated signature
     || c_name == "efl_canvas_object_scale_get" // duplicated signature
     || c_name == "efl_canvas_object_scale_set" // duplicated signature
+    || c_name == "efl_ui_format_func_cb_set"
     ;
 }
 
