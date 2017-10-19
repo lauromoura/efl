@@ -122,6 +122,20 @@ struct marshall_type_visitor_generate
                     r.base_type = " eina.Value_Native";
                 return r;
                }}
+           , {"any_value_ptr", true, [&]
+               {
+                regular_type_def r = regular;
+                r.namespaces.clear();
+                r.base_type = " eina.Value";
+                return r;
+               }}
+           , {"any_value_ptr", false, [&]
+               {
+                regular_type_def r = regular;
+                r.namespaces.clear();
+                r.base_type = " eina.Value";
+                return r;
+               }}
            , {"void", nullptr, [&]
                {
                 regular_type_def r = regular;

@@ -70,17 +70,11 @@ struct marshall_annotation_visitor_generate
           {"stringshare", false, [&] {
                 return " [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef=typeof(efl.eo.StringshareKeepOwnershipMarshaler))]";
           }},
-          {"generic_value", true, [&] {
-                if (is_ptr)
+          {"any_value_ptr", true, [&] {
                     return " [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef=typeof(eina.ValueMarshalerOwn))]";
-                else
-                    return "";
           }},
-          {"generic_value", false, [&] {
-                if (is_ptr)
+          {"any_value_ptr", false, [&] {
                     return " [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef=typeof(eina.ValueMarshaler))]";
-                else
-                    return "";
           }},
         };
       match const return_match_table[] =
@@ -105,17 +99,11 @@ struct marshall_annotation_visitor_generate
           {"stringshare", false, [&] {
                 return " [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef=typeof(efl.eo.StringshareKeepOwnershipMarshaler))]";
           }},
-          {"generic_value", true, [&] {
-                if (is_ptr)
+          {"any_value_ptr", true, [&] {
                     return " [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef=typeof(eina.ValueMarshalerOwn))]";
-                else
-                    return "";
           }},
-          {"generic_value", false, [&] {
-                if (is_ptr)
+          {"any_value_ptr", false, [&] {
                     return " [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef=typeof(eina.ValueMarshaler))]";
-                else
-                    return "";
           }},
         };
 
