@@ -233,7 +233,7 @@ tests/efl_mono/libefl_mono_test.dll$(EXEEXT): $(efl_mono_test_eolian_mono_files)
 	@rm -f tests/efl_mono/libefl_mono_test.dll$(EXEEXT)
 	$(AM_V_MCS) $(MCS) $(MCS_FLAGS) -r:$(abs_builddir)/lib/efl_mono/libefl_mono.dll$(EXEEXT) -out:$@ -t:library $(filter %.cs, $(^))
 
-TEST_PATHS = '$(abs_top_builddir)/src/lib/efl_mono:$(abs_top_builddir)/src/lib/efl_mono/.libs:$(abs_top_builddir)/src/lib/eina/.libs:$(abs_top_builddir)/src/lib/ecore/.libs:$(abs_top_builddir)/src/lib/ecore_evas/.libs:$(abs_top_builddir)/src/lib/eo/.libs:$(abs_top_builddir)/src/lib/evas/.libs'
+TEST_PATHS = '$(abs_top_builddir)/src/lib/efl_mono:$(abs_top_builddir)/src/lib/efl_mono/.libs:$(abs_top_builddir)/src/lib/eina/.libs:$(abs_top_builddir)/src/lib/ecore/.libs:$(abs_top_builddir)/src/lib/ecore_evas/.libs:$(abs_top_builddir)/src/lib/eo/.libs:$(abs_top_builddir)/src/lib/evas/.libs:$(abs_top_builddir)/src/lib/emile/.libs:$(abs_top_builddir)/src/lib/eet/.libs:$(abs_top_builddir)/src/lib/efl/.libs:$(abs_top_builddir)/src/ecore-file/.libs:$(abs_top_builddir)/src/lib/efl-input/.libs:$(abs_top_builddir)/src/lib/edje/.libs:$(abs_top_builddir)/src/lib/ethumb/.libs:$(abs_top_builddir)/src/lib/ethumb-client/.libs:$(abs_top_builddir)/src/lib/emotion/.libs:$(abs_top_builddir)/src/lib/ecore-imf/.libs:$(abs_top_builddir)/src/lib/ecore-con/.libs:$(abs_top_builddir)/src/lib/eldbus/.libs:$(abs_top_builddir)/src/lib/efreet/.libs:$(abs_top_builddir)/src/lib/efreet-mime/.libs:$(abs_top_builddir)/src/lib/efreet-trash/.libs:$(abs_top_builddir)/src/lib/eio/.libs:$(abs_top_builddir)/src/lib/elocation/.libs:$(abs_top_builddir)/src/lib/elementary/.libs'
 
 AM_TESTS_ENVIRONMENT += MONO='mono'; export MONO;
 AM_TESTS_ENVIRONMENT += MONO_BUILDPATH='$(abs_top_builddir)'; export MONO_BUILDPATH;
