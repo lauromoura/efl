@@ -319,11 +319,11 @@ examples/efl_mono/libefl_mono_example.dll$(EXEEXT): $(efl_mono_example_eolian_mo
 
 define mono_example_sh_gen
     @echo @ECHO_E@ "#!/bin/sh" > $(1)
-    @echo @ECHO_E@ 'export MONO_PATH="$$MONO_PATH:$(TEST_PATHS)"' >> $(1)
+    @echo @ECHO_E@ 'MONO_PATH="$${MONO_PATH}:$(TEST_PATHS)"; export MONO_PATH' >> $(1)
 if HAVE_WIN32
-    @echo @ECHO_E@ 'export PATH="$$PATH:$(TEST_PATHS):$(ADDITIONAL_TEST_PATHS)"' >> $(1)
+    @echo @ECHO_E@ 'PATH="$${PATH}:$(TEST_PATHS):$(ADDITIONAL_TEST_PATHS)"; export PATH' >> $(1)
 else
-    @echo @ECHO_E@ 'export LD_LIBRARY_PATH="$$LD_LIBRARY_PATH:$(TEST_PATHS)"' >> $(1)
+    @echo @ECHO_E@ 'LD_LIBRARY_PATH="$${LD_LIBRARY_PATH}:$(TEST_PATHS)"; export LD_LIBRARY_PATH' >> $(1)
 endif
     @echo @ECHO_E@ 'mono "$(2)"' >> $(1)
 endef
