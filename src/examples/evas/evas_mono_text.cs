@@ -29,13 +29,19 @@ class TestMain
 
     public TestMain(String border_file) {
         ecore_evas = new EcoreEvas();
+        eina.Size2D size = new eina.Size2D();
+        eina.Position2D position = new eina.Position2D();
         canvas = ecore_evas.canvas;
         canvas.visible_set(true);
 
         bg = new efl.canvas.RectangleConcrete(canvas);
         bg.color_set(255, 255, 255, 255);
-        bg.position_set(0, 0);
-        bg.size_set(WIDTH, HEIGHT);
+        position.X = 0;
+        position.Y = 0;
+        bg.position_set(position);
+        size.W = WIDTH;
+        size.H = HEIGHT;
+        bg.size_set(size);
         bg.visible_set(true);
         bg.key_focus_set(true);
 
@@ -52,13 +58,17 @@ class TestMain
         text.font_set("Courier", 30);
 
         text.text_set("sample text");
-        text.size_set((3*WIDTH)/4, HEIGHT / 4);
-        text.position_set(WIDTH/8, (3*HEIGHT)/8);
+        size.W = 3*WIDTH / 4;
+        size.H = HEIGHT / 4;
+        text.size_set(size);
+        position.X = WIDTH / 8;
+        position.Y = 3 * HEIGHT / 8;
+        text.position_set(position);
         text.visible_set(true);
 
-        Efl_Font_Size size = 0;
+        Efl_Font_Size font_size = 0;
         String font = String.Empty;
-        text.font_get(out font, out size);
+        text.font_get(out font, out font_size);
         Console.WriteLine("Adding text object with font {0} and size {1}", font, size);
 
         // setup border
@@ -67,8 +77,12 @@ class TestMain
         border.border_set(3, 3, 3, 3);
         border.border_center_fill_set(0);
 
-        border.size_set((3 * WIDTH) / 4 + 3, (HEIGHT / 4) + 3);
-        border.position_set((WIDTH / 8)-3, ((3 * HEIGHT) / 8) - 3);
+        size.W = 3 * WIDTH / 4 + 3;
+        size.H = HEIGHT / 4 + 3;
+        border.size_set(size);
+        position.X = WIDTH / 8 - 3;
+        position.Y = 3 * HEIGHT / 8 - 3;
+        border.position_set(position);
         border.visible_set(true);
 
 

@@ -18,10 +18,10 @@ public class MyBox : evas.BoxInherit
         IntPtr evas = evas_object_evas_get(raw_handle);
         evas_event_freeze(evas);
         Console.WriteLine("called group_calculate");
-        layouting_set(true);
+        /* layouting_set(true); */
         evas_obj_box_layout_vertical(raw_handle, IntPtr.Zero, IntPtr.Zero);
-        layouting_set(false);
-        children_changed_set(false);
+        /* layouting_set(false); */
+        /* children_changed_set(false); */
         evas_event_thaw(evas);
     }
 }
@@ -44,18 +44,25 @@ class TestMain
         System.Diagnostics.Debug.Assert(parent.raw_handle != IntPtr.Zero);
 
         evas.Box box = new MyBox(canvas);
-        box.size_set(320, 240);
+        eina.Size2D size = new eina.Size2D();
+
+        size.W = 320;
+        size.H = 240;
+
+        box.size_set(size);
         box.visible_set(true);
 
         efl.canvas.Rectangle rect = new efl.canvas.RectangleConcrete(canvas);
         rect.color_set(0, 0, 255, 255);
-        rect.size_set(320, 120);
+        size.W = 320;
+        size.H = 120;
+        rect.size_set(size);
         rect.visible_set(true);
         box.append(rect);
 
         efl.canvas.Rectangle rect2 = new efl.canvas.RectangleConcrete(canvas);
         rect2.color_set(0, 255, 0, 255);
-        rect2.size_set(320, 120);
+        rect2.size_set(size);
         rect2.visible_set(true);
         box.append(rect2);
 

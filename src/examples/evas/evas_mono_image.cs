@@ -26,6 +26,7 @@ class TestMain
         efl.Loop loop = new efl.LoopConcrete();
 
         EcoreEvas ecore_evas = new EcoreEvas();
+        eina.Size2D size = new eina.Size2D();
         
         efl.canvas.Object canvas = ecore_evas.canvas;
         canvas.visible_set(true);
@@ -35,7 +36,9 @@ class TestMain
         
         efl.canvas.Rectangle bg = new efl.canvas.RectangleConcrete(canvas);
         bg.color_set(255, 255, 255, 255);
-        bg.size_set(WIDTH, HEIGHT);
+        size.W = WIDTH;
+        size.H = HEIGHT;
+        bg.size_set(size);
         bg.visible_set(true);
 
         string valid_path = args[0];
@@ -47,15 +50,23 @@ class TestMain
          * efl.image.load.State state = image.load_error_get(); */
 
         // FIXME missing move
-        image.fill_set(0, 0, WIDTH / 2, HEIGHT / 2);
-        image.size_set(WIDTH / 2, HEIGHT / 2);
+        eina.Rect rect = new eina.Rect();
+
+        rect.X = 0;
+        rect.Y = 0;
+        rect.W = WIDTH / 2;
+        rect.H = HEIGHT / 2;
+        image.fill_set(rect);
+
+        size.W = WIDTH / 2;
+        size.H = HEIGHT / 2;
+        image.size_set(size);
         image.visible_set(true);
 
-        int x, y, w, h;
-        image.fill_get(out x, out y, out w, out h);
-        y -= 50;
-        w += 100;
-        image.fill_set(x, y, w, h);
+        rect = image.fill_get();
+        rect.Y -= 50;
+        rect.W += 100;
+        image.fill_set(rect);
 
         TestMain listener = new TestMain(image);
 

@@ -24,7 +24,10 @@ class TestMain
 
         efl.canvas.Rectangle rect = new efl.canvas.RectangleConcrete(canvas);
         rect.color_set(colors[0, 0], colors[0, 1], colors[0, 2], 255);
-        rect.size_set(640, 480);
+        eina.Size2D size = new eina.Size2D();
+        size.W = 640;
+        size.H = 480;
+        rect.size_set(size);
         rect.visible_set(true);
 
         canvas.KEY_DOWN += (object sender, efl.input.KEY_DOWN_Args e) => {
