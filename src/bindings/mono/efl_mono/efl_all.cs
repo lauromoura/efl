@@ -55,10 +55,10 @@ public static class All {
     public static void Init() {
         eina.Config.Init();
         efl.eo.Config.Init();
-        //efl.ui.Config.Init();
         ecore_init();
         evas_init();
         eldbus.Config.Init();
+        //efl.ui.Config.Init();
     }
 
     /// <summary>Shutdowns all EFL subsystems.</summary>
@@ -67,10 +67,10 @@ public static class All {
         System.GC.Collect();
         System.GC.WaitForPendingFinalizers();
 
+        //efl.ui.Config.Shutdown();
         eldbus.Config.Shutdown();
         evas_shutdown();
         ecore_shutdown();
-        //efl.ui.Config.Shutdown();
         efl.eo.Config.Shutdown();
         eina.Config.Shutdown();
     }
