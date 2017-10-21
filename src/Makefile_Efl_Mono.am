@@ -187,11 +187,15 @@ efl_eldbus_mono_files = \
 	bindings/mono/eldbus_mono/eldbus_proxy.cs \
 	bindings/mono/eldbus_mono/eldbus_service.cs
 
+efl_ecore_evas_mono_files = \
+	bindings/mono/ecore_evas_mono/ecore_evas.cs
+
 lib_efl_mono_libefl_mono_dll_SOURCES = \
 	bindings/mono/efl_mono/efl_all.cs \
 	$(efl_eo_mono_files) \
 	$(efl_eina_mono_files) \
-	$(efl_eldbus_mono_files)
+	$(efl_eldbus_mono_files) \
+	$(efl_ecore_evas_mono_files)
 
 lib/efl_mono/libefl_mono.dll$(EXEEXT): $(lib_efl_mono_libefl_mono_dll_SOURCES) lib/efl_mono/$(am__dirstamp) $(efl_eolian_mono_files)
 	@rm -f lib/efl_mono/libefl_mono.dll$(EXEEXT)
