@@ -51,14 +51,25 @@ static class UnsafeNativeMethods {
     [DllImport(efl.Libs.Elementary)] public static extern void elm_exit();
 }
 
+public enum Components {
+    Basic,
+    Ui
+}
+
 public static class All {
-    public static void Init() {
+    private static bool InitializedUi = false;
+
+    public static void Init(efl.Components components=Components.Basic) {
         eina.Config.Init();
         efl.eo.Config.Init();
         ecore_init();
         evas_init();
         eldbus.Config.Init();
-        //efl.ui.Config.Init();
+
+        if (components == Components.Ui) {
+            efl.ui.Config.Init();
+            InitializedUi = true;
+        }
     }
 
     /// <summary>Shutdowns all EFL subsystems.</summary>
@@ -67,7 +78,8 @@ public static class All {
         System.GC.Collect();
         System.GC.WaitForPendingFinalizers();
 
-        //efl.ui.Config.Shutdown();
+        if (InitializedUi)
+            efl.ui.Config.Shutdown();
         eldbus.Config.Shutdown();
         evas_shutdown();
         ecore_shutdown();
