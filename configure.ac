@@ -379,13 +379,6 @@ fi
 
 AM_CONDITIONAL([EFL_ENABLE_COVERAGE], [test "${want_coverage}" = "yes"])
 
-if test "x${HAVE_MCS}" = "x1"; then
-  have_mcs="yes"
-else
-  have_mcs="no"
-fi
-AM_CONDITIONAL([HAVE_MCS], [test "x${have_mcs}" = "xyes"])
-
 #### Checks for libraries
 
 # check unit testing library
@@ -1337,6 +1330,32 @@ EFL_EVAL_PKGS([EO_JS])
 
 EFL_LIB_END_OPTIONAL([Eo_Js])
 #### End of Eo JS
+
+#### C Sharp Bindings
+
+want_csharp="no"
+AC_ARG_ENABLE([csharp-bindings],
+  [AS_HELP_STRING([--enable-csharp-bindings],[enable C Sharp bindings. @<:@default=disabled@:>@])],
+  [
+    if test "x${enableval}" = "xyes" ; then
+      want_csharp="yes"
+    else
+      want_csharp="no"
+    fi
+  ],
+  [want_csharp="no"])
+
+if test "x${want_csharp}" = "xyes" -a "x${HAVE_MCS}" != "x1"; then
+  want_csharp="no"
+  AC_MSG_ERROR([C Sharp bindings requested but C Sharp compiler could not be found])
+fi
+
+AM_CONDITIONAL([HAVE_CSHARP], [test "x${want_csharp}" = "xyes"])
+AC_DEFINE_IF([HAVE_CSHARP], [test "x${want_csharp}" = "xyes"],
+  [1], [Compiling bindings for C Sharp])
+AC_SUBST([want_csharp])
+
+#### End of Efl Mono
 
 #### Eo
 
@@ -5799,7 +5818,7 @@ echo "  Cryptography..: ${build_crypto}"
 echo "  X11...........: ${with_x11}"
 echo "  OpenGL........: ${with_opengl} ${opengl_egl}"
 echo "  C++11.........: ${have_cxx11}"
-echo "  C#............: ${have_mcs}"
+echo "  C#............: ${want_csharp}"
 echo "  JavaScript....: ${want_js}"
 echo "  JavaScript flg: $EINA_JS_LIBS"
 echo "Eina............: yes (${features_eina} unwind=$have_unwind)"

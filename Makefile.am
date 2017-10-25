@@ -188,7 +188,7 @@ pc/eo-js.pc \
 pc/eina-js.pc
 endif
 
-if HAVE_MCS
+if HAVE_CSHARP
 pkgconfig_DATA += \
 pc/efl-mono.pc
 endif

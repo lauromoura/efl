@@ -1,3 +1,4 @@
+if HAVE_CSHARP
 
 bin_PROGRAMS += bin/eolian_mono/eolian_mono
 
@@ -13,6 +14,22 @@ bin_eolian_mono_eolian_mono_CXXFLAGS = -I$(top_builddir)/src/lib/efl \
 bin_eolian_mono_eolian_mono_LDADD = @CHECK_LIBS@ @USE_EOLIAN_LIBS@
 
 bin_eolian_mono_eolian_mono_DEPENDENCIES = @USE_EOLIAN_INTERNAL_LIBS@
+
+if HAVE_EOLIAN_MONO
+EOLIAN_MONO = @eolian_mono@
+_EOLIAN_MONO_DEP = @eolian_mono@
+else
+EOLIAN_MONO = EFL_RUN_IN_TREE=1 $(top_builddir)/src/bin/eolian_mono/eolian_mono${EXEEXT}
+_EOLIAN_MONO_DEP = bin/eolian_mono/eolian_mono${EXEEXT}
+endif
+
+EOLIAN_MONO_FLAGS = -M @VMAJ@ -m @VMIN@
+
+AM_V_EOLMONO = $(am__v_EOLMONO_@AM_V@)
+am__v_EOLMONO_ = $(am__v_EOLMONO_@AM_DEFAULT_V@)
+am__v_EOLMONO_0 = @echo "  EOLMONO  " $@;
+
+### Efl C Sharp Binding
 
 evas_eolian_blacklisted_files = \
 lib/evas/canvas/efl_canvas_text.eo.cs \
@@ -97,27 +114,10 @@ lib/efl/interfaces/efl_text_properties.eo.cs \
 $(evas_canvas_eolian_type_files:%.eot=%.eot.cs) \
 lib/eo/eina_types.eot.cs
 
-### Efl C++
 installed_eflmonomainheadersdir = $(includedir)/efl-mono-@VMAJ@/
 nodist_installed_eflmonomainheaders_DATA = $(efl_eolian_files:%.eo=%.eo.cs)
 
 CLEANFILES += $(efl_eolian_mono_files)
-
-if HAVE_EOLIAN_MONO
-EOLIAN_MONO = @eolian_mono@
-_EOLIAN_MONO_DEP = @eolian_mono@
-else
-EOLIAN_MONO = EFL_RUN_IN_TREE=1 $(top_builddir)/src/bin/eolian_mono/eolian_mono${EXEEXT}
-_EOLIAN_MONO_DEP = bin/eolian_mono/eolian_mono${EXEEXT}
-endif
-
-EOLIAN_MONO_FLAGS = -M @VMAJ@ -m @VMIN@
-
-AM_V_EOLMONO = $(am__v_EOLMONO_@AM_V@)
-am__v_EOLMONO_ = $(am__v_EOLMONO_@AM_DEFAULT_V@)
-am__v_EOLMONO_0 = @echo "  EOLMONO  " $@;
-
-if HAVE_MCS
 
 if HAVE_WIN32
 

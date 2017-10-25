@@ -1305,8 +1305,8 @@ AM_TESTS_ENVIRONMENT += \
         ELM_RUN_IN_TREE=1 \
 	EFL_RUN_IN_TREE=1
 
-check_PROGRAMS += tests/elementary/elm_suite
-TESTS += tests/elementary/elm_suite
+## check_PROGRAMS += tests/elementary/elm_suite
+## TESTS += tests/elementary/elm_suite
 
 tests_elementary_elm_suite_SOURCES = \
 	tests/elementary/elm_suite.c \

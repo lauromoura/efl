@@ -256,7 +256,7 @@ codegen_example_generated.c \
 codegen_example_generated.h
 
 
-if HAVE_MCS
+if HAVE_CSHARP
 
 efl_ui_slider_mono_exe_SOURCES = \
 	efl_ui_slider_mono.cs
@@ -426,7 +426,7 @@ toolbar_cxx_example_01 \
 $(NULL)
 endif
 
-if HAVE_MCS
+if HAVE_CSHARP
 
 examples_PROGRAMS += \
 	efl_ui_slider_mono.exe

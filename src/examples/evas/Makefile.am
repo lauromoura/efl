@@ -367,7 +367,7 @@ $(AM_CPPFLAGS) @EVAS_CFLAGS@
 
 endif
 
-if HAVE_MCS
+if HAVE_CSHARP
 
 EXTRA_PROGRAMS += \
     evas_mono_box.exe \
