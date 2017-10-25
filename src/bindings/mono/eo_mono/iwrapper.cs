@@ -91,7 +91,7 @@ public class Globals {
         eina.Log.Debug("Registered?");
         return klass;
     }
-    public static IntPtr instantiate(IntPtr klass, efl.Object parent)
+    public static IntPtr instantiate_start(IntPtr klass, efl.Object parent)
     {
         eina.Log.Debug("Instantiating");
         System.IntPtr parent_ptr = System.IntPtr.Zero;
@@ -99,6 +99,10 @@ public class Globals {
             parent_ptr = parent.raw_handle;
 
         System.IntPtr eo = efl.eo.Globals._efl_add_internal_start("file", 0, klass, parent_ptr, 0, 0);
+        return eo;
+    }
+
+    public static IntPtr instantiate_end(IntPtr eo) {
         eina.Log.Debug("efl_add_internal_start returned");
         eo = efl.eo.Globals._efl_add_end(eo, 0, 0);
         eina.Log.Debug("efl_add_end returned");

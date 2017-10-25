@@ -99,4 +99,34 @@ class TestEoInherit
     }
 }
 
+class TestEoConstructingMethods
+{
+    public static void constructing_method()
+    {
+        bool called = false;
+        test.Testing obj = new test.TestingConcrete(null, (test.Testing a) => {
+                called = true;
+            });
+
+        Test.Assert(called);
+    }
+
+    private class Derived : test.TestingInherit
+    {
+        public Derived(test.Testing parent = null,
+                       test.TestingInherit.ConstructingMethod cb = null) : base(parent, cb) {
+        }
+    }
+
+    public static void constructing_method_inherit()
+    {
+        bool called = false;
+        Derived obj = new Derived(null, (test.Testing a) => {
+                called = true;
+            });
+
+        Test.Assert(called);
+    }
+}
+
 }

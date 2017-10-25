@@ -182,17 +182,21 @@ struct klass
              << scope_tab << "public System.IntPtr raw_klass {\n"
              << scope_tab << scope_tab << "get { return efl.eo.Globals.efl_class_get(handle); }\n"
              << scope_tab << "}\n"
+             << scope_tab << "public delegate void ConstructingMethod(" << string << " obj);\n"
              << scope_tab << "[System.Runtime.InteropServices.DllImport(" << context_find_tag<library_context>(concrete_cxt).actual_library_name(cls.filename)
              << ")] static extern System.IntPtr\n"
              << scope_tab << scope_tab << class_get_name << "();\n"
              << (class_type == "class" ? "" : "/*")
-             << scope_tab << "public " << string << "Concrete(efl.Object parent = null)\n"
+             << scope_tab << "public " << string << "Concrete(efl.Object parent = null, ConstructingMethod init_cb=null)\n"
              << scope_tab << "{\n"
              << scope_tab << scope_tab << "System.IntPtr klass = " << class_get_name << "();\n"
              << scope_tab << scope_tab << "System.IntPtr parent_ptr = System.IntPtr.Zero;\n"
              << scope_tab << scope_tab << "if(parent != null)\n"
              << scope_tab << scope_tab << scope_tab << "parent_ptr = parent.raw_handle;\n"
              << scope_tab << scope_tab << "System.IntPtr eo = efl.eo.Globals._efl_add_internal_start(\"file\", 0, klass, parent_ptr, 0, 0);\n"
+             << scope_tab << scope_tab << "if (init_cb != null) {\n"
+             << scope_tab << scope_tab << scope_tab << "init_cb(this);\n"
+             << scope_tab << scope_tab << "}\n"
              << scope_tab << scope_tab << "handle = efl.eo.Globals._efl_add_end(eo, 0, 0);\n"
              << scope_tab << scope_tab << "register_event_proxies();\n"
              << scope_tab << "}\n"
@@ -218,11 +222,10 @@ struct klass
              << scope_tab << scope_tab << "Dispose(true);\n"
              << scope_tab << scope_tab << "GC.SuppressFinalize(this);\n"
              << scope_tab << "}\n"
-             /* << scope_tab << "public delegate void EflEventHandler(object sender, EventArgs e);\n" */
             )
             .generate(sink
               , std::make_tuple(
-                cls.cxx_name, cls.cxx_name, cls.namespaces, cls.eolian_name
+                cls.cxx_name, cls.cxx_name, cls.cxx_name, cls.namespaces, cls.eolian_name
                 , cls.cxx_name, cls.namespaces, cls.eolian_name, cls.cxx_name
                 , cls.cxx_name)
               , concrete_cxt))
@@ -271,10 +274,11 @@ struct klass
              << scope_tab << "public System.IntPtr raw_klass {\n"
              << scope_tab << scope_tab << "get { return klass; }\n"
              << scope_tab << "}\n"
+             << scope_tab << "public delegate void ConstructingMethod(" << string << " obj);\n"
              << scope_tab << "[System.Runtime.InteropServices.DllImport(" << context_find_tag<library_context>(inherit_cxt).actual_library_name(cls.filename)
              << ")] static extern System.IntPtr\n"
              << scope_tab << scope_tab << class_get_name << "();\n"
-             << scope_tab << "public " << string << "Inherit(efl.Object parent = null, System.Type interface1 = null)\n"
+             << scope_tab << "public " << string << "Inherit(efl.Object parent = null, ConstructingMethod init_cb=null)\n"
              << scope_tab << "{\n"
              << scope_tab << scope_tab << "if (klass == System.IntPtr.Zero) {\n"
              << scope_tab << scope_tab << scope_tab << "lock (klassAllocLock) {\n"
@@ -284,7 +288,11 @@ struct klass
              << scope_tab << scope_tab << scope_tab << scope_tab << "}\n"
              << scope_tab << scope_tab << scope_tab << "}\n"
              << scope_tab << scope_tab << "}\n"
-             << scope_tab << scope_tab << "handle = efl.eo.Globals.instantiate(klass, parent);\n"
+             << scope_tab << scope_tab << "handle = efl.eo.Globals.instantiate_start(klass, parent);\n"
+             << scope_tab << scope_tab << "if (init_cb != null) {\n"
+             << scope_tab << scope_tab << scope_tab << "init_cb(this);\n"
+             << scope_tab << scope_tab << "}\n"
+             << scope_tab << scope_tab << "efl.eo.Globals.instantiate_end(handle);\n"
              << scope_tab << scope_tab << "efl.eo.Globals.data_set(this);\n"
              << scope_tab << scope_tab << "register_event_proxies();\n"
              << scope_tab << "}\n"
@@ -309,7 +317,7 @@ struct klass
             )
             .generate(sink
               , std::make_tuple(
-                cls.cxx_name, cls.cxx_name, cls.namespaces, cls.eolian_name
+                cls.cxx_name, cls.cxx_name, cls.cxx_name, cls.namespaces, cls.eolian_name
                 , cls.cxx_name, cls.cxx_name, cls.namespaces, cls.eolian_name, cls.cxx_name
                 , cls.cxx_name)
               , inherit_cxt))
