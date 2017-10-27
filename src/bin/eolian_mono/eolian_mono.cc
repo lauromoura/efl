@@ -145,6 +145,11 @@ run(options_type const& opts)
         throw std::runtime_error("Failed to generate file preamble");
      }
 
+   auto context = efl::eolian::grammar::context_add_tag(eolian_mono::library_context{opts.dllimport,
+                                                                                     opts.v_major,
+                                                                                     opts.v_minor,
+                                                                                     opts.references_map},
+                                                        efl::eolian::grammar::context_null());
    EINA_ITERATOR_FOREACH(aliases, tp)
      {
          if (eolian_typedecl_type_get(tp) != EOLIAN_TYPEDECL_FUNCTION_POINTER)
@@ -160,7 +165,7 @@ run(options_type const& opts)
            }
 
          if (!eolian_mono::function_pointer
-               .generate(iterator, function_def, escape_namespace(namespaces), efl::eolian::grammar::context_cons<eolian_mono::library_context>({opts.dllimport, opts.v_major, opts.v_minor, opts.references_map})))
+               .generate(iterator, function_def, escape_namespace(namespaces), context))
            {
               throw std::runtime_error("Failed to generate function pointer wrapper");
            }
@@ -172,7 +177,7 @@ run(options_type const& opts)
        std::vector<efl::eolian::grammar::attributes::klass_def> klasses{klass_def};
 
        if (!eolian_mono::klass
-         .generate(iterator, klass_def, efl::eolian::grammar::context_cons<eolian_mono::library_context>({opts.dllimport, opts.v_major, opts.v_minor, opts.references_map})))
+         .generate(iterator, klass_def, context))
          {
             throw std::runtime_error("Failed to generate class");
          }
