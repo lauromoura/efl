@@ -36,7 +36,7 @@
 
 typedef struct Test_Testing_Data
 {
-  SimpleCb cb;
+  Test_SimpleCb cb;
   void *cb_data;
   Eina_Free_Cb free_cb;
   Eina_Error error_code;
@@ -3042,7 +3042,7 @@ Eina_Iterator *_test_testing_eina_iterator_obj_return_own(EINA_UNUSED Eo *obj, E
 // Callbacks and Function Pointers //
 //                                 //
 
-void _test_testing_set_callback(EINA_UNUSED Eo *obj, Test_Testing_Data *pd, void *cb_data, SimpleCb cb, Eina_Free_Cb cb_free_cb)
+void _test_testing_set_callback(EINA_UNUSED Eo *obj, Test_Testing_Data *pd, void *cb_data, Test_SimpleCb cb, Eina_Free_Cb cb_free_cb)
 {
    if (!pd)
      {

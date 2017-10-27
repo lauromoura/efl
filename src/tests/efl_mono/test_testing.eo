@@ -1,6 +1,6 @@
 import eina_types;
 
-function SimpleCb {
+function Test.SimpleCb {
    params {
       a: int;
    }
@@ -1147,7 +1147,7 @@ class Test.Testing (Efl.Object) {
 
      set_callback {
          params {
-            cb: SimpleCb;
+            cb: Test.SimpleCb;
          }
       }
 

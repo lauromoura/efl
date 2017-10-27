@@ -102,12 +102,12 @@ class TestFunctionPointers
     class WithOverride : test.TestingInherit {
         public bool set_called = false;
         public bool invoke_called = false;
-        public SimpleCb cb = null;
+        public test.SimpleCb cb = null;
 
         public WithOverride() : base() {
 
         }
-        public override void set_callback(SimpleCb cb) {
+        public override void set_callback(test.SimpleCb cb) {
             set_called = true;
             this.cb = cb;
         }
