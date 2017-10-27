@@ -99,16 +99,32 @@ class TestEoInherit
     }
 }
 
+class TestEoNames
+{
+    public static void name_getset()
+    {
+        test.Testing obj = new test.TestingConcrete();
+
+        string name = "Dummy";
+        obj.name_set(name);
+        Test.AssertEquals(name, obj.name_get());
+    }
+}
+
 class TestEoConstructingMethods
 {
     public static void constructing_method()
     {
         bool called = false;
+        string name = "Test object";
         test.Testing obj = new test.TestingConcrete(null, (test.Testing a) => {
                 called = true;
+                Console.WriteLine("callback: obj raw_handle: {0:x}", a.raw_handle);
+                a.name_set(name);
             });
 
         Test.Assert(called);
+        Test.AssertEquals(name, obj.name_get());
     }
 
     private class Derived : test.TestingInherit
@@ -121,11 +137,14 @@ class TestEoConstructingMethods
     public static void constructing_method_inherit()
     {
         bool called = false;
+        string name = "Another test object";
         Derived obj = new Derived(null, (test.Testing a) => {
                 called = true;
+                a.comment_set(name);
             });
 
         Test.Assert(called);
+        Test.AssertEquals(name, obj.comment_get());
     }
 }
 
