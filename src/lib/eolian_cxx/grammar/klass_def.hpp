@@ -720,10 +720,10 @@ struct klass_def
                functions.push_back({function, EOLIAN_METHOD, unit});
          } catch(std::exception const&) {}
        }
-     for(efl::eina::iterator<const char> inherit_iterator ( ::eolian_class_inherits_get(klass))
+     for(efl::eina::iterator<Eolian_Class const> inherit_iterator ( ::eolian_class_inherits_get(klass))
            , inherit_last; inherit_iterator != inherit_last; ++inherit_iterator)
        {
-         Eolian_Class const* inherit = ::eolian_class_get_by_name(NULL, &*inherit_iterator);
+         Eolian_Class const* inherit = &*inherit_iterator;
          immediate_inherits.insert({inherit, {}});
        }
      std::function<void(Eolian_Class const*)> inherit_algo = 
