@@ -24,6 +24,8 @@ inline bool is_function_blacklisted(std::string const& c_name)
     || c_name == "efl_canvas_object_pointer_inside_get"
     || c_name == "evas_canvas_smart_objects_calculate"
     || c_name == "efl_ui_focus_manager_focus_get"
+    || c_name == "efl_ui_widget_focus_set"
+    || c_name == "efl_ui_widget_focus_get"
     || c_name == "efl_ui_text_password_get"
     || c_name == "efl_ui_text_password_set"
     || c_name == "elm_obj_entry_calc_force"

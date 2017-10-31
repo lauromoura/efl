@@ -483,3 +483,17 @@ public struct Elm_Atspi_Action
 // Some places stil use the non-namespaced Efl_Event_Cb
 public delegate void Efl_Event_Cb(System.IntPtr data, ref efl.Event evt);
 
+[StructLayout(LayoutKind.Sequential)]
+public struct Tm {
+    int tm_sec;
+    int tm_min;
+    int tm_hour;
+    int tm_mday;
+    int tm_mon;
+    int tm_year;
+    int tm_wday;
+    int tm_yday;
+    int tm_isdst;
+}
+
+public delegate IntPtr Efl_Ui_Calendar_Format_Cb(Tm stime); // struct tm as argument
