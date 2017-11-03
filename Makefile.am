@@ -439,6 +439,15 @@ EXTRA_DIST += $(systemdunits_DATA)
 
 .PHONY: doc benchmark examples install-examples
 
+# MSBuild C Sharp projects generation:
+
+if HAVE_CSHARP
+
+msbuildcsprojs:
+	@$(MAKE) $(AM_MAKEFLAGS) -C src msbuildcsprojs
+
+endif
+
 # Documentation
 
 doc:

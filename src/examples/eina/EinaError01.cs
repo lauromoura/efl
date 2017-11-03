@@ -68,18 +68,6 @@ public class ExampleEinaError01
             WriteLine("Unspected error!!!");
         }
 
-        // With object
-        try
-        {
-            var obj = new example.NumberwrapperConcrete();
-            obj.callback_call();
-        }
-        catch (efl.EflException e)
-        {
-            WriteLine("Exception message: " + e.Message);
-        }
-
-
         WriteLine("No error message is empty string: \"{0}\"", eina.Error.NO_ERROR.Message);
         WriteLine("No error message is empty string: \"{0}\"", eina.Error.MsgGet(0));
     }

@@ -5606,6 +5606,7 @@ src/examples/emile/Makefile
 src/examples/ethumb_client/Makefile
 src/examples/elua/Makefile
 src/examples/eolian_cxx/Makefile
+src/examples/efl_mono/Makefile
 src/examples/elocation/Makefile
 src/examples/elementary/Makefile
 src/lib/eina/eina_config.h
