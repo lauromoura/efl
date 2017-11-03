@@ -148,4 +148,47 @@ class TestEoConstructingMethods
     }
 }
 
+class TestEoParent
+{
+    public static void basic_parent()
+    {
+        test.Testing parent = new test.TestingConcrete(null);
+        test.Testing child = new test.TestingConcrete(parent);
+
+        Test.AssertEquals(parent, child.parent_get());
+
+        test.Testing parent_retrieved = test.TestingConcrete.static_cast(child.parent_get());
+        Test.AssertEquals(parent, parent_retrieved);
+    }
+
+    public static void parent_inherited_class()
+    {
+        test.Numberwrapper parent = new test.NumberwrapperConcrete(null);
+        test.Testing child = new test.TestingConcrete(parent);
+
+        Test.AssertEquals(parent, child.parent_get());
+
+        test.Numberwrapper parent_retrieved = test.NumberwrapperConcrete.static_cast(child.parent_get());
+        Test.AssertEquals(parent, parent_retrieved);
+    }
+
+    private class Derived : test.TestingInherit
+    {
+        public Derived(test.Testing parent = null) : base (parent)
+        {
+        }
+    }
+
+    public static void basic_parent_managed_inherit()
+    {
+        test.Testing parent = new Derived(null);
+        test.Testing child = new Derived(parent);
+
+        Test.AssertEquals(parent, child.parent_get());
+
+        test.Testing parent_from_cast = test.TestingInherit.static_cast(child.parent_get());
+        Test.AssertEquals(parent, parent_from_cast);
+    }
+}
+
 }

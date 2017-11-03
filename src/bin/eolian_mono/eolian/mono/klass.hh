@@ -26,6 +26,37 @@
 
 namespace eolian_mono {
 
+template <typename OutputIterator, typename Context>
+static bool generate_static_cast_method(OutputIterator sink, const std::string &class_name, Context const &context)
+{
+   return as_generator(
+       scope_tab << "public static " << class_name << " static_cast(efl.Object obj)\n"
+       << scope_tab << "{\n"
+       << scope_tab << scope_tab << "if (obj == null)\n"
+       << scope_tab << scope_tab << scope_tab << "throw new System.ArgumentNullException(\"obj\");\n"
+       << scope_tab << scope_tab << "return new " << class_name << "Concrete(obj.raw_handle);\n"
+       << scope_tab << "}\n"
+       ).generate(sink, nullptr, context);
+}
+
+template <typename OutputIterator, typename Context>
+static bool generate_equals_method(OutputIterator sink, Context const &context)
+{
+   return as_generator(
+       scope_tab << "public override bool Equals(object obj)\n"
+       << scope_tab << "{\n"
+       << scope_tab << scope_tab << "var other = obj as efl.Object;\n"
+       << scope_tab << scope_tab << "if (other == null)\n"
+       << scope_tab << scope_tab << scope_tab << "return false;\n"
+       << scope_tab << scope_tab << "return this.raw_handle == other.raw_handle;\n"
+       << scope_tab << "}\n"
+       << scope_tab << "public override int GetHashCode()\n"
+       << scope_tab << "{\n"
+       << scope_tab << scope_tab << "return this.raw_handle.ToInt32();\n"
+       << scope_tab << "}\n"
+      ).generate(sink, nullptr, context);
+}
+
 struct get_csharp_type_visitor
 {
     typedef get_csharp_type_visitor visitor_type;
@@ -164,6 +195,7 @@ struct klass
              return false;
        }
 
+     // End of interface declaration
      if(!as_generator("}\n").generate(sink, attributes::unused, iface_cxt)) return false;
      }
 
@@ -229,6 +261,12 @@ struct klass
                 , cls.cxx_name, cls.namespaces, cls.eolian_name, cls.cxx_name
                 , cls.cxx_name)
               , concrete_cxt))
+           return false;
+
+         if (!generate_static_cast_method(sink, cls.cxx_name, concrete_cxt))
+           return false;
+
+         if (!generate_equals_method(sink, concrete_cxt))
            return false;
 
          if (!generate_events(sink, cls, concrete_cxt))
@@ -321,6 +359,12 @@ struct klass
                 , cls.cxx_name, cls.cxx_name, cls.namespaces, cls.eolian_name, cls.cxx_name
                 , cls.cxx_name)
               , inherit_cxt))
+           return false;
+
+         if (!generate_static_cast_method(sink, cls.cxx_name, inherit_cxt))
+           return false;
+
+         if (!generate_equals_method(sink, inherit_cxt))
            return false;
 
          if (!generate_events(sink, cls, inherit_cxt))
