@@ -18,12 +18,12 @@ public class ExampleFunctionPointer01
         var obj = new example.NumberwrapperConcrete();
 
         // Set internal value
-        obj.number_set(12);
+        obj.SetNumber(12);
 
         // With static method
-        obj.number_callback_set(twiceCb);
+        obj.SetNumberCallback(twiceCb);
 
-        var ret = obj.callback_call();
+        var ret = obj.CallCallback();
 
         WriteLine($"Callback called? {static_called}.");
         WriteLine($"Returned value: {ret}.\n");
@@ -31,12 +31,12 @@ public class ExampleFunctionPointer01
         // With lambda
         bool lamda_called = false;
 
-        obj.number_callback_set(n => {
+        obj.SetNumberCallback(n => {
             lamda_called = true;
             return n * 3;
         });
 
-        ret = obj.callback_call();
+        ret = obj.CallCallback();
 
         WriteLine($"Lambda called? {lamda_called}.");
         WriteLine($"Returned value: {ret}.\n");

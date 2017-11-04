@@ -15,10 +15,10 @@ class TestEo
     public static void return_same_object()
     {
         test.Testing testing = new test.TestingConcrete();
-        test.Testing o1 = testing.return_object();
+        test.Testing o1 = testing.ReturnObject();
         Test.Assert(o1.raw_handle != IntPtr.Zero);
         Test.Assert(o1.raw_handle == testing.raw_handle);
-        test.Testing o2 = o1.return_object();
+        test.Testing o2 = o1.ReturnObject();
         Test.Assert(o2.raw_handle != IntPtr.Zero);
         Test.Assert(o2.raw_handle == o1.raw_handle);
     }
@@ -106,8 +106,8 @@ class TestEoNames
         test.Testing obj = new test.TestingConcrete();
 
         string name = "Dummy";
-        obj.name_set(name);
-        Test.AssertEquals(name, obj.name_get());
+        obj.SetName(name);
+        Test.AssertEquals(name, obj.GetName());
     }
 }
 
@@ -120,11 +120,11 @@ class TestEoConstructingMethods
         test.Testing obj = new test.TestingConcrete(null, (test.Testing a) => {
                 called = true;
                 Console.WriteLine("callback: obj raw_handle: {0:x}", a.raw_handle);
-                a.name_set(name);
+                a.SetName(name);
             });
 
         Test.Assert(called);
-        Test.AssertEquals(name, obj.name_get());
+        Test.AssertEquals(name, obj.GetName());
     }
 
     private class Derived : test.TestingInherit
@@ -140,11 +140,11 @@ class TestEoConstructingMethods
         string name = "Another test object";
         Derived obj = new Derived(null, (test.Testing a) => {
                 called = true;
-                a.comment_set(name);
+                a.SetComment(name);
             });
 
         Test.Assert(called);
-        Test.AssertEquals(name, obj.comment_get());
+        Test.AssertEquals(name, obj.GetComment());
     }
 }
 
@@ -155,9 +155,9 @@ class TestEoParent
         test.Testing parent = new test.TestingConcrete(null);
         test.Testing child = new test.TestingConcrete(parent);
 
-        Test.AssertEquals(parent, child.parent_get());
+        Test.AssertEquals(parent, child.GetParent());
 
-        test.Testing parent_retrieved = test.TestingConcrete.static_cast(child.parent_get());
+        test.Testing parent_retrieved = test.TestingConcrete.static_cast(child.GetParent());
         Test.AssertEquals(parent, parent_retrieved);
     }
 
@@ -166,9 +166,9 @@ class TestEoParent
         test.Numberwrapper parent = new test.NumberwrapperConcrete(null);
         test.Testing child = new test.TestingConcrete(parent);
 
-        Test.AssertEquals(parent, child.parent_get());
+        Test.AssertEquals(parent, child.GetParent());
 
-        test.Numberwrapper parent_retrieved = test.NumberwrapperConcrete.static_cast(child.parent_get());
+        test.Numberwrapper parent_retrieved = test.NumberwrapperConcrete.static_cast(child.GetParent());
         Test.AssertEquals(parent, parent_retrieved);
     }
 
@@ -184,9 +184,9 @@ class TestEoParent
         test.Testing parent = new Derived(null);
         test.Testing child = new Derived(parent);
 
-        Test.AssertEquals(parent, child.parent_get());
+        Test.AssertEquals(parent, child.GetParent());
 
-        test.Testing parent_from_cast = test.TestingInherit.static_cast(child.parent_get());
+        test.Testing parent_from_cast = test.TestingInherit.static_cast(child.GetParent());
         Test.AssertEquals(parent, parent_from_cast);
     }
 }

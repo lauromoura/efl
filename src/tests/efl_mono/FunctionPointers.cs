@@ -30,11 +30,11 @@ class TestFunctionPointers
     {
         setup();
         test.Testing obj = new test.TestingConcrete();
-        obj.set_callback(twice);
+        obj.SetCallback(twice);
 
         Test.Assert(called == false, "set_callback should not call the callback");
 
-        int x = obj.call_callback(42);
+        int x = obj.CallCallback(42);
 
         Test.Assert(called, "call_callback must call a callback");
         Test.AssertEquals(42 * 2, x);
@@ -45,14 +45,14 @@ class TestFunctionPointers
         setup();
 
         test.Testing obj = new test.TestingConcrete();
-        obj.set_callback(y => {
+        obj.SetCallback(y => {
                     called = true;
                     return y + 4;
                 });
 
         Test.Assert(called == false, "set_callback should not call the callback");
 
-        int x = obj.call_callback(37);
+        int x = obj.CallCallback(37);
 
         Test.Assert(called, "call_callback must call a callback");
         Test.AssertEquals(37 + 4, x);
@@ -63,22 +63,22 @@ class TestFunctionPointers
         setup();
 
         test.Testing obj = new test.TestingConcrete();
-        obj.set_callback(twice);
+        obj.SetCallback(twice);
         Test.Assert(called == false, "set_callback should not call the callback");
 
-        int x = obj.call_callback(42);
+        int x = obj.CallCallback(42);
         Test.Assert(called, "call_callback must call a callback");
         Test.AssertEquals(42 * 2, x);
 
         bool new_called = false;
-        obj.set_callback(y => {
+        obj.SetCallback(y => {
                     new_called = true;
                     return y * y;
                 });
 
         Test.Assert(new_called == false, "set_callback should not call the callback");
 
-        x = obj.call_callback(42);
+        x = obj.CallCallback(42);
         Test.Assert(new_called, "call_callback must call a callback");
         Test.AssertEquals(42 * 42, x);
     }
@@ -89,11 +89,11 @@ class TestFunctionPointers
     {
         setup();
         NoOverride obj = new NoOverride();
-        obj.set_callback(thrice);
+        obj.SetCallback(thrice);
 
         Test.Assert(!called, "set_callback in virtual should not call the callback");
 
-        int x = obj.call_callback(42);
+        int x = obj.CallCallback(42);
 
         Test.Assert(called, "call_callback must call a callback");
         Test.AssertEquals(42 * 3, x);
@@ -107,11 +107,11 @@ class TestFunctionPointers
         public WithOverride() : base() {
 
         }
-        public override void set_callback(test.SimpleCb cb) {
+        public override void SetCallback(test.SimpleCb cb) {
             set_called = true;
             this.cb = cb;
         }
-        public override int call_callback(int a) {
+        public override int CallCallback(int a) {
             invoke_called = true;
             if (cb != null)
                 return cb(a);
@@ -123,13 +123,13 @@ class TestFunctionPointers
     {
         setup();
         WithOverride obj = new WithOverride();
-        obj.set_callback(thrice);
+        obj.SetCallback(thrice);
 
         Test.Assert(obj.set_called, "set_callback override must have been called");
         Test.Assert(!obj.invoke_called, "invoke_callback must not have been called");
 
         obj.set_called = false;
-        int x = obj.call_callback(42);
+        int x = obj.CallCallback(42);
 
         Test.Assert(!obj.set_called, "set_callback override must not have been called");
         Test.Assert(obj.invoke_called, "set_callback in virtual should not call the callback");
@@ -148,14 +148,14 @@ class TestFunctionPointers
         setup();
         WithOverride obj = new WithOverride();
         free_called_set(false);
-        obj.call_set_callback();
+        obj.CallSetCallback();
 
         Test.Assert(obj.set_called, "set_callback override must have been called");
         Test.Assert(!obj.invoke_called, "invoke_callback must not have been called");
         Test.Assert(!free_called_get(), "call_set_callback must not call the free callback");
 
         obj.set_called = false;
-        int x = obj.call_callback(42);
+        int x = obj.CallCallback(42);
 
         Test.Assert(!obj.set_called, "set_callback override must not have been called");
         Test.Assert(obj.invoke_called, "set_callback in virtual should not call the callback");
@@ -169,7 +169,7 @@ class TestFunctionPointers
         free_called_set(false);
 
         // Should release the handle to the wrapper allocated when calling set_callback from C.
-        obj.set_callback(twice);
+        obj.SetCallback(twice);
 
         GC.Collect();
         GC.WaitForPendingFinalizers();
@@ -180,7 +180,7 @@ class TestFunctionPointers
 
         obj.set_called = false;
         free_called_set(false);
-        x = obj.call_callback(42);
+        x = obj.CallCallback(42);
 
         Test.Assert(!obj.set_called, "set_callback override must not have been called");
         Test.Assert(obj.invoke_called, "set_callback in virtual should not call the callback");

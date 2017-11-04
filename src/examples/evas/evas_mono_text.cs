@@ -32,72 +32,71 @@ class TestMain
         eina.Size2D size = new eina.Size2D();
         eina.Position2D position = new eina.Position2D();
         canvas = ecore_evas.canvas;
-        canvas.visible_set(true);
+        canvas.SetVisible(true);
 
         bg = new efl.canvas.RectangleConcrete(canvas);
-        bg.color_set(255, 255, 255, 255);
+        bg.SetColor(255, 255, 255, 255);
         position.X = 0;
         position.Y = 0;
-        bg.position_set(position);
+        bg.SetPosition(position);
         size.W = WIDTH;
         size.H = HEIGHT;
-        bg.size_set(size);
-        bg.visible_set(true);
-        bg.key_focus_set(true);
+        bg.SetSize(size);
+        bg.SetVisible(true);
+        bg.SetKeyFocus(true);
 
         bg.KEY_DOWN += On_KeyDown;
 
         text = new evas.TextConcrete(canvas);
-        text.style_set(evas.Text_Style_Type.OutlineSoftShadow);
+        text.SetStyle(evas.Text_Style_Type.OutlineSoftShadow);
 
-        text.color_set(0, 0, 0, 255);
-        text.glow_color_set(255, 0, 0, 255);
-        text.glow_color_set(0, 255, 0, 255);
-        text.outline_color_set(0, 0, 255, 255);
-        text.shadow_color_set(0, 255,255, 255);
-        text.font_set("Courier", 30);
+        text.SetColor(0, 0, 0, 255);
+        text.SetGlowColor(255, 0, 0, 255);
+        text.SetOutlineColor(0, 0, 255, 255);
+        text.SetShadowColor(0, 255,255, 255);
+        text.SetFont("Courier", 30);
 
-        text.text_set("sample text");
+        text.SetText("sample text");
         size.W = 3*WIDTH / 4;
         size.H = HEIGHT / 4;
-        text.size_set(size);
+        text.SetSize(size);
         position.X = WIDTH / 8;
         position.Y = 3 * HEIGHT / 8;
-        text.position_set(position);
-        text.visible_set(true);
+        text.SetPosition(position);
+        text.SetVisible(true);
 
         Efl_Font_Size font_size = 0;
         String font = String.Empty;
-        text.font_get(out font, out font_size);
+        text.GetFont(out font, out font_size);
         Console.WriteLine("Adding text object with font {0} and size {1}", font, size);
 
         // setup border
         border = new evas.ImageConcrete(canvas);
-        border.file_set(border_file, null);
-        border.border_set(3, 3, 3, 3);
-        border.border_center_fill_set(0);
+        border.SetFile(border_file, null);
+        border.SetBorder(3, 3, 3, 3);
+        border.SetBorderCenterFill(0);
 
         size.W = 3 * WIDTH / 4 + 3;
         size.H = HEIGHT / 4 + 3;
-        border.size_set(size);
+        border.SetSize(size);
         position.X = WIDTH / 8 - 3;
         position.Y = 3 * HEIGHT / 8 - 3;
-        border.position_set(position);
-        border.visible_set(true);
+        border.SetPosition(position);
+        border.SetVisible(true);
 
 
     }
 
     private void On_KeyDown(object sender, efl.input.KEY_DOWN_Args e)
     {
-        var key = e.arg.key_get();
+        var key = e.arg.GetKey();
 
         if (key == "h") {
             Console.WriteLine(commands);
         } else if (key == "t") {
-            evas.Text_Style_Type type = text.style_get();
+            evas.Text_Style_Type type = text.GetStyle();
             type = (evas.Text_Style_Type)(((int)type + 1) % 10); // 10 hardcoded from C example
-            text.style_set(type);
+            text.SetStyle(type);
         }
     }
 
@@ -118,7 +117,7 @@ class TestMain
         efl.Loop loop = new efl.LoopConcrete();
         TestMain t = new TestMain(border_path);
 
-        loop.begin();
+        loop.Begin();
 
         efl.All.Shutdown();
     }

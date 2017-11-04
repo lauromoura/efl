@@ -8,10 +8,10 @@ class PlusTenNumberWrapper : example.NumberwrapperInherit
 
     public bool derivedCalled = false;
 
-    override public void number_set(int n)
+    override public void SetNumber(int n)
     {
         // Call native EFL method
-        base.number_set(n + 10);
+        base.SetNumber(n + 10);
         derivedCalled = true;
     }
 }
@@ -35,16 +35,16 @@ public class ExampleEoInherit01
         WriteLine($"Override successfully called? {inheritObj.derivedCalled}!\n");
 
         // Call C function from C# object
-        int stored = inheritObj.number_get();
+        int stored = inheritObj.GetNumber();
 
         WriteLine($"Given value: {given}");
         WriteLine($"Stored value: {stored}\n");
 
         // Call C# override directly
         given = 333;
-        inheritObj.number_set(given);
+        inheritObj.SetNumber(given);
 
-        stored = inheritObj.number_get();
+        stored = inheritObj.GetNumber();
 
         WriteLine($"Given value: {given}");
         WriteLine($"Stored value: {stored}\n");
@@ -54,8 +54,8 @@ public class ExampleEoInherit01
         // Check original EFL object
         var origObj = new example.NumberwrapperConcrete();
         given = 111;
-        origObj.number_set(given);
-        stored = origObj.number_get();
+        origObj.SetNumber(given);
+        stored = origObj.GetNumber();
 
         WriteLine($"Given value: {given}");
         WriteLine($"Stored value: {stored}\n");

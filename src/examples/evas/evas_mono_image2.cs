@@ -20,32 +20,32 @@ class TestMain
         eina.Position2D pos = new eina.Position2D();
         
         efl.canvas.Object canvas = ecore_evas.canvas;
-        canvas.visible_set(true);
+        canvas.SetVisible(true);
 
         efl.canvas.Rectangle bg = new efl.canvas.RectangleConcrete(canvas);
-        bg.color_set(255, 255, 255, 255);
+        bg.SetColor(255, 255, 255, 255);
         pos.X = 0;
         pos.Y = 0;
-        bg.position_set(pos);
+        bg.SetPosition(pos);
         size.W = WIDTH;
         size.H = HEIGHT;
-        bg.size_set(size);
-        bg.visible_set(true);
+        bg.SetSize(size);
+        bg.SetVisible(true);
 
         string path = args[0];
         evas.Image logo = new evas.ImageConcrete(canvas);
-        logo.fill_auto_set(true);
+        logo.SetFillAuto(true);
 
         // TODO add preloaded support (depends on events)
 
-        logo.file_set(path, null);
+        logo.SetFile(path, null);
         size.W = WIDTH / 2;
         size.H = HEIGHT / 2;
-        logo.size_set(size);
+        logo.SetSize(size);
 
         // TODO add a bunch of key/mouse handlers
 
-        logo.visible_set(true);
+        logo.SetVisible(true);
 
         int[] pixels = new int[(WIDTH/4) * (HEIGHT / 4)];
         System.Random generator = new System.Random();
@@ -56,27 +56,27 @@ class TestMain
         evas.Image noise_img = new evas.ImageConcrete(canvas);
         size.W = WIDTH / 4;
         size.H = HEIGHT / 4;
-        noise_img.size_set(size);
+        noise_img.SetSize(size);
         // FIXME Add a way to set the pixels.
         // noise_img.data_set(pixels);
-        noise_img.fill_auto_set(true);
+        noise_img.SetFillAuto(true);
         pos.X = WIDTH * 5 / 8;
         pos.Y = HEIGHT / 8;
-        noise_img.position_set(pos);
-        noise_img.visible_set(true);
+        noise_img.SetPosition(pos);
+        noise_img.SetVisible(true);
         Console.WriteLine("Creating noise image with sizez %d, %d", WIDTH/4, HEIGHT/4);
 
         efl.canvas.Proxy proxy_img = new efl.canvas.ProxyConcrete(canvas);
-        proxy_img.source_set(noise_img);
+        proxy_img.SetSource(noise_img);
         pos.X = WIDTH / 2;
         pos.Y = HEIGHT / 2;
-        proxy_img.position_set(pos);
+        proxy_img.SetPosition(pos);
         size.W = WIDTH / 2;
         size.H = HEIGHT / 2;
-        proxy_img.size_set(size);
-        proxy_img.visible_set(true);
+        proxy_img.SetSize(size);
+        proxy_img.SetVisible(true);
 
-        loop.begin();
+        loop.Begin();
     }
 }
 

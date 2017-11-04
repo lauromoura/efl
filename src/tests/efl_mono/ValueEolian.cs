@@ -15,10 +15,10 @@ public static class TestEinaValueEolian {
 
         using (eina.Value v = new eina.Value(eina.ValueType.Int32)) {
             v.Set(42);
-            obj.set_value_ptr(v);
+            obj.SetValuePtr(v);
             Test.AssertEquals(eina.ValueOwnership.Managed, v.Ownership);
 
-            eina.Value v_received = obj.get_value_ptr_own();
+            eina.Value v_received = obj.GetValuePtrOwn();
             Test.AssertEquals(eina.ValueOwnership.Managed, v_received.Ownership);
             Test.AssertEquals(v, v_received);
             v_received.Dispose();
@@ -33,15 +33,15 @@ public static class TestEinaValueEolian {
             v.Set(2001);
             Test.AssertEquals(eina.ValueOwnership.Managed, v.Ownership);
 
-            obj.set_value_ptr_own(v);
+            obj.SetValuePtrOwn(v);
             Test.AssertEquals(eina.ValueOwnership.Unmanaged, v.Ownership);
 
-            eina.Value v_received = obj.get_value_ptr();
+            eina.Value v_received = obj.GetValuePtr();
             Test.AssertEquals(eina.ValueOwnership.Unmanaged, v_received.Ownership);
 
             Test.AssertEquals(v, v_received);
 
-            obj.clear_value();
+            obj.ClearValue();
         }
     }
 
@@ -53,8 +53,8 @@ public static class TestEinaValueEolian {
             eina.Value v_out = null;
 
             v.Set("hello!");
-            obj.set_value_ptr(v);
-            obj.out_value_ptr(out v_out);
+            obj.SetValuePtr(v);
+            obj.OutValuePtr(out v_out);
 
             Test.AssertEquals(v, v_out);
             Test.AssertEquals(eina.ValueOwnership.Unmanaged, v_out.Ownership);
@@ -69,8 +69,8 @@ public static class TestEinaValueEolian {
             eina.Value v_out = null;
 
             v.Set("hello!");
-            obj.set_value_ptr(v);
-            obj.out_value_ptr_own(out v_out);
+            obj.SetValuePtr(v);
+            obj.OutValuePtrOwn(out v_out);
 
             Test.AssertEquals(v, v_out);
             Test.AssertEquals(eina.ValueOwnership.Managed, v_out.Ownership);
@@ -83,11 +83,11 @@ public static class TestEinaValueEolian {
 
         using (eina.Value v = new eina.Value(eina.ValueType.Int32)) {
             v.Set(42);
-            obj.set_value(v);
+            obj.SetValue(v);
             Test.AssertEquals(eina.ValueOwnership.Managed, v.Ownership);
 
             // Using get_value_ptr while get_value() is not supported.
-            eina.Value v_received = obj.get_value_ptr_own();
+            eina.Value v_received = obj.GetValuePtrOwn();
             Test.AssertEquals(eina.ValueOwnership.Managed, v_received.Ownership);
             Test.AssertEquals(v, v_received);
             v_received.Dispose();
@@ -102,8 +102,8 @@ public static class TestEinaValueEolian {
             eina.Value v_out = null;
 
             v.Set("hello!");
-            obj.set_value(v);
-            obj.out_value(out v_out);
+            obj.SetValue(v);
+            obj.OutValue(out v_out);
 
             Test.AssertEquals(v, v_out);
             Test.AssertEquals(eina.ValueOwnership.Managed, v_out.Ownership);

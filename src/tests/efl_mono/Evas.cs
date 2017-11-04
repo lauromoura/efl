@@ -13,7 +13,7 @@ public class MyBox : evas.BoxInherit
     [DllImport("evas")] static extern void evas_event_freeze(IntPtr obj);
     [DllImport("evas")] static extern void evas_event_thaw(IntPtr obj);
 
-    override public void group_calculate()
+    override public void CalculateGroup()
     {
         IntPtr evas = evas_object_evas_get(raw_handle);
         evas_event_freeze(evas);

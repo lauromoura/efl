@@ -10,7 +10,7 @@ class TestStrings
         {
             test.Testing obj = new test.TestingConcrete();
             String sent = "in_string";
-            String returned = obj.in_string(sent);
+            String returned = obj.InString(sent);
             Test.AssertEquals(sent, returned);
         }
         System.GC.Collect();
@@ -23,7 +23,7 @@ class TestStrings
         {
             test.Testing obj = new test.TestingConcrete();
             String sent = "in_own_string";
-            String returned = obj.in_own_string(sent);
+            String returned = obj.InOwnString(sent);
             Test.AssertEquals(sent, returned);
         }
         System.GC.Collect();
@@ -34,7 +34,7 @@ class TestStrings
     {
         {
             test.Testing obj = new test.TestingConcrete();
-            Test.AssertEquals("string", obj.return_string());
+            Test.AssertEquals("string", obj.ReturnString());
         }
         System.GC.Collect();
     }
@@ -44,7 +44,7 @@ class TestStrings
     {
         {
             test.Testing obj = new test.TestingConcrete();
-            Test.AssertEquals("own_string", obj.return_own_string());
+            Test.AssertEquals("own_string", obj.ReturnOwnString());
         }
         System.GC.Collect();
     }
@@ -55,7 +55,7 @@ class TestStrings
         {
             String str = String.Empty;
             test.Testing obj = new test.TestingConcrete();
-            obj.out_string(out str);
+            obj.OutString(out str);
             Test.AssertEquals("out_string", str);
         }
         System.GC.Collect();
@@ -67,7 +67,7 @@ class TestStrings
         {
             String str = String.Empty;
             test.Testing obj = new test.TestingConcrete();
-            obj.out_own_string(out str);
+            obj.OutOwnString(out str);
             Test.AssertEquals(str.ToString(), "out_own_string");
         }
         System.GC.Collect();
@@ -82,35 +82,35 @@ class TestStrings
             received_in_own = String.Empty;
         }
 
-        public override String in_string(String str)
+        public override String InString(String str)
         {
             received_in = str;
             return String.Empty;
         }
 
-        public override String in_own_string(String str)
+        public override String InOwnString(String str)
         {
             /* Console.WriteLine("Called my own virtual"); */
             received_in_own = str;
             return String.Empty;
         }
 
-        public override String return_string()
+        public override String ReturnString()
         {
             return "inherited";
         }
 
-        public override String return_own_string()
+        public override String ReturnOwnString()
         {
             return "own_inherited";
         }
 
-        public override void out_string(out String str)
+        public override void OutString(out String str)
         {
             str = "out_inherited";
         }
 
-        public override void out_own_string(out System.String str)
+        public override void OutOwnString(out System.String str)
         {
             str = "out_own_inherited";
         }
@@ -122,7 +122,7 @@ class TestStrings
         StringReturner obj = new StringReturner();
         /* for (int i = 0; i < 10000; i++) { */
             String sent = "in_inherited";
-            obj.call_in_string(sent);
+            obj.CallInString(sent);
             Test.AssertEquals(sent, obj.received_in);
         /* } */
         System.GC.Collect();
@@ -134,7 +134,7 @@ class TestStrings
         StringReturner obj = new StringReturner();
         /* for (int i = 0; i < 10000; i++) { */
             String sent = "in_own_inherited";
-            obj.call_in_own_string(sent);
+            obj.CallInOwnString(sent);
             Test.AssertEquals(sent, obj.received_in_own);
         /* } */
         System.GC.Collect();
@@ -146,7 +146,7 @@ class TestStrings
     {
         test.Testing obj = new StringReturner();
         /* for (int i = 0; i < 10000; i ++) // Uncomment this to check for memory leaks. */
-        Test.AssertEquals("inherited", obj.call_return_string());
+        Test.AssertEquals("inherited", obj.CallReturnString());
         System.GC.Collect();
     }
 
@@ -155,7 +155,7 @@ class TestStrings
     {
         test.Testing obj = new StringReturner();
         /* for (int i = 0; i < 10000; i ++) // Uncomment this to check for memory leaks. */
-        Test.AssertEquals("own_inherited", obj.call_return_own_string());
+        Test.AssertEquals("own_inherited", obj.CallReturnOwnString());
         System.GC.Collect();
     }
 
@@ -165,7 +165,7 @@ class TestStrings
     {
         test.Testing obj = new StringReturner();
         /* for (int i = 0; i < 10000; i ++) // Uncomment this to check for memory leaks. */
-        Test.AssertEquals("out_inherited", obj.call_out_string());
+        Test.AssertEquals("out_inherited", obj.CallOutString());
         System.GC.Collect();
     }
 
@@ -174,7 +174,7 @@ class TestStrings
     {
         test.Testing obj = new StringReturner();
         /* for (int i = 0; i < 10000; i ++) // Uncomment this to check for memory leaks. */
-        Test.AssertEquals("out_own_inherited", obj.call_out_own_string());
+        Test.AssertEquals("out_own_inherited", obj.CallOutOwnString());
         System.GC.Collect();
     }
 
@@ -187,7 +187,7 @@ class TestStringshare
         {
             test.Testing obj = new test.TestingConcrete();
             String sent = "in_stringshare";
-            String returned = obj.in_stringshare(sent);
+            String returned = obj.InStringshare(sent);
             Test.AssertEquals(sent, returned);
         }
         System.GC.Collect();
@@ -198,7 +198,7 @@ class TestStringshare
         {
             test.Testing obj = new test.TestingConcrete();
             String sent = "in_own_stringshare";
-            String returned = obj.in_own_stringshare(sent);
+            String returned = obj.InOwnStringshare(sent);
             Test.AssertEquals(sent, returned);
         }
         System.GC.Collect();
@@ -208,7 +208,7 @@ class TestStringshare
     {
         {
             test.Testing obj = new test.TestingConcrete();
-            Test.AssertEquals("stringshare", obj.return_stringshare());
+            Test.AssertEquals("stringshare", obj.ReturnStringshare());
         }
         System.GC.Collect();
     }
@@ -217,7 +217,7 @@ class TestStringshare
     {
         {
             test.Testing obj = new test.TestingConcrete();
-            Test.AssertEquals("own_stringshare", obj.return_own_stringshare());
+            Test.AssertEquals("own_stringshare", obj.ReturnOwnStringshare());
         }
         System.GC.Collect();
     }
@@ -227,7 +227,7 @@ class TestStringshare
         {
             String str = String.Empty;
             test.Testing obj = new test.TestingConcrete();
-            obj.out_stringshare(out str);
+            obj.OutStringshare(out str);
             Test.AssertEquals("out_stringshare", str);
         }
         System.GC.Collect();
@@ -238,7 +238,7 @@ class TestStringshare
         {
             String str = String.Empty;
             test.Testing obj = new test.TestingConcrete();
-            obj.out_own_stringshare(out str);
+            obj.OutOwnStringshare(out str);
             Test.AssertEquals(str.ToString(), "out_own_stringshare");
         }
         System.GC.Collect();
@@ -253,34 +253,34 @@ class TestStringshare
             received_in_own = String.Empty;
         }
 
-        public override String in_stringshare(String str)
+        public override String InStringshare(String str)
         {
             received_in = str;
             return String.Empty;
         }
 
-        public override String in_own_stringshare(String str)
+        public override String InOwnStringshare(String str)
         {
             received_in_own = str;
             return String.Empty;
         }
 
-        public override String return_stringshare()
+        public override String ReturnStringshare()
         {
             return "inherited";
         }
 
-        public override String return_own_stringshare()
+        public override String ReturnOwnStringshare()
         {
             return "own_inherited";
         }
 
-        public override void out_stringshare(out String str)
+        public override void OutStringshare(out String str)
         {
             str = "out_inherited";
         }
 
-        public override void out_own_stringshare(out System.String str)
+        public override void OutOwnStringshare(out System.String str)
         {
             str = "out_own_inherited";
         }
@@ -290,7 +290,7 @@ class TestStringshare
     {
         StringshareReturner obj = new StringshareReturner();
         String sent = "in_inherited";
-        obj.call_in_stringshare(sent);
+        obj.CallInStringshare(sent);
         Test.AssertEquals(sent, obj.received_in);
     }
 
@@ -298,7 +298,7 @@ class TestStringshare
     {
         StringshareReturner obj = new StringshareReturner();
         String sent = "in_own_inherited";
-        obj.call_in_own_stringshare(sent);
+        obj.CallInOwnStringshare(sent);
         Test.AssertEquals(sent, obj.received_in_own);
     }
 
@@ -306,28 +306,28 @@ class TestStringshare
     {
         test.Testing obj = new StringshareReturner();
         // for (int i = 0; i < 1000000; i ++) // Uncomment this to check for memory leaks.
-        Test.AssertEquals("inherited", obj.call_return_stringshare());
+        Test.AssertEquals("inherited", obj.CallReturnStringshare());
     }
 
     public static void return_own_stringshare_from_virtual()
     {
         test.Testing obj = new StringshareReturner();
         // for (int i = 0; i < 1000000; i ++) // Uncomment this to check for memory leaks.
-        Test.AssertEquals("own_inherited", obj.call_return_own_stringshare());
+        Test.AssertEquals("own_inherited", obj.CallReturnOwnStringshare());
     }
 
     public static void out_stringshare_from_virtual()
     {
         test.Testing obj = new StringshareReturner();
         // for (int i = 0; i < 1000000; i ++) // Uncomment this to check for memory leaks.
-        Test.AssertEquals("out_inherited", obj.call_out_stringshare());
+        Test.AssertEquals("out_inherited", obj.CallOutStringshare());
     }
 
     public static void out_own_stringshare_from_virtual()
     {
         test.Testing obj = new StringshareReturner();
         // for (int i = 0; i < 1000000; i ++) // Uncomment this to check for memory leaks.
-        Test.AssertEquals("out_own_inherited", obj.call_out_own_stringshare());
+        Test.AssertEquals("out_own_inherited", obj.CallOutOwnStringshare());
     }
 }
 

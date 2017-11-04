@@ -13,7 +13,7 @@ public class MyBox : evas.BoxInherit
     [DllImport("evas")] static extern void evas_event_freeze(IntPtr obj);
     [DllImport("evas")] static extern void evas_event_thaw(IntPtr obj);
     
-    override public void group_calculate()
+    override public void CalculateGroup()
     {
         IntPtr evas = evas_object_evas_get(raw_handle);
         evas_event_freeze(evas);
@@ -38,9 +38,9 @@ class TestMain
         EcoreEvas ecore_evas = new EcoreEvas();
 
         efl.canvas.Object canvas = ecore_evas.canvas;
-        canvas.visible_set(true);
+        canvas.SetVisible(true);
 
-        efl.Object parent = canvas.parent_get();
+        efl.Object parent = canvas.GetParent();
         System.Diagnostics.Debug.Assert(parent.raw_handle != IntPtr.Zero);
 
         evas.Box box = new MyBox(canvas);
@@ -49,24 +49,24 @@ class TestMain
         size.W = 320;
         size.H = 240;
 
-        box.size_set(size);
-        box.visible_set(true);
+        box.SetSize(size);
+        box.SetVisible(true);
 
         efl.canvas.Rectangle rect = new efl.canvas.RectangleConcrete(canvas);
-        rect.color_set(0, 0, 255, 255);
+        rect.SetColor(0, 0, 255, 255);
         size.W = 320;
         size.H = 120;
-        rect.size_set(size);
-        rect.visible_set(true);
-        box.append(rect);
+        rect.SetSize(size);
+        rect.SetVisible(true);
+        box.Append(rect);
 
         efl.canvas.Rectangle rect2 = new efl.canvas.RectangleConcrete(canvas);
-        rect2.color_set(0, 255, 0, 255);
-        rect2.size_set(size);
-        rect2.visible_set(true);
-        box.append(rect2);
+        rect2.SetColor(0, 255, 0, 255);
+        rect2.SetSize(size);
+        rect2.SetVisible(true);
+        box.Append(rect2);
 
-        loop.begin();
+        loop.Begin();
 
         efl.All.Shutdown();
     }

@@ -20,7 +20,7 @@ class TestEolianError
     public static void global_eina_error()
     {
         test.Testing obj = new test.TestingConcrete();
-        Test.AssertRaises<efl.EflException>(() => obj.raises_eina_error());
+        Test.AssertRaises<efl.EflException>(() => obj.RaisesEinaError());
     }
 
     class Child : test.TestingInherit {
@@ -29,7 +29,7 @@ class TestEolianError
     public static void global_eina_error_inherited()
     {
         test.Testing obj = new Child();
-        Test.AssertRaises<efl.EflException>(() => obj.raises_eina_error());
+        Test.AssertRaises<efl.EflException>(() => obj.RaisesEinaError());
     }
 
     class CustomException : Exception {
@@ -37,7 +37,7 @@ class TestEolianError
     }
 
     class Overrider : test.TestingInherit {
-        public override void children_raise_error() {
+        public override void ChildrenRaiseError() {
             throw (new CustomException("Children error"));
         }
     }
@@ -46,7 +46,7 @@ class TestEolianError
     {
         test.Testing obj = new Overrider();
 
-        Test.AssertRaises<efl.EflException>(obj.call_children_raise_error);
+        Test.AssertRaises<efl.EflException>(obj.CallChildrenRaiseError);
     }
 
     // return eina_error
@@ -54,24 +54,24 @@ class TestEolianError
     {
         test.Testing obj = new test.TestingConcrete();
         eina.Error expected = 42;
-        obj.error_ret_set(expected);
-        eina.Error error = obj.returns_error();
+        obj.SetErrorRet(expected);
+        eina.Error error = obj.ReturnsError();
 
         Test.AssertEquals(expected, error);
 
         expected = 0;
-        obj.error_ret_set(expected);
-        error = obj.returns_error();
+        obj.SetErrorRet(expected);
+        error = obj.ReturnsError();
 
         Test.AssertEquals(expected, error);
     }
 
     class ReturnOverride : test.TestingInherit {
         eina.Error code;
-        public override void error_ret_set(eina.Error err) {
+        public override void SetErrorRet(eina.Error err) {
             code = 2 * err;
         }
-        public override eina.Error returns_error()
+        public override eina.Error ReturnsError()
         {
             return code;
         }
@@ -81,14 +81,14 @@ class TestEolianError
     {
         test.Testing obj = new ReturnOverride();
         eina.Error expected = 42;
-        obj.error_ret_set(expected);
-        eina.Error error = obj.returns_error();
+        obj.SetErrorRet(expected);
+        eina.Error error = obj.ReturnsError();
 
         Test.AssertEquals(new eina.Error(expected * 2), error);
 
         expected = 0;
-        obj.error_ret_set(expected);
-        error = obj.returns_error();
+        obj.SetErrorRet(expected);
+        error = obj.ReturnsError();
 
         Test.AssertEquals(new eina.Error(expected * 2), error);
     }
