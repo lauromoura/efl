@@ -1,6 +1,12 @@
 #ifndef EOLIAN_CXX_KEYWORD_HH
 #define EOLIAN_CXX_KEYWORD_HH
 
+#include <string>
+#include <strings.h>
+#include <vector>
+
+#include "name_helpers.hh"
+
 namespace eolian_mono {
 namespace detail {
 inline bool is_iequal(std::string const& lhs, std::string const& rhs)
@@ -25,9 +31,22 @@ inline std::string escape_keyword(std::string const& name)
      || is_iequal(name, "fixed")
      || is_iequal(name, "base"))
     return "kw_" + name;
+
+  if (is_iequal(name, "Finalize"))
+    return name + "Add"; // Eo's Finalize is actually the end of efl_add.
   return name;
 }
-      
+
+
+std::string managed_method_name(std::string const& underscore_name)
+{
+  std::vector<std::string> names = name_helpers::split(underscore_name, '_');
+
+  name_helpers::reorder_verb(names);
+
+  return escape_keyword(name_helpers::pascal_case(names));
+}
+
 }
 
 #endif

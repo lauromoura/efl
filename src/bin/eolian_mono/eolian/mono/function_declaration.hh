@@ -24,7 +24,7 @@ struct function_declaration_generator
     else
       return as_generator
         (eolian_mono::type(true) << " " << string << "(" << (parameter % ", ") << ");\n")
-        .generate(sink, std::make_tuple(f.return_type, escape_keyword(f.name), f.parameters), context);
+        .generate(sink, std::make_tuple(f.return_type, managed_method_name(f.name), f.parameters), context);
   }
 };
 
