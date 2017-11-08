@@ -636,6 +636,8 @@ auto get(event_def& def) -> decltype(tuple_element<N, event_def>::get(def))
   return tuple_element<N, event_def>::get(def);
 }
 
+inline Eolian_Class const* get_klass(klass_name const& klass_name_, Eolian_Unit const* unit);
+
 struct klass_def
 {
   std::string eolian_name;
@@ -764,6 +766,22 @@ struct klass_def
        }
   }
 
+  // TODO memoize the return?
+  std::vector<function_def> get_all_methods() const
+  {
+      std::vector<function_def> ret;
+
+      std::copy(functions.cbegin(), functions.cend(), std::back_inserter(ret));
+
+      for (auto inherit : inherits)
+       {
+          klass_def klass(get_klass(inherit, NULL), NULL);
+          std::copy(klass.functions.cbegin(), klass.functions.cend(),
+                    std::back_inserter(ret));
+       }
+
+      return ret;
+  }
 };
 
 struct value_def
