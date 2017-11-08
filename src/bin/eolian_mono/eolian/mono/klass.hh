@@ -57,6 +57,17 @@ static bool generate_equals_method(OutputIterator sink, Context const &context)
       ).generate(sink, nullptr, context);
 }
 
+/* Get the actual number of functions of a class, checking for blacklisted ones */
+static std::size_t
+get_function_count(grammar::attributes::klass_def const& cls)
+{
+   auto methods = cls.get_all_methods();
+   return std::count_if(methods.cbegin(), methods.cend(), [](grammar::attributes::function_def const& func)
+     {
+        return !is_function_blacklisted(func.c_name);
+     });
+}
+
 struct get_csharp_type_visitor
 {
     typedef get_csharp_type_visitor visitor_type;
@@ -391,14 +402,7 @@ struct klass
          if(!as_generator("}\n").generate(sink, attributes::unused, inherit_cxt)) return false;
        }
 
-     std::size_t function_count = cls.functions.size();
-     for(auto first = std::begin(cls.inherits)
-           , last = std::end(cls.inherits); first != last; ++first)
-       {
-         attributes::klass_def klass(get_klass(*first, NULL), NULL);
-         function_count += klass.functions.size();
-       }
-     // function_count--;
+     std::size_t function_count = get_function_count(cls);
 
      int function_registration_index = 0;
      auto index_generator = [&function_registration_index]
