@@ -250,7 +250,7 @@ public class Message : IDisposable
         var ptr = eldbus_message_method_call_new(dest, path, iface, method);
         if (ptr == IntPtr.Zero)
         {
-            eina.Error.RaiseIfOcurred();
+            eina.Error.RaiseIfOccurred();
             throw new SEHException("Eldbus: could not get `Message' object from eldbus_message_method_call_new");
         }
         return new eldbus.Message(ptr, true);
@@ -261,7 +261,7 @@ public class Message : IDisposable
         var ptr = eldbus_message_signal_new(path, _interface, name);
         if (ptr == IntPtr.Zero)
         {
-            eina.Error.RaiseIfOcurred();
+            eina.Error.RaiseIfOccurred();
             throw new SEHException("Eldbus: could not get `Message' object from eldbus_message_signal_new");
         }
         return new eldbus.Message(ptr, true);
@@ -327,7 +327,7 @@ public class Message : IDisposable
         var ptr = eldbus_message_error_new(Handle, error_name, error_msg);
         if (ptr == IntPtr.Zero)
         {
-            eina.Error.RaiseIfOcurred();
+            eina.Error.RaiseIfOccurred();
             throw new SEHException("Eldbus: could not get `Message' object from eldbus_message_error_new");
         }
         return new eldbus.Message(ptr, false);
@@ -339,7 +339,7 @@ public class Message : IDisposable
         var ptr = eldbus_message_method_return_new(Handle);
         if (ptr == IntPtr.Zero)
         {
-            eina.Error.RaiseIfOcurred();
+            eina.Error.RaiseIfOccurred();
             throw new SEHException("Eldbus: could not get `Message' object from eldbus_message_method_return_new");
         }
         return new eldbus.Message(ptr, false);
@@ -470,7 +470,7 @@ public class Message : IDisposable
         var ptr = eldbus_message_iter_get(Handle);
         if (ptr == IntPtr.Zero)
         {
-            eina.Error.RaiseIfOcurred();
+            eina.Error.RaiseIfOccurred();
             throw new SEHException("Eldbus: could not get `MessageIterator' object from eldbus_message_iter_get");
         }
         return new eldbus.MessageIterator(ptr, IntPtr.Zero);
@@ -532,13 +532,13 @@ public class MessageIterator
         }
         else if (!eldbus_message_iter_arguments_append(Handle, signature, out new_iter))
         {
-            eina.Error.RaiseIfOcurred();
+            eina.Error.RaiseIfOccurred();
             throw new SEHException("Eldbus: could not append container type");
         }
 
         if (new_iter == IntPtr.Zero)
         {
-            eina.Error.RaiseIfOcurred();
+            eina.Error.RaiseIfOccurred();
             throw new SEHException("Eldbus: could not get `MessageIterator' object from eldbus_message_iter_arguments_append");
         }
 
@@ -553,7 +553,7 @@ public class MessageIterator
 
         if (new_iter == IntPtr.Zero)
         {
-            eina.Error.RaiseIfOcurred();
+            eina.Error.RaiseIfOccurred();
             throw new SEHException("Eldbus: could not get `MessageIterator' object from eldbus_message_iter_container_new");
         }
 
@@ -571,7 +571,7 @@ public class MessageIterator
 
         if (!eldbus_message_iter_container_close(Parent, Handle))
         {
-            eina.Error.RaiseIfOcurred();
+            eina.Error.RaiseIfOccurred();
             throw new SEHException("Eldbus: could not close MessageIterator");
         }
 
@@ -684,7 +684,7 @@ public class MessageIterator
         bool r = eldbus_message_iter_get_and_next(Handle, typecode, out hdl);
         if (hdl == IntPtr.Zero)
         {
-            eina.Error.RaiseIfOcurred();
+            eina.Error.RaiseIfOccurred();
             throw new SEHException("Eldbus: could not get argument");
         }
         iter = new eldbus.MessageIterator(hdl, Handle);
@@ -698,7 +698,7 @@ public class MessageIterator
         IntPtr hdl = IntPtr.Zero;
         if (!eldbus_message_iter_arguments_get(Handle, signatue, out hdl) || hdl == IntPtr.Zero)
         {
-            eina.Error.RaiseIfOcurred();
+            eina.Error.RaiseIfOccurred();
             throw new SEHException("Eldbus: could not get argument");
         }
         iter = new eldbus.MessageIterator(hdl, Handle);
@@ -800,7 +800,7 @@ public class MessageIterator
         IntPtr hdl = IntPtr.Zero;
         if (!eldbus_message_iter_arguments_get(Handle, signatue, out hdl) || hdl == IntPtr.Zero)
         {
-            eina.Error.RaiseIfOcurred();
+            eina.Error.RaiseIfOccurred();
             throw new SEHException("Eldbus: could not get argument");
         }
         iter = new eldbus.MessageIterator(hdl, Handle);
@@ -828,7 +828,7 @@ public class MessageIterator
 
         if (!eldbus_message_iter_fixed_array_get(Handle, type_code, out value, out n_elements))
         {
-            eina.Error.RaiseIfOcurred();
+            eina.Error.RaiseIfOccurred();
             throw new SEHException("Eldbus: could not get fixed array");
         }
     }

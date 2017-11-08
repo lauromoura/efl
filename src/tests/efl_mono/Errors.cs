@@ -8,9 +8,9 @@ class TestEinaError
     public static void basic_test()
     {
         eina.Error.Clear();
-        Test.AssertNotRaises<efl.EflException>(eina.Error.RaiseIfOcurred);
+        Test.AssertNotRaises<efl.EflException>(eina.Error.RaiseIfOccurred);
         eina.Error.Set(eina.Error.ENOENT);
-        Test.AssertRaises<efl.EflException>(eina.Error.RaiseIfOcurred);
+        Test.AssertRaises<efl.EflException>(eina.Error.RaiseIfOccurred);
     }
 }
 

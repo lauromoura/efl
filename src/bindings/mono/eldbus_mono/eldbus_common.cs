@@ -134,7 +134,7 @@ public abstract class BasicMessageArgument
     {
         if (!InternalAppendTo(msg))
         {
-            eina.Error.RaiseIfOcurred();
+            eina.Error.RaiseIfOccurred();
             throw new SEHException("Eldbus: could not append basic type to eldbus.Message");
         }
     }
@@ -143,7 +143,7 @@ public abstract class BasicMessageArgument
     {
         if (!InternalAppendTo(iter))
         {
-            eina.Error.RaiseIfOcurred();
+            eina.Error.RaiseIfOccurred();
             throw new SEHException("Eldbus: could not append basic type to eldbus.MessageIterator");
         }
     }

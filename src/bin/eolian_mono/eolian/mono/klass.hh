@@ -231,6 +231,7 @@ struct klass
              << scope_tab << scope_tab << "}\n"
              << scope_tab << scope_tab << "handle = efl.eo.Globals._efl_add_end(handle, 0, 0);\n" // replace handle with the actual final handle
              << scope_tab << scope_tab << "register_event_proxies();\n"
+             << scope_tab << scope_tab << "eina.Error.RaiseIfOccurred();\n"
              << scope_tab << "}\n"
              << (class_type == "class" ? "" : "*/")
              << scope_tab << "public " << string << "Concrete(System.IntPtr raw)\n"
@@ -333,6 +334,7 @@ struct klass
              << scope_tab << scope_tab << "handle = efl.eo.Globals.instantiate_end(handle);\n"
              << scope_tab << scope_tab << "efl.eo.Globals.data_set(this);\n"
              << scope_tab << scope_tab << "register_event_proxies();\n"
+             << scope_tab << scope_tab << "eina.Error.RaiseIfOccurred();\n"
              << scope_tab << "}\n"
              << scope_tab << "~" << string << "Inherit()\n"
              << scope_tab << "{\n"
@@ -554,7 +556,7 @@ struct klass
             << scope_tab << scope_tab << scope_tab << scope_tab << "eina.Log.Error(\"Failed to add event proxy for event ${key}\");\n"
             << scope_tab << scope_tab << scope_tab << scope_tab << "return false;\n"
             << scope_tab << scope_tab << scope_tab << "}\n"
-            << scope_tab << scope_tab << scope_tab << "eina.Error.RaiseIfOcurred();\n"
+            << scope_tab << scope_tab << scope_tab << "eina.Error.RaiseIfOccurred();\n"
             << scope_tab << scope_tab << "} \n"
             << scope_tab << scope_tab << "event_cb_count[key]++;\n"
             << scope_tab << scope_tab << "return true;\n"
@@ -570,7 +572,7 @@ struct klass
             << scope_tab << scope_tab << scope_tab << scope_tab << "eina.Log.Error(\"Failed to remove event proxy for event ${key}\");\n"
             << scope_tab << scope_tab << scope_tab << scope_tab << "return false;\n"
             << scope_tab << scope_tab << scope_tab << "}\n"
-            << scope_tab << scope_tab << scope_tab << "eina.Error.RaiseIfOcurred();\n"
+            << scope_tab << scope_tab << scope_tab << "eina.Error.RaiseIfOccurred();\n"
             << scope_tab << scope_tab << "} else if (event_count == 0) {\n"
             << scope_tab << scope_tab << scope_tab << "eina.Log.Error(\"Trying to remove proxy for event ${key} when there is nothing registered.\");\n"
             << scope_tab << scope_tab << scope_tab << "return false;\n"

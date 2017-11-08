@@ -66,7 +66,7 @@ public struct Error : IComparable<Error>
         return eina.StringConversion.NativeUtf8ToManagedString(cstr);
     }
 
-    public static void RaiseIfOcurred()
+    public static void RaiseIfOccurred()
     {
         Error e = Get();
         Clear();

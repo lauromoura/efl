@@ -119,7 +119,7 @@ public class Object : System.IDisposable
 
         if (handle == IntPtr.Zero)
         {
-            eina.Error.RaiseIfOcurred();
+            eina.Error.RaiseIfOccurred();
             throw new SEHException("Eldbus: could not get `Object' object from eldbus_object_get");
         }
 
@@ -167,7 +167,7 @@ public class Object : System.IDisposable
 
         if (conn == IntPtr.Zero)
         {
-            eina.Error.RaiseIfOcurred();
+            eina.Error.RaiseIfOccurred();
             throw new SEHException("Eldbus: could not get `Connection' object from eldbus_object_connection_get");
         }
 
@@ -214,7 +214,7 @@ public class Object : System.IDisposable
 
         if (pending_hdl == IntPtr.Zero)
         {
-            eina.Error.RaiseIfOcurred();
+            eina.Error.RaiseIfOccurred();
             throw new SEHException("Eldbus: could not get `Pending' object from eldbus_object_send");
         }
 
@@ -229,7 +229,7 @@ public class Object : System.IDisposable
 
         if (hdl == IntPtr.Zero)
         {
-            eina.Error.RaiseIfOcurred();
+            eina.Error.RaiseIfOccurred();
             throw new SEHException("Eldbus: could not get `Message' object from eldbus_object_method_call_new");
         }
 
@@ -247,7 +247,7 @@ public class Object : System.IDisposable
 
         if (pending_hdl == IntPtr.Zero)
         {
-            eina.Error.RaiseIfOcurred();
+            eina.Error.RaiseIfOccurred();
             throw new SEHException("Eldbus: could not get `Pending' object from eldbus_object_peer_ping");
         }
 
@@ -265,7 +265,7 @@ public class Object : System.IDisposable
 
         if (pending_hdl == IntPtr.Zero)
         {
-            eina.Error.RaiseIfOcurred();
+            eina.Error.RaiseIfOccurred();
             throw new SEHException("Eldbus: could not get `Pending' object from eldbus_object_peer_machine_id_get");
         }
 
@@ -283,7 +283,7 @@ public class Object : System.IDisposable
 
         if (pending_hdl == IntPtr.Zero)
         {
-            eina.Error.RaiseIfOcurred();
+            eina.Error.RaiseIfOccurred();
             throw new SEHException("Eldbus: could not get `Pending' object from eldbus_object_introspect");
         }
 
@@ -301,7 +301,7 @@ public class Object : System.IDisposable
 
         if (pending_hdl == IntPtr.Zero)
         {
-            eina.Error.RaiseIfOcurred();
+            eina.Error.RaiseIfOccurred();
             throw new SEHException("Eldbus: could not get `Pending' object from eldbus_object_managed_objects_get");
         }
 
