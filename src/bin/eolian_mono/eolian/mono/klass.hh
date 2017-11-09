@@ -143,6 +143,7 @@ struct klass
      std::vector<std::string> namespaces = escape_namespace(cls.namespaces);
      auto open_namespace = *("namespace " << string << " { ") << "\n";
      if(!as_generator(open_namespace).generate(sink, namespaces, add_lower_case_context(context))) return false;
+     auto methods = cls.get_all_methods();
 
      // FIXME Generate local event argument wrappers
      for (auto&& e : cls.events)
@@ -286,20 +287,11 @@ struct klass
 
          if (!generate_events_registration(sink, cls, concrete_cxt))
              return false;
-     
+
+         // Concrete function definitions
          if(!as_generator(*(function_definition))
-            .generate(sink, cls.functions, concrete_cxt)) return false;
+            .generate(sink, methods, concrete_cxt)) return false;
 
-         for(auto first = std::begin(cls.inherits)
-               , last = std::end(cls.inherits); first != last; ++first)
-           {
-             attributes::klass_def klass(get_klass(*first, NULL), NULL);
-             
-             if(!as_generator(*(function_definition))
-                .generate(sink, klass.functions, concrete_cxt)) return false;
-           }
-
-         
          if(!as_generator("}\n").generate(sink, attributes::unused, concrete_cxt)) return false;
        }
 
@@ -385,20 +377,11 @@ struct klass
 
          if (!generate_events_registration(sink, cls, inherit_cxt))
              return false;
-     
+
+         // Inherit function definitions
          if(!as_generator(*(function_definition(true)))
-            .generate(sink, cls.functions, inherit_cxt)) return false;
+            .generate(sink, methods, inherit_cxt)) return false;
 
-         for(auto first = std::begin(cls.inherits)
-               , last = std::end(cls.inherits); first != last; ++first)
-           {
-             attributes::klass_def klass(get_klass(*first, NULL), NULL);
-             
-             if(!as_generator(*(function_definition(true)))
-                .generate(sink, klass.functions, inherit_cxt)) return false;
-           }
-
-         
          if(!as_generator("}\n").generate(sink, attributes::unused, inherit_cxt)) return false;
        }
 
@@ -420,17 +403,13 @@ struct klass
              << scope_tab << "public static byte class_initializer(IntPtr klass)\n"
              << scope_tab << "{\n"
              << scope_tab << scope_tab << "Efl_Op_Description[] descs = new Efl_Op_Description[" << grammar::int_ << "];\n"
-             << *(function_registration(index_generator, cls))
             )
-            .generate(sink, std::make_tuple(cls.cxx_name, function_count, cls.functions), inative_cxt))
+            .generate(sink, std::make_tuple(cls.cxx_name, function_count), inative_cxt))
            return false;
-         for(auto first = std::begin(cls.inherits)
-               , last = std::end(cls.inherits); first != last; ++first)
-           {
-             attributes::klass_def klass(get_klass(*first, NULL), NULL);
-             if(!as_generator(*(function_registration(index_generator, cls)))
-                .generate(sink, klass.functions, inative_cxt)) return false;
-           }
+
+         // Native wrapper registration
+         if(!as_generator(*(function_registration(index_generator, cls)))
+            .generate(sink, methods, inative_cxt)) return false;
 
          if(!as_generator
             (   scope_tab << scope_tab << "IntPtr descs_ptr = Marshal.AllocHGlobal(Marshal.SizeOf(descs[0])*" << function_count << ");\n"
@@ -453,18 +432,10 @@ struct klass
                           << scope_tab << "}\n")
             .generate(sink, attributes::unused, inative_cxt)) return false;
      
+         // Native method definitions
          if(!as_generator(*(native_function_definition(cls)))
-            .generate(sink, cls.functions, inative_cxt)) return false;
+            .generate(sink, methods, inative_cxt)) return false;
 
-         for(auto first = std::begin(cls.inherits)
-               , last = std::end(cls.inherits); first != last; ++first)
-           {
-             attributes::klass_def klass(get_klass(*first, NULL), NULL);
-             
-             if(!as_generator(*(native_function_definition(cls)))
-                .generate(sink, klass.functions, inative_cxt)) return false;
-           }
-         
          if(!as_generator("}\n").generate(sink, attributes::unused, inative_cxt)) return false;
        }
      
