@@ -25,8 +25,6 @@ COMMON_FLAGS = \
 -L$(top_builddir)/src/lib/eina/.libs -leina \
 @EO_CFLAGS@ @EO_LDFLAGS@ \
 -L$(top_builddir)/src/lib/eo/.libs -leo \
-@ECORE_CFLAGS@ @ECORE_LDFLAGS@ \
--L$(top_builddir)/src/lib/ecore/.libs -lecore \
 @EFL_CFLAGS@ @EFL_LDFLAGS@ \
 -L$(top_builddir)/src/lib/efl/.libs -lefl
 
@@ -35,6 +33,9 @@ COMMON_FLAGS += \
 @EVIL_CFLAGS@ @EVIL_LDFLAGS@ \
 @EFL_WINDOWS_VERSION_CFLAGS@ \
 -L$(top_builddir)/src/lib/evil/.libs -levil
+else
+COMMON_FLAGS += \
+-fPIC -DPIC
 endif
 
 
