@@ -126,6 +126,7 @@ MSBUILD_GEN_FLAGS += -p x64
 
 endif
 
+# Efl Custom Exports Mono auxiliary library
 efl_custom_exports_mono_files = \
 	lib/efl_mono/efl_custom_exports_mono.c
 
@@ -138,11 +139,12 @@ lib_efl_mono_libeflcustomexportsmono_la_SOURCES = \
 lib_efl_mono_libeflcustomexportsmono_la_CPPFLAGS = \
 -DEFL_BETA_API_SUPPORT \
 -I$(top_builddir)/src/lib/efl \
-@EINA_CFLAGS@ @EO_CFLAGS@ @ELDBUS_CFLAGS@
-lib_efl_mono_libeflcustomexportsmono_la_LDFLAGS = -no-undefined
-lib_efl_mono_libeflcustomexportsmono_la_LIBADD = @USE_EINA_LIBS@ @USE_EO_LIBS@ @USE_ELDBUS_LIBS@
-lib_efl_mono_libeflcustomexportsmono_la_DEPENDENCIES = @USE_EINA_INTERNAL_LIBS@ @USE_EO_INTERNAL_LIBS@ @USE_ELDBUS_INTERNAL_LIBS@
+@EFL_CUSTOM_EXPORTS_MONO_CFLAGS@
+lib_efl_mono_libeflcustomexportsmono_la_LDFLAGS = @EFL_LTLIBRARY_FLAGS@
+lib_efl_mono_libeflcustomexportsmono_la_LIBADD = @EFL_CUSTOM_EXPORTS_MONO_LIBS@
+lib_efl_mono_libeflcustomexportsmono_la_DEPENDENCIES = @EFL_CUSTOM_EXPORTS_MONO_INTERNAL_LIBS@
 
+#Efl Mono - C Sharp binding library
 bin_PROGRAMS += lib/efl_mono/libefl_mono.dll
 
 efl_eo_mono_files = \
@@ -182,6 +184,7 @@ efl_ecore_evas_mono_files = \
 
 lib_efl_mono_libefl_mono_dll_SOURCES = \
 	bindings/mono/efl_mono/efl_all.cs \
+	bindings/mono/efl_mono/efl_libs.cs \
 	$(efl_eo_mono_files) \
 	$(efl_eina_mono_files) \
 	$(efl_eldbus_mono_files) \
@@ -372,7 +375,7 @@ lib/elementary/%.eot.cs: lib/elementary/%.eot $(_EOLIAN_MONO_DEP)
 tests/efl_mono/%.eo.cs: tests/efl_mono/%.eo $(_EOLIAN_MONO_DEP)
 	$(AM_V_EOLMONO) \
 	$(MKDIR_P) $(dir $@); \
-	$(EOLIAN_MONO) $(EOLIAN_FLAGS) $(EOLIAN_MONO_FLAGS) --dllimport efl_mono_native_test -o $@ $(ALL_EO_FILES) $<
+	$(EOLIAN_MONO) $(EOLIAN_FLAGS) $(EOLIAN_MONO_FLAGS) --dllimport "@DLIB_PREFIX_MONO@efl_mono_native_test@DLIB_SUFFIX_MONO@" -o $@ $(ALL_EO_FILES) $<
 
 endif
 endif

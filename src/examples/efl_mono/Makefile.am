@@ -33,6 +33,7 @@ COMMON_FLAGS = \
 if HAVE_WIN32
 COMMON_FLAGS += \
 @EVIL_CFLAGS@ @EVIL_LDFLAGS@ \
+@EFL_WINDOWS_VERSION_CFLAGS@ \
 -L$(top_builddir)/src/lib/evil/.libs -levil
 endif
 
@@ -45,11 +46,7 @@ endif
 
 example_numberwrapper.c: example_numberwrapper.eo.h example_numberwrapper.eo.c
 
-if HAVE_WIN32
-numberwrapper_lib_name = libexample_numberwrapper.out-@VMAJ@
-else
 numberwrapper_lib_name = example_numberwrapper.out
-endif
 
 $(numberwrapper_lib_name): example_numberwrapper.c
 	$(CC) -shared -o $@ $< -DEFL_BETA_API_SUPPORT -I. $(COMMON_FLAGS)
@@ -70,7 +67,7 @@ FunctionPointer01.exe
 
 example_numberwrapper.eo.cs: example_numberwrapper.eo
 	$(AM_V_EOLMONO) \
-	$(EOLIAN_MONO) $(EOLIAN_FLAGS) $(EOLIAN_MONO_FLAGS) --dllimport example_numberwrapper.out -o $@ $<
+	$(EOLIAN_MONO) $(EOLIAN_FLAGS) $(EOLIAN_MONO_FLAGS) --dllimport $(numberwrapper_lib_name) -o $@ $<
 
 EoInherit01_exe_SOURCES = EoInherit01.cs
 EoInherit01_srcs = $(EoInherit01_exe_SOURCES) example_numberwrapper.eo.cs

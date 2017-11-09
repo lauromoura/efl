@@ -5,40 +5,6 @@ using static efl.UnsafeNativeMethods;
 
 namespace efl {
 
-/// <summary>
-/// Define the name of the libraries to be passed to DllImport statements.
-/// </summary>
-public class Libs {
-#if WIN32
-    // TODO: Hardcoded -VERSION version suffixes
-    public const string Efl = "libefl-1";
-    public const string Ecore = "libecore-1";
-    public const string Eina = "libeina-1";
-    public const string Eo = "libeo-1";
-    public const string Evas = "libevas-1";
-    public const string Evil = "libevil-1";
-    public const string EcoreEvas = "libecore_evas-1";
-    public const string Edje = "libedje-1";
-    public const string Elementary = "libelementary-1";
-    public const string Eldbus = "libeldbus-1";
-
-    public const string CustomExports = "libeflcustomexportsmono-0";
-#else
-    public const string Efl = "efl";
-    public const string Ecore = "ecore";
-    public const string Eina = "eina";
-    public const string Eo = "eo";
-    public const string Evas = "evas";
-    public const string Evil = "dl"; // Used for dlsym, dlopen and dlerror
-    public const string EcoreEvas = "ecore_evas";
-    public const string Edje = "edje";
-    public const string Elementary = "elementary";
-    public const string Eldbus = "eldbus";
-
-    public const string CustomExports = "eflcustomexportsmono";
-#endif
-}
-
 static class UnsafeNativeMethods {
     [DllImport(efl.Libs.Ecore)] public static extern void ecore_init();
     [DllImport(efl.Libs.Ecore)] public static extern void ecore_shutdown();
