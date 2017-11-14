@@ -53,7 +53,8 @@ static const std::vector<std::string> verbs =
     "pack",
     "unpack",
     "emit",
-    "call"
+    "call",
+    "append"
   };
 
 const std::vector<std::string> not_verbs =
