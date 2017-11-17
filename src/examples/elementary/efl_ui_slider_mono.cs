@@ -15,6 +15,11 @@ public class Example
         return button;
     }
 
+#if WIN32
+    // Mono on Windows by default uses multi-thread apartments for COM stuff while
+    // OLE - used by ecore win32 DnD requires single threading for COM.
+    [STAThreadAttribute()]
+#endif
     public static void Main() {
         efl.All.Init(efl.Components.Ui);
 
