@@ -1,6 +1,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 public class EcoreEvas
 {
@@ -15,6 +16,11 @@ public class EcoreEvas
     IntPtr handle;
     public EcoreEvas()
     {
+#if WIN32 // Not a native define, we define it in our build system
+        // Ecore_Win32 uses OleInitialize, which requires single thread apartments
+        if (Thread.CurrentThread.GetApartmentState() != ApartmentState.STA)
+            throw new InvalidOperationException("UI Applications require STAThreadAttribute in Main()");
+#endif
         ecore_evas_init();
         handle = ecore_evas_new(IntPtr.Zero, 0, 0, 640, 480, IntPtr.Zero);
         if(handle == IntPtr.Zero)

@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 using static efl.UnsafeNativeMethods;
 
@@ -60,6 +61,11 @@ namespace ui {
 public static class Config {
     public static void Init() {
         // TODO Support elm command line arguments
+#if WIN32 // Not a native define, we define it in our build system
+        // Ecore_Win32 uses OleInitialize, which requires single thread apartments
+        if (Thread.CurrentThread.GetApartmentState() != ApartmentState.STA)
+            throw new InvalidOperationException("UI Applications require STAThreadAttribute in Main()");
+#endif
         elm_init(0, IntPtr.Zero);
 
         elm_policy_set((int)elm.Policy.Quit, (int)elm.policy.Quit.Last_window_hidden);

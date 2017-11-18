@@ -261,6 +261,11 @@ if HAVE_CSHARP
 efl_ui_slider_mono_exe_SOURCES = \
 	efl_ui_slider_mono.cs
 
+if HAVE_WIN32
+MCS_FLAGS := $(MCS_FLAGS)
+MCS_FLAGS += -define:WIN32
+endif
+
 efl_ui_slider_mono.exe$(EXEEXT): $(efl_ui_slider_mono_exe_SOURCES) $(am_dirstamp) $(top_builddir)/src/lib/efl_mono/libefl_mono.dll$(EXEEXT)
 	@rm -f efl_ui_slider_mono$(EXEEXT)
 	$(AM_V_MCS) $(MCS) $(MCS_FLAGS) -r:$(abs_top_builddir)/src/lib/efl_mono/libefl_mono.dll$(EXEEXT) -out:$@ $(filter %.cs, $(^))

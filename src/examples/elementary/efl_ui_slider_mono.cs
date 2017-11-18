@@ -15,7 +15,7 @@ public class Example
         return button;
     }
 
-#if WIN32
+#if WIN32 // Passed to the C# compiler with -define:WIN32
     // Mono on Windows by default uses multi-thread apartments for COM stuff while
     // OLE - used by ecore win32 DnD requires single threading for COM.
     [STAThreadAttribute()]
