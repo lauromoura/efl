@@ -47,44 +47,27 @@ struct options_type
 
 efl::eina::log_domain domain("eolian_mono");
 
+// Parses a CSV file in the format 'filename,library' (without trimming spaces around ',')
 static std::vector<std::pair<std::string, std::string> >
-parse_reference(std::string argument)
+parse_reference(std::string filename)
 {
     std::vector<std::pair<std::string, std::string> > ret;
-    std::string param_delim = " ";
+    std::string delimiter = ",";
+    std::ifstream infile(filename);
+    std::string line;
 
-    std::string::size_type sep_idx = argument.find(':');
-
-    if (sep_idx == std::string::npos)
-      throw std::invalid_argument("Wrong reference mapping format.");
-
-    std::string library_name = argument.substr(0, sep_idx);
-    argument = argument.substr(sep_idx + 1);
-    try
+    while (std::getline(infile, line))
       {
-         while (true)
-           {
-              size_t delim_idx = argument.find(param_delim);
+         size_t pos = line.find(delimiter);
 
-              std::string param = argument.substr(0, delim_idx);
-              if (param == "")
-                  break;
+         if (pos == std::string::npos)
+           throw std::invalid_argument("Malformed mapping. Must be 'filename,library'");
 
-              size_t last_slash = param.find_last_of("/\\");
-
-              if (last_slash == std::string::npos)
-                last_slash = -1; // Probably it's just a filename
-
-              std::string filename = param.substr(last_slash + 1);
-              ret.push_back(std::pair<std::string, std::string>(filename, library_name));
-              argument = argument.substr(param.length() + param_delim.length());
-           }
+         std::string eo_filename = line.substr(0, pos);
+         std::string library = line.substr(pos + 1);
+         library[0] = std::toupper(library[0]);
+         ret.push_back(std::pair<std::string, std::string>(eo_filename, library));
       }
-    catch (const std::out_of_range &e)
-      {
-         // Silently ignore the trailing '"' if present
-      }
-
     return ret;
 }
 

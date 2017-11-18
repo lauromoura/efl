@@ -229,20 +229,8 @@ WIN_ADD_TEST_PATHS = $(abs_top_builddir)/src/lib/evil/.libs:$(abs_top_builddir)/
 
 ### Rules for generating the .cs files
 
-# Somehow spaces are accumulating at the end of the returned sting.
-# Use $(strip ...) after calling rwildcard
-rwildcard=$(wildcard $1$2)$(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))
-
 if HAVE_WIN32
-# The name of the library (before :) is the same name from the efl.Libs enumeration
-EO_EO_REFS = -r Eo:"$(strip $(call rwildcard,lib/eo/,*.eo))"
-ECORE_EO_REFS = -r Ecore:"$(strip $(call rwildcard,lib/ecore/,*.eo))"
-EVAS_EO_REFS = -r Evas:"$(strip $(call rwildcard,lib/evas/,*.eo))"
-EFL_EO_REFS = -r Efl:"$(strip $(call rwildcard,lib/efl/,*.eo))"
-EDJE_EO_REFS = -r Edje:"$(strip $(call rwildcard,lib/edje/,*.eo))"
-ELM_EO_REFS = -r Elementary:"$(strip $(call rwildcard,lib/elementary/,*.eo))"
-
-ALL_EO_REFS = $(EO_EO_REFS) $(ECORE_EO_REFS) $(EVAS_EO_REFS) $(EFL_EO_REFS) $(EDJE_EO_REFS) $(ELM_EO_REFS)
+ALL_EO_REFS = -r bindings/mono/efl_mono/efl_libs.csv
 else
 ALL_EO_REFS=
 endif

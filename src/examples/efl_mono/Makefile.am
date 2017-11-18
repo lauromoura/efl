@@ -68,7 +68,7 @@ FunctionPointer01.exe
 
 example_numberwrapper.eo.cs: example_numberwrapper.eo
 	$(AM_V_EOLMONO) \
-	$(EOLIAN_MONO) $(EOLIAN_FLAGS) $(EOLIAN_MONO_FLAGS) --dllimport $(numberwrapper_lib_name) -o $@ $<
+	$(EOLIAN_MONO) $(EOLIAN_FLAGS) $(EOLIAN_MONO_FLAGS) --dllimport $(numberwrapper_lib_name) -o $@ -r $(top_builddir)/src/bindings/mono/efl_mono/efl_libs.csv $<
 
 EoInherit01_exe_SOURCES = EoInherit01.cs
 EoInherit01_srcs = $(EoInherit01_exe_SOURCES) example_numberwrapper.eo.cs

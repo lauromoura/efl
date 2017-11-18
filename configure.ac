@@ -1442,6 +1442,14 @@ AC_SUBST([ELEMENTARY_DL_MONO])
 AC_SUBST([ELDBUS_DL_MONO])
 AC_SUBST([CUSTOM_EXPORTS_MONO_DL_MONO])
 
+# Eos file/library mapping
+
+# Unescaped sed pattern: sed -n 's/src\/lib\/\([a-z0-9_]*\)\/[a-z\/]*\/\([a-z0-9\._]*\)/\2,\1/pg'
+EFL_MONO_LIBRARY_MAP=`find src/lib/ -iname "*\.eo" | sed -n 's/src\/lib\/\(@<:@a-z0-9_@:>@*\)@<:@\/a-z@:>@*\/\(@<:@a-z0-9\._@:>@*\)/\2,\1/pg'`
+
+AC_SUBST([EFL_MONO_LIBRARY_MAP])
+AM_SUBST_NOTMAKE([EFL_MONO_LIBRARY_MAP])
+
 #### End of Efl C Sharp Bindings
 
 #### Eo
@@ -5676,6 +5684,7 @@ doc/previews/Makefile
 doc/widgets/Makefile
 src/Makefile
 src/bindings/mono/efl_mono/efl_libs.cs
+src/bindings/mono/efl_mono/efl_libs.csv
 src/benchmarks/eina/Makefile
 src/benchmarks/eo/Makefile
 src/benchmarks/evas/Makefile
