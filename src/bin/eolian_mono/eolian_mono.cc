@@ -320,6 +320,7 @@ opts_get(int argc, char **argv)
                }
              catch (const std::invalid_argument &e)
                {
+                   std::cerr << "Invalid argument processing argument " << optarg << std::endl;
                    _usage(argv[0]);
                    assert(false && e.what());
                }
