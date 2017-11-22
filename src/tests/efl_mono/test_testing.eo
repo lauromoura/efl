@@ -223,7 +223,7 @@ class Test.Testing (Efl.Object) {
       /* Integer */
       eina_array_int_in {
          params {
-            @in arr: array<int>;
+            @in arr: array<ptr(int)>;
          }
          return: bool;
       }
@@ -240,7 +240,7 @@ class Test.Testing (Efl.Object) {
 
       eina_array_int_out {
          params {
-            @out arr: array<int>;
+            @out arr: array<ptr(int)>;
          }
          return: bool;
       }
@@ -256,7 +256,7 @@ class Test.Testing (Efl.Object) {
       }
 
       eina_array_int_return {
-         return: array<int>;
+         return: array<ptr(int)>;
       }
       check_eina_array_int_return {
          return: bool;
@@ -517,7 +517,7 @@ class Test.Testing (Efl.Object) {
       /* Integer */
       eina_list_int_in {
          params {
-            @in lst: list<int>;
+            @in lst: list<ptr(int)>;
          }
          return: bool;
       }
@@ -534,7 +534,7 @@ class Test.Testing (Efl.Object) {
 
       eina_list_int_out {
          params {
-            @out lst: list<int>;
+            @out lst: list<ptr(int)>;
          }
          return: bool;
       }
@@ -550,7 +550,7 @@ class Test.Testing (Efl.Object) {
       }
 
       eina_list_int_return {
-         return: list<int>;
+         return: list<ptr(int)>;
       }
       check_eina_list_int_return {
          return: bool;
@@ -812,14 +812,14 @@ class Test.Testing (Efl.Object) {
       // Integer //
       eina_hash_int_in {
          params {
-            @in hsh: hash<int, int>;
+            @in hsh: hash<ptr(int), ptr(int)>;
          }
          return: bool;
       }
 
       eina_hash_int_in_own {
          params {
-            @in hsh: hash<int, ptr(int) @owned> @owned;
+            @in hsh: hash<ptr(int), ptr(int) @owned> @owned;
          }
          return: bool;
       }
@@ -829,7 +829,7 @@ class Test.Testing (Efl.Object) {
 
       eina_hash_int_out {
          params {
-            @out hsh: hash<int, int>;
+            @out hsh: hash<ptr(int), ptr(int)>;
          }
          return: bool;
       }
@@ -839,7 +839,7 @@ class Test.Testing (Efl.Object) {
 
       eina_hash_int_out_own {
          params {
-            @out hsh: hash<int, ptr(int) @owned> @owned;
+            @out hsh: hash<ptr(int), ptr(int) @owned> @owned;
          }
          return: bool;
       }
@@ -848,14 +848,14 @@ class Test.Testing (Efl.Object) {
       }
 
       eina_hash_int_return {
-         return: hash<int, int>;
+         return: hash<ptr(int), ptr(int)>;
       }
       check_eina_hash_int_return {
          return: bool;
       }
 
       eina_hash_int_return_own {
-         return: hash<int, ptr(int) @owned> @owned;
+         return: hash<ptr(int), ptr(int) @owned> @owned;
       }
       check_eina_hash_int_return_own {
          return: bool;
@@ -1008,7 +1008,7 @@ class Test.Testing (Efl.Object) {
       /* Integer */
       eina_iterator_int_in {
          params {
-            @in itr: iterator<int>;
+            @in itr: iterator<ptr(int)>;
          }
          return: bool;
       }
@@ -1025,7 +1025,7 @@ class Test.Testing (Efl.Object) {
 
       eina_iterator_int_out {
          params {
-            @out itr: iterator<int>;
+            @out itr: iterator<ptr(int)>;
          }
          return: bool;
       }
@@ -1041,7 +1041,7 @@ class Test.Testing (Efl.Object) {
       }
 
       eina_iterator_int_return {
-         return: iterator<int>;
+         return: iterator<ptr(int)>;
       }
       check_eina_iterator_int_return {
          return: bool;
