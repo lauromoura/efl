@@ -165,7 +165,31 @@ public struct Relation_Set {
     }
 }
 
+public struct Action_Data {
+    public IntPtr name;
+    public IntPtr action;
+    public IntPtr param;
+    public IntPtr func;
+}
+
 } // namespace access
+
+namespace font {
+
+public struct Size {
+    private int mask;
+
+    public static implicit operator Size(int x)
+    {
+        return new Size{mask=x};
+    }
+    public static implicit operator int(Size x)
+    {
+        return x.mask;
+    }
+}
+
+}
 
 } // namespace efl
 
