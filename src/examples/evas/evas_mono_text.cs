@@ -65,7 +65,7 @@ class TestMain
         text.SetPosition(position);
         text.SetVisible(true);
 
-        Efl_Font_Size font_size = 0;
+        efl.font.Size font_size = 0;
         String font = String.Empty;
         text.GetFont(out font, out font_size);
         Console.WriteLine("Adding text object with font {0} and size {1}", font, size);
