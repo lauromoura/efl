@@ -345,4 +345,23 @@ class TestCsharpProperties
     }
 }
 
+class TestEoGrandChildrenFinalize
+{
+    public sealed class Child : Dummy.TestObject
+    {
+        public int receivedValue = 0;
+        public override Efl.Object FinalizeAdd()
+        {
+            receivedValue = 42;
+            return this;
+        }
+    }
+
+    public static void test_grand_children_finalize()
+    {
+        Child obj = new Child();
+        Test.AssertEquals(42, obj.receivedValue);
+    }
+}
+
 }
