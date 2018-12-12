@@ -6,6 +6,7 @@
 #include "grammar/html_escaped_string.hpp"
 #include "using_decl.hh"
 #include "name_helpers.hh"
+#include "generation_contexts.hh"
 
 #include <Eina.h>
 
@@ -58,6 +59,7 @@ struct documentation_generator
    template<typename OutputIterator, typename Attribute, typename Context>
    bool generate(OutputIterator sink, Attribute const& attr, Context const& context) const
    {
+       const Eolian_State *state = state = context_find_tag<eolian_state_context>(context).state;
        return generate(sink, attr.documentation, context);
    }
 
